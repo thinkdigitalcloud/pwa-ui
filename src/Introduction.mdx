@@ -1,0 +1,37 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Introduction" />
+
+# pwa-ui
+
+A shared **React 18 + TypeScript** component library extracted from the four TDD
+estate PWAs — **anch**, **balwin**, **gocity**, and **redefine**.
+
+Each app was a fork of a common template, carrying its own copy of the same
+components and a Redux-driven `styled-components` theme. This library unifies them
+into one typed, themeable source of truth.
+
+## How to browse
+
+- Use the sidebar to explore components grouped by **Primitives**, **Inputs**,
+  **Cards**, **Layout**, **Navigation**, **Overlays**, and **Feedback**.
+- Use the **Theme** switcher in the toolbar (top) to re-render any story under
+  each brand — `light`, `anch`, `balwin`, `gocity`, or `redefine`.
+- Open the **Docs** tab on any component for its auto-generated props table.
+
+## Quick start
+
+```tsx
+import { ThemeProvider, balwinTheme, Button } from '@thinkdigitalcloud/pwa-ui';
+
+<ThemeProvider theme={balwinTheme}>
+  <Button text="Make booking" block />
+</ThemeProvider>
+```
+
+## Theme contract
+
+Components read a strongly-typed `AppTheme` (see `theme/types.ts`) via
+styled-components' `ThemeProvider` — grouped tokens for `colors`, `button`,
+`header`, `bottomBar`, `tile`, `typography`, `radii`, and `gradient`. This
+replaces the legacy flat `store.theme.data` Redux object.

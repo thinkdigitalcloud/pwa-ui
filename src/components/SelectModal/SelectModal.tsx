@@ -1,8 +1,6 @@
 import styled from 'styled-components';
 import { FiCheck, FiChevronRight } from 'react-icons/fi';
 import { Modal } from '../Modal';
-import { Text } from '../Text';
-import { Button } from '../Button';
 
 export interface SelectOption<T = string> {
   label: string;
@@ -27,22 +25,33 @@ const List = styled.div`
   flex-direction: column;
 `;
 
+// Reproduces the TDD estate apps' picker: the selected row is filled with the
+// brand primary colour + light text and a check; unselected rows show a chevron.
 const Row = styled.button<{ $selected: boolean }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
   width: 100%;
-  padding: 14px 8px;
+  padding: 14px 20px;
   border: none;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  background: ${({ $selected, theme }) =>
-    $selected ? theme.colors.backgroundSecondary : 'transparent'};
+  border-bottom: 1px solid #eee;
+  font-family: ${({ theme }) => theme.typography.fontFamily};
+  font-size: 16px;
+  font-weight: ${({ $selected, theme }) =>
+    $selected ? theme.typography.weightBold : theme.typography.weightBody};
+  background: ${({ $selected, theme }) => ($selected ? theme.colors.primary : 'transparent')};
+  color: ${({ $selected, theme }) =>
+    $selected ? theme.colors.textInverse : theme.colors.text};
   cursor: pointer;
   text-align: left;
 
   &:last-child {
     border-bottom: none;
+  }
+  &:hover:not(:disabled) {
+    background: ${({ $selected, theme }) =>
+      $selected ? theme.colors.primary : 'rgba(0, 0, 0, 0.04)'};
   }
   &:disabled {
     opacity: 0.4;
@@ -50,9 +59,34 @@ const Row = styled.button<{ $selected: boolean }>`
   }
 `;
 
+const Label = styled.span`
+  flex: 1;
+  min-width: 0;
+`;
+
+// Cancel reads as a distinct branded action below the list.
+const Cancel = styled.button`
+  appearance: none;
+  border: none;
+  border-radius: 4px;
+  width: 90%;
+  align-self: center;
+  margin: 8px auto 0;
+  display: block;
+  text-align: center;
+  padding: 14px 10px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: ${({ theme }) => theme.typography.fontFamily};
+  background: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.textInverse};
+  cursor: pointer;
+`;
+
 /**
- * Bottom/centred option picker — unifies the apps' `SelectModal`,
- * `SelectionModal` and `ModalList` into one generic, typed component.
+ * Centred option picker. The selected row is filled with the brand primary
+ * colour (matching the TDD estate apps' SelectModal / role picker); an optional
+ * branded Cancel button sits below the list.
  */
 export function SelectModal<T extends string | number = string>({
   open,
@@ -68,11 +102,7 @@ export function SelectModal<T extends string | number = string>({
       open={open}
       onClose={onClose}
       title={title}
-      footer={
-        cancelLabel ? (
-          <Button variant="ghost" text={cancelLabel} block onClick={onClose} />
-        ) : undefined
-      }
+      footer={cancelLabel ? <Cancel type="button" onClick={onClose}>{cancelLabel}</Cancel> : undefined}
     >
       <List>
         {options.map((option) => {
@@ -88,13 +118,11 @@ export function SelectModal<T extends string | number = string>({
                 onClose();
               }}
             >
-              <Text variant="body" color="inherit">
-                {option.label}
-              </Text>
+              <Label>{option.label}</Label>
               {selected ? (
-                <FiCheck size={20} />
+                <FiCheck size={22} />
               ) : (
-                <FiChevronRight size={20} color="#CBCACF" />
+                <FiChevronRight size={22} color="#CBCACF" />
               )}
             </Row>
           );

@@ -47,7 +47,7 @@ const Bar = styled.header<{ $shadow: boolean }>`
   left: 0;
   width: 100%;
   display: grid;
-  grid-template-columns: 44px 1fr 44px;
+  grid-template-columns: minmax(44px, auto) 1fr minmax(44px, auto);
   align-items: center;
   height: 60px;
   padding: 0 8px;
@@ -82,11 +82,14 @@ const IconButton = styled.button<{ $color?: string }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
+  min-width: 40px;
+  width: auto;
   height: 40px;
+  padding: 0 8px;
   border: none;
   background: transparent;
-  border-radius: 50%;
+  border-radius: 20px;
+  white-space: nowrap;
   color: ${({ theme, $color }) => $color || theme.headerOptionTextColor || theme.header.icon};
   cursor: pointer;
 

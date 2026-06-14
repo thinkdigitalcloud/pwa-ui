@@ -15,6 +15,8 @@ export interface HeaderAction {
   label: string;
   onClick: () => void;
   disabled?: boolean;
+  /** Optional icon colour override (e.g. success for save, danger for delete). */
+  color?: string;
 }
 
 export interface HeaderProps {
@@ -40,14 +42,17 @@ export interface HeaderProps {
 }
 
 const Bar = styled.header<{ $shadow: boolean }>`
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
   display: grid;
   grid-template-columns: 44px 1fr 44px;
   align-items: center;
   height: 60px;
   padding: 0 8px;
-  background: ${({ theme }) => theme.header.background};
-  color: ${({ theme }) => theme.header.text};
+  background: ${({ theme }) => theme.headerOptionBackground || theme.header.background};
+  color: ${({ theme }) => theme.headerOptionTextColor || theme.header.text};
   box-shadow: ${({ $shadow }) =>
     $shadow ? 'rgba(102, 102, 102, 0.42) 0px 1px 7px -1px' : 'none'};
   z-index: 100;
@@ -56,8 +61,9 @@ const Bar = styled.header<{ $shadow: boolean }>`
 const Title = styled.h1`
   margin: 0;
   text-align: center;
-  font-size: 17px;
+  font-size: 14px;
   font-weight: 700;
+  color: ${({ theme }) => theme.headerOptionTextColor || theme.header.text};
   font-family: ${({ theme }) => theme.typography.fontFamilyHeading};
   white-space: nowrap;
   overflow: hidden;
@@ -72,7 +78,7 @@ const Side = styled.div<{ $align: 'start' | 'end' }>`
   gap: 4px;
 `;
 
-const IconButton = styled.button`
+const IconButton = styled.button<{ $color?: string }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -81,7 +87,7 @@ const IconButton = styled.button`
   border: none;
   background: transparent;
   border-radius: 50%;
-  color: ${({ theme }) => theme.header.icon};
+  color: ${({ theme, $color }) => $color || theme.headerOptionTextColor || theme.header.icon};
   cursor: pointer;
 
   &:disabled {
@@ -115,8 +121,15 @@ export function Header({
   const rightActions: HeaderAction[] = [
     refresh && { key: 'refresh', icon: <FiRefreshCw size={20} />, label: 'Refresh', onClick: onRefresh ?? (() => {}) },
     edit && { key: 'edit', icon: <FiEdit2 size={20} />, label: 'Edit', onClick: onEdit ?? (() => {}) },
-    save && { key: 'save', icon: <FiSave size={20} />, label: 'Save', onClick: onSave ?? (() => {}), disabled: saveDisabled },
-    remove && { key: 'remove', icon: <FiTrash2 size={20} />, label: 'Delete', onClick: onRemove ?? (() => {}) },
+    save && {
+      key: 'save',
+      icon: <FiSave size={20} />,
+      label: 'Save',
+      onClick: onSave ?? (() => {}),
+      disabled: saveDisabled,
+      color: saveDisabled ? undefined : '#4C8B2B',
+    },
+    remove && { key: 'remove', icon: <FiTrash2 size={20} />, label: 'Delete', onClick: onRemove ?? (() => {}), color: '#D01E2D' },
     share && { key: 'share', icon: <FiShare2 size={20} />, label: 'Share', onClick: onShare ?? (() => {}) },
     ...actions,
   ].filter(Boolean) as HeaderAction[];
@@ -139,6 +152,7 @@ export function Header({
             aria-label={action.label}
             disabled={action.disabled}
             onClick={action.onClick}
+            $color={action.color}
           >
             {action.icon}
           </IconButton>

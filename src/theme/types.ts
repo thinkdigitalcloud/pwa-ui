@@ -64,6 +64,12 @@ export interface ThemeBottomBar {
   badge: string;
   badgeText: string;
   border: string;
+  /** Inner-circle background of the lifted active tab (TDD estate apps). */
+  activeBackground?: string;
+  /** Icon colour for the active tab. */
+  activeIconColor?: string;
+  /** Inactive icon colour (legacy flat key alias for `inactive`). */
+  iconColor?: string;
 }
 
 export interface ThemeTile {
@@ -103,4 +109,11 @@ export interface AppTheme {
   gradient: ThemeGradient;
   /** Base spacing unit in px; multiply for consistent rhythm. */
   spacingUnit: number;
+  /**
+   * Legacy/flat brand keys passed through from a consuming app's existing theme
+   * (e.g. the TDD estate apps' `store.theme.data`). Lets components honour a host
+   * app's exact brand styling when present, falling back to the grouped fields
+   * above otherwise. Untyped by design.
+   */
+  [key: string]: any;
 }

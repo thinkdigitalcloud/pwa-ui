@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { FiChevronRight } from 'react-icons/fi';
+import { FiArrowRight } from 'react-icons/fi';
 import { Text } from '../Text';
 
 export interface ListRowProps {
@@ -8,7 +8,7 @@ export interface ListRowProps {
   description?: string;
   /** Leading icon node (react-icons glyph, <img />, etc.). */
   icon?: React.ReactNode;
-  /** Show a trailing chevron. */
+  /** Show a trailing arrow. */
   hasArrow?: boolean;
   /** Show a "NEW" banner in the top-right corner. */
   isNew?: boolean;
@@ -16,6 +16,9 @@ export interface ListRowProps {
   onClick?: () => void;
 }
 
+// Reproduces the TDD estate apps' profile/menu row: a small rounded icon chip
+// (profileIconBackground + shadow) followed by a bottom-bordered body with the
+// label and a trailing arrow. Reads the flat brand keys with grouped fallbacks.
 const Container = styled.button`
   position: relative;
   display: flex;
@@ -23,30 +26,40 @@ const Container = styled.button`
   align-items: center;
   width: 100%;
   box-sizing: border-box;
-  min-height: 65px;
-  padding: 8px 25px;
-  gap: 16px;
+  padding: 0 20px;
   border: none;
-  border-top: 1px solid ${({ theme }) => theme.colors.lightGrey};
   background: transparent;
   text-align: left;
   cursor: pointer;
-
-  &:hover {
-    background: ${({ theme }) => theme.colors.backgroundSecondary};
-  }
 `;
 
-const IconSlot = styled.span`
+const Chip = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
-  font-size: 26px;
-  color: ${({ theme }) => theme.colors.secondary};
+  width: 34px;
+  height: 34px;
+  margin: 2px;
+  border-radius: 8px;
+  background: ${({ theme }) => theme.profileIconBackground || theme.tile.iconBackground};
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 2px 3.84px;
+  overflow: hidden;
 `;
 
 const Body = styled.span`
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-left: 17px;
+  padding: 14px 0;
+  border-bottom: 1px solid ${({ theme }) => theme.profileListBorderColor || theme.colors.border};
+`;
+
+const Labels = styled.span`
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -54,11 +67,14 @@ const Body = styled.span`
   min-width: 0;
 `;
 
-const Clamp = styled(Text)`
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+const RowText = styled(Text)`
+  color: ${({ theme }) => theme.textColour || theme.colors.text};
+`;
+
+const Arrow = styled(FiArrowRight)`
+  flex: 0 0 auto;
+  color: ${({ theme }) =>
+    (theme.bottomBar && theme.bottomBar.background) || theme.colors.textMuted};
 `;
 
 const NewBanner = styled.span`
@@ -73,12 +89,6 @@ const NewBanner = styled.span`
   background: ${({ theme }) => theme.colors.warning};
 `;
 
-/**
- * Full-width tappable list row — icon, title, optional clamped description,
- * optional trailing chevron and "NEW" banner. Ported from balwin's
- * `GoListItem/DrawerListItem` (the CMS icon-resolution wrappers `TileRow`/
- * `Tiles` are left to the app; pass a rendered `icon` node here instead).
- */
 export function ListRow({
   title,
   description,
@@ -90,16 +100,18 @@ export function ListRow({
 }: ListRowProps) {
   return (
     <Container type="button" onClick={onClick}>
-      {icon && <IconSlot aria-hidden>{icon}</IconSlot>}
+      {icon && <Chip aria-hidden>{icon}</Chip>}
       <Body>
-        <Text variant="label">{title}</Text>
-        {description != null && description !== '' && (
-          <Clamp variant="small" color="#7B7B7B">
-            {description}
-          </Clamp>
-        )}
+        <Labels>
+          <RowText variant="label">{title}</RowText>
+          {description != null && description !== '' && (
+            <Text variant="small" color="#7B7B7B">
+              {description}
+            </Text>
+          )}
+        </Labels>
+        {hasArrow && <Arrow size={20} aria-hidden />}
       </Body>
-      {hasArrow && <FiChevronRight size={22} aria-hidden />}
       {isNew && <NewBanner>{newLabel}</NewBanner>}
     </Container>
   );

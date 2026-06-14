@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Text } from '../Text';
 
 export interface TileProps {
   heading: string;
@@ -13,49 +12,75 @@ export interface TileProps {
   badgeText?: string;
   disabled?: boolean;
   onClick?: () => void;
+  style?: React.CSSProperties;
+  className?: string;
 }
 
+// Reproduces the TDD estate apps' home Tile: a gradient card (theme.tileGradient
+// + gradient angle) with a transparent icon area on the left and heading +
+// description. Falls back to the grouped theme.tile fields when the flat brand
+// keys aren't supplied.
 const Card = styled.button<{ $disabled: boolean }>`
   position: relative;
   display: flex;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-  text-align: left;
-  padding: 14px 16px;
+  flex-direction: column;
+  width: 90%;
+  max-width: 1200px;
+  margin: 10px auto;
+  padding: 10px;
+  min-height: 80px;
   border: none;
-  border-radius: ${({ theme }) => theme.radii.md};
-  background: ${({ theme }) => theme.tile.background};
-  box-shadow: ${({ theme }) => theme.tile.shadow};
+  align-self: center;
+  text-align: left;
+  border-radius: 20px;
+  background-image: linear-gradient(
+    ${({ theme }) => (theme.gradient && theme.gradient.angle) || 120}deg,
+    ${({ theme }) => (theme.tileGradient && theme.tileGradient[0]) || theme.tile.background},
+    ${({ theme }) => (theme.tileGradient && theme.tileGradient[1]) || theme.tile.background}
+  );
   cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+`;
 
-  &:hover:not(:disabled) {
-    transform: translateY(-1px);
-  }
-  &:disabled {
-    opacity: 0.55;
-  }
+const Row = styled.span`
+  display: flex;
+  align-items: center;
 `;
 
 const IconWrap = styled.span`
   display: flex;
-  align-items: center;
+  align-self: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  align-items: center;
+  margin: 10px 10px 10px 0;
+  height: 50px;
+  width: 50px;
   flex: 0 0 auto;
-  border-radius: ${({ theme }) => theme.radii.md};
-  background: ${({ theme }) => theme.tile.iconBackground};
-  color: ${({ theme }) => theme.tile.iconColor};
-  font-size: 22px;
+  font-size: 28px;
 `;
 
 const Info = styled.span`
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  flex: 10;
   min-width: 0;
+`;
+
+const Heading = styled.span`
+  width: 100%;
+  text-align: left;
+  font-family: ${({ theme }) => theme.typography.fontFamily};
+  font-weight: ${({ theme }) => theme.typography.weightLabel};
+  font-size: 14px;
+  color: ${({ theme }) => theme.tileHeadingColor || theme.tile.heading};
+`;
+
+const Description = styled.span`
+  width: 100%;
+  text-align: left;
+  font-family: ${({ theme }) => theme.typography.fontFamily};
+  font-weight: ${({ theme }) => theme.typography.weightBody};
+  font-size: 11px;
+  color: ${({ theme }) => theme.tileTextColour || theme.tile.description};
 `;
 
 const Badge = styled.span`
@@ -71,11 +96,13 @@ const Badge = styled.span`
   background: ${({ theme }) => theme.colors.warning};
 `;
 
-/**
- * Primary navigation tile (icon + heading + description) used on home/menu
- * screens across all four apps. Estate/Phosphor-specific icon resolution from
- * the originals is left to the consumer by accepting an arbitrary `icon` node.
- */
+const Backdrop = styled.span`
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background-color: rgba(0, 0, 0, 0.2);
+`;
+
 export function Tile({
   heading,
   description,
@@ -84,6 +111,8 @@ export function Tile({
   badgeText = 'NEW',
   disabled = false,
   onClick,
+  style,
+  className,
 }: TileProps) {
   return (
     <Card
@@ -91,19 +120,18 @@ export function Tile({
       $disabled={disabled}
       disabled={disabled}
       onClick={onClick}
+      style={style}
+      className={className}
     >
       {isNew && <Badge>{badgeText}</Badge>}
-      {icon && <IconWrap aria-hidden>{icon}</IconWrap>}
-      <Info>
-        <Text variant="bodyBold" color="inherit">
-          {heading}
-        </Text>
-        {description && (
-          <Text variant="small" color="#7B7B7B">
-            {description}
-          </Text>
-        )}
-      </Info>
+      <Row>
+        {icon && <IconWrap aria-hidden>{icon}</IconWrap>}
+        <Info>
+          <Heading>{heading}</Heading>
+          {description && <Description>{description}</Description>}
+        </Info>
+      </Row>
+      {disabled && <Backdrop aria-hidden />}
     </Card>
   );
 }

@@ -18,83 +18,120 @@ export interface BottomNavigationProps {
   showLabels?: boolean;
 }
 
+// Reproduces the TDD estate apps' tab bar: a fixed bottom bar where the active
+// tab is a two-layer lifted circle (outer ring = bottomBar.active, inner =
+// bottomBar.activeBackground), with themeable active/inactive icon colours and a
+// notifications badge. Reads the flat bottomBar brand keys with grouped fallbacks.
 const Bar = styled.nav`
-  display: flex;
   width: 100%;
-  background: ${({ theme }) => theme.bottomBar.background};
-  border-top: 1px solid ${({ theme }) => theme.bottomBar.border};
-  padding: 8px 12px;
-  padding-bottom: max(8px, env(safe-area-inset-bottom));
+  height: 60px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: rgb(102 102 102 / 42%) 0px 1px 7px -1px;
+  background: ${({ theme }) => (theme.bottomBar && theme.bottomBar.background) || theme.colors.surface};
 `;
 
-const Item = styled.button<{ $active: boolean; $labelled: boolean }>`
-  position: relative;
+const Item = styled.button`
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  border: none;
+  position: relative;
   background: transparent;
-  padding: 4px 0;
+  border: none;
   cursor: pointer;
+  height: 100%;
+  padding: 0;
+`;
+
+const ActiveOuter = styled.span`
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin-top: -20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.3);
+  background: ${({ theme }) => (theme.bottomBar && theme.bottomBar.active) || theme.colors.primary};
+`;
+
+const ActiveInner = styled.span`
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 22px;
-  color: ${({ $active, theme }) =>
-    $active ? theme.bottomBar.active : theme.bottomBar.inactive};
+  background: ${({ theme }) =>
+    (theme.bottomBar && theme.bottomBar.activeBackground) || theme.colors.surface};
+  color: ${({ theme }) =>
+    (theme.bottomBar && theme.bottomBar.activeIconColor) || theme.colors.primary};
+`;
+
+const Inactive = styled.span`
+  width: 55px;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  font-size: 22px;
+  color: ${({ theme }) =>
+    (theme.bottomBar && (theme.bottomBar.iconColor || theme.bottomBar.inactive)) || theme.colors.textMuted};
+`;
+
+const BadgeDot = styled.span`
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: ${({ theme }) => (theme.bottomBar && theme.bottomBar.badge) || theme.colors.danger};
+  color: ${({ theme }) => (theme.bottomBar && theme.bottomBar.badgeText) || theme.colors.textInverse};
+  font-size: 10px;
 `;
 
 const Label = styled.span`
   font-size: 10px;
-  font-weight: 600;
+  margin-top: 2px;
+  font-family: ${({ theme }) => theme.typography.fontFamily};
 `;
 
-const Badge = styled.span`
-  position: absolute;
-  top: -2px;
-  right: 50%;
-  transform: translateX(18px);
-  min-width: 16px;
-  height: 16px;
-  padding: 0 4px;
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: 700;
-  line-height: 16px;
-  text-align: center;
-  color: ${({ theme }) => theme.bottomBar.badgeText};
-  background: ${({ theme }) => theme.bottomBar.badge};
-`;
-
-/**
- * Fixed bottom tab bar. Data-driven (pass an `items` array) rather than the
- * apps' hard-coded five tabs, with theme-aware active colours and a badge.
- */
-export function BottomNavigation({
-  items,
-  active,
-  onSelect,
-  showLabels = false,
-}: BottomNavigationProps) {
+export function BottomNavigation({ items, active, onSelect, showLabels = false }: BottomNavigationProps) {
   return (
     <Bar>
-      {items.map((item) => (
-        <Item
-          key={item.key}
-          type="button"
-          aria-label={item.label ?? item.key}
-          aria-current={item.key === active}
-          $active={item.key === active}
-          $labelled={showLabels}
-          onClick={() => onSelect(item.key)}
-        >
-          {item.badge != null && item.badge > 0 && (
-            <Badge>{item.badge > 99 ? '99+' : item.badge}</Badge>
-          )}
-          {item.icon}
-          {showLabels && item.label && <Label>{item.label}</Label>}
-        </Item>
-      ))}
+      {items.map((item) => {
+        const isActive = item.key === active;
+        return (
+          <Item key={item.key} type="button" onClick={() => onSelect(item.key)} aria-label={item.label || item.key}>
+            {isActive ? (
+              <ActiveOuter>
+                <ActiveInner>{item.icon}</ActiveInner>
+              </ActiveOuter>
+            ) : (
+              <Inactive>
+                {item.icon}
+                {item.badge ? <BadgeDot>{item.badge}</BadgeDot> : null}
+              </Inactive>
+            )}
+            {showLabels && item.label && <Label>{item.label}</Label>}
+          </Item>
+        );
+      })}
     </Bar>
   );
 }

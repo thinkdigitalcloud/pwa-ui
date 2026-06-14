@@ -19,5 +19,6 @@ export * from './VisitorCard';
 export * from './Header';
 export * from './BottomNavigation';
 export * from './Page';
+export * from './ProfileBase';
 export * from './Modal';
 export * from './SelectModal';

@@ -50,6 +50,7 @@
     "build-storybook": "storybook build",
     "build": "tsup",
     "typecheck": "tsc --noEmit",
+    "prepare": "tsup",
     "prepublishOnly": "npm run typecheck && npm run build"
   },
   "peerDependencies": {

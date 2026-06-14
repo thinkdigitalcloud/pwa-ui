@@ -1,5 +1,9 @@
 # @thinkdigitalcloud/pwa-ui
 
+[![Storybook](https://img.shields.io/badge/Storybook-live-FF4785?logo=storybook&logoColor=white)](https://thinkdigitalcloud.github.io/pwa-ui/)
+
+📖 **Live component docs:** https://thinkdigitalcloud.github.io/pwa-ui/
+
 A shared **React 18 + TypeScript** component library with **Storybook**, extracted from the four TDD estate PWAs — 
 `anch-pwa`, `balwin-app-pwa`, `gocity-app-pwa`, and `redefine-app-pwa`.
 

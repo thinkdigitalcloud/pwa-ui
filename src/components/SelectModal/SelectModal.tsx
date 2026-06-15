@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { FiCheck, FiChevronRight } from 'react-icons/fi';
 import { Modal } from '../Modal';
 
 export interface SelectOption<T = string> {
@@ -26,16 +25,16 @@ const List = styled.div`
 `;
 
 // Reproduces the TDD estate apps' picker: the selected row is filled with the
-// brand primary colour + light text and a check; unselected rows show a chevron.
+// brand primary colour + light text. The divider + vertical padding live on the
+// inner Label (span), so the border is inset from the row's horizontal padding.
 const Row = styled.button<{ $selected: boolean }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
   width: 100%;
-  padding: 14px 20px;
+  padding: 0 20px;
   border: none;
-  border-bottom: 1px solid #eee;
   font-family: ${({ theme }) => theme.typography.fontFamily};
   font-size: 16px;
   font-weight: ${({ $selected, theme }) =>
@@ -46,7 +45,7 @@ const Row = styled.button<{ $selected: boolean }>`
   cursor: pointer;
   text-align: left;
 
-  &:last-child {
+  &:last-child span {
     border-bottom: none;
   }
   &:hover:not(:disabled) {
@@ -62,6 +61,9 @@ const Row = styled.button<{ $selected: boolean }>`
 const Label = styled.span`
   flex: 1;
   min-width: 0;
+  padding-top: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #eee;
 `;
 
 // Cancel reads as a distinct branded action below the list.
@@ -102,6 +104,10 @@ export function SelectModal<T extends string | number = string>({
       open={open}
       onClose={onClose}
       title={title}
+      centerTitle
+      closeButtonColor="#000"
+      borderRadius="5px"
+      bodyPadding="0"
       footer={cancelLabel ? <Cancel type="button" onClick={onClose}>{cancelLabel}</Cancel> : undefined}
     >
       <List>
@@ -119,11 +125,6 @@ export function SelectModal<T extends string | number = string>({
               }}
             >
               <Label>{option.label}</Label>
-              {selected ? (
-                <FiCheck size={22} />
-              ) : (
-                <FiChevronRight size={22} color="#CBCACF" />
-              )}
             </Row>
           );
         })}

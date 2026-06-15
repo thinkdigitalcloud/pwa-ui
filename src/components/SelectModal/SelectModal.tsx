@@ -48,6 +48,7 @@ const Row = styled.button<{ $selected: boolean }>`
   &:last-child span {
     border-bottom: none;
   }
+  ${({ $selected }) => ($selected ? 'span { border-bottom: none; }' : '')}
   &:hover:not(:disabled) {
     background: ${({ $selected, theme }) =>
       $selected ? theme.colors.primary : 'rgba(0, 0, 0, 0.04)'};

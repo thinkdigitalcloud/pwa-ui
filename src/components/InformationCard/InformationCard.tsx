@@ -17,7 +17,8 @@ const Card = styled.div<{ $clickable: boolean }>`
   width: 100%;
   padding: 12px;
   border-radius: ${({ theme }) => theme.radii.md};
-  background: ${({ theme }) => theme.colors.surface};
+  background: ${({ theme }) =>
+    theme.buttonBackgroundColor || theme.button.background || theme.colors.surface};
   box-shadow: ${({ theme }) => theme.tile.shadow};
   cursor: ${({ $clickable }) => ($clickable ? 'pointer' : 'default')};
 `;

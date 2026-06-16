@@ -67,8 +67,11 @@ const Labels = styled.span`
   min-width: 0;
 `;
 
+// Profile/menu rows use a regular-weight title (the `label` variant's 600 made
+// them read as bold). Keep the label sizing but drop to the body weight.
 const RowText = styled(Text)`
   color: ${({ theme }) => theme.textColour || theme.colors.text};
+  font-weight: ${({ theme }) => theme.typography.weightBody};
 `;
 
 const Arrow = styled(FiArrowRight)`

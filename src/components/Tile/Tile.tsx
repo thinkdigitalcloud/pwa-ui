@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 
 export interface TileProps {
   heading: string;
@@ -103,6 +103,44 @@ const Backdrop = styled.span`
   background-color: rgba(0, 0, 0, 0.2);
 `;
 
+// `tileIconRight` variant (e.g. LeClub): a flat list row — heading on the left,
+// icon on the right, a bottom-border divider and no gradient card.
+const RowCard = styled.button<{ $disabled: boolean }>`
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 18px 6px;
+  border: none;
+  border-bottom: 1px solid ${({ theme }) => theme.tileBorderColor || theme.colors.border};
+  background: transparent;
+  text-align: left;
+  cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
+`;
+
+const RowHeading = styled.span`
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  font-family: ${({ theme }) => theme.typography.fontFamily};
+  font-weight: ${({ theme }) => theme.typography.weightBody};
+  font-size: 14px;
+  color: ${({ theme }) => theme.tileTextColour || theme.tile.heading || theme.colors.text};
+`;
+
+const RowIcon = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  margin-left: 12px;
+  font-size: 24px;
+`;
+
 export function Tile({
   heading,
   description,
@@ -114,6 +152,27 @@ export function Tile({
   style,
   className,
 }: TileProps) {
+  const theme = useTheme();
+
+  // LeClub-style list row: heading left, icon right, bottom divider, no card.
+  if (theme && (theme as any).tileIconRight) {
+    return (
+      <RowCard
+        type="button"
+        $disabled={disabled}
+        disabled={disabled}
+        onClick={onClick}
+        style={style}
+        className={className}
+      >
+        <RowHeading>{heading}</RowHeading>
+        {icon && <RowIcon aria-hidden>{icon}</RowIcon>}
+        {isNew && <Badge>{badgeText}</Badge>}
+        {disabled && <Backdrop aria-hidden />}
+      </RowCard>
+    );
+  }
+
   return (
     <Card
       type="button"

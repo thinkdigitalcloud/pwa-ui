@@ -22,3 +22,4 @@ export * from './Page';
 export * from './ProfileBase';
 export * from './Modal';
 export * from './SelectModal';
+export * from './AddFromContacts';

@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { Header, type HeaderProps } from '../Header';
 import {
   BottomNavigation,
@@ -18,20 +18,33 @@ export interface PageProps {
   children: React.ReactNode;
 }
 
+/** Fixed height of the floating (absolutely-positioned) Header. */
+const HEADER_HEIGHT = 60;
+
 const Shell = styled.div<{ $bg?: string }>`
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
   min-height: 100%;
+  overflow: hidden;
   background: ${({ $bg, theme }) => $bg ?? theme.colors.background};
 `;
 
-const Content = styled.main<{ $padded: boolean }>`
+const Content = styled.main<{ $padded: boolean; $hasHeader: boolean }>`
   flex: 1;
+  /* allow this flex child to shrink so it becomes the scroll container */
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   padding: ${({ $padded }) => ($padded ? '16px 5%' : '0')};
+  /* The Header floats over the Shell, so offset content below it. */
+  ${({ $hasHeader, $padded }) =>
+    $hasHeader &&
+    css`
+      padding-top: ${$padded ? HEADER_HEIGHT + 16 : HEADER_HEIGHT}px;
+    `}
 `;
 
 /**
@@ -48,7 +61,9 @@ export function Page({
   return (
     <Shell $bg={backgroundColor}>
       {header && <Header {...header} />}
-      <Content $padded={padded}>{children}</Content>
+      <Content $padded={padded} $hasHeader={!!header}>
+        {children}
+      </Content>
       {bottomNav && <BottomNavigation {...bottomNav} />}
     </Shell>
   );

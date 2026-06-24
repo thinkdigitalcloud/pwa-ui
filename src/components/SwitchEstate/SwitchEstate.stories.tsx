@@ -41,6 +41,21 @@ const meta: Meta<typeof SwitchEstate> = {
   title: 'Pages/SwitchEstate',
   component: SwitchEstate,
   parameters: { layout: 'fullscreen' },
+  // Constrain to a device-sized frame so the page scrolls internally.
+  decorators: [
+    (Story) => (
+      <div
+        style={{
+          height: 720,
+          maxHeight: '90vh',
+          overflow: 'hidden',
+          boxShadow: '0 0 0 1px #e5e5e5',
+        }}
+      >
+        <Story />
+      </div>
+    ),
+  ],
   args: {
     estates,
     roles,

@@ -232,7 +232,7 @@ const Subtitle = styled(Text)`
 /* RN parity (EstateSwitchScreen): full-width rows, top divider, no card
    shadow/radius; image centred; check mark on the right in theme.secondary. */
 const EstateRow = styled.button`
-  background: #fff;
+  background: transparent;
   color: #000;
   display: flex;
   flex-direction: column;

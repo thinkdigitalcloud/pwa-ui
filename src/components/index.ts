@@ -24,3 +24,6 @@ export * from './Modal';
 export * from './SelectModal';
 export * from './AddFromContacts';
 export * from './SwitchEstate';
+export * from './NotificationTile';
+export * from './NotificationCategories';
+export * from './NotificationList';

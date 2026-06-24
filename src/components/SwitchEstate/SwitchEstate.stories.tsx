@@ -8,44 +8,33 @@ import {
   type SwitchEstateSelection,
 } from './SwitchEstate';
 
-// Self-contained, transparent typographic logos (data-URI SVGs — no network,
-// no background fill) so the story mirrors real estate-brand marks.
-const logo = (
-  name: string,
-  opts: { sub?: string; color?: string; italic?: boolean; spacing?: number } = {},
-) => {
-  const { sub = '', color = '#222', italic = false, spacing = 4 } = opts;
+// Self-contained, transparent, centred text logo (data-URI SVG — no network,
+// no background fill). Used for a few estates so the others exercise the
+// building-icon fallback.
+const logo = (name: string, color = '#222') => {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="80">
-    <text x="50%" y="${sub ? '44%' : '54%'}" text-anchor="middle" dominant-baseline="middle"
-      font-family="Georgia, 'Times New Roman', serif" font-size="26"
-      font-style="${italic ? 'italic' : 'normal'}" letter-spacing="${spacing}" fill="${color}">${name}</text>
-    ${
-      sub
-        ? `<text x="50%" y="74%" text-anchor="middle" dominant-baseline="middle"
-        font-family="Georgia, serif" font-size="9" letter-spacing="2" fill="#999">${sub}</text>`
-        : ''
-    }
+    <text x="50%" y="50%" text-anchor="middle" dominant-baseline="central"
+      font-family="Georgia, 'Times New Roman', serif" font-size="24"
+      letter-spacing="3" fill="${color}">${name}</text>
   </svg>`;
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 };
 
 const estates: SwitchEstateEstate[] = [
-  { id: 1, name: 'Balboa Head Office', imageUrl: logo('Balboa', { sub: 'HEAD OFFICE JHB', color: '#C0202E', italic: true }) },
-  { id: 2, name: 'Balboa Park', imageUrl: logo('BALBOA PARK', { sub: 'OAKDENE PARK DRIVE', spacing: 5 }) },
-  { id: 3, name: 'Ballito Hills', imageUrl: logo('BALLITO HILLS', { spacing: 4 }) },
-  { id: 4, name: 'De Aan-Zicht', imageUrl: logo('DE AAN-ZICHT', { sub: 'CAPE TOWN', spacing: 5 }) },
-  { id: 5, name: 'De Kuile', imageUrl: logo('De Kuile', { sub: 'ZEVENWACHT · CAPE TOWN', italic: true }) },
-  { id: 6, name: 'Hilltop Manor' }, // no image -> building fallback
+  { id: 1, name: 'Test Estate One', imageUrl: logo('TEST ESTATE ONE', '#C0202E') },
+  { id: 2, name: 'Test Estate Two', imageUrl: logo('TEST ESTATE TWO') },
+  { id: 3, name: 'Test Estate Three' }, // no logo -> building fallback
+  { id: 4, name: 'Test Estate Four', imageUrl: logo('TEST ESTATE FOUR', '#1B578C') },
+  { id: 5, name: 'Test Estate Five' }, // no logo -> building fallback
 ];
 
 const roles: SwitchEstateRole[] = [
-  { estateName: 'Balboa Head Office', roleName: 'admin', roleDisplayName: 'Administrator' },
-  { estateName: 'Balboa Park', roleName: 'owner', roleDisplayName: 'Owner' },
-  { estateName: 'Balboa Park', roleName: 'tenant', roleDisplayName: 'Tenant' },
-  { estateName: 'Ballito Hills', roleName: 'owner', roleDisplayName: 'Owner' },
-  { estateName: 'De Aan-Zicht', roleName: 'owner', roleDisplayName: 'Owner' },
-  { estateName: 'De Kuile', roleName: 'owner', roleDisplayName: 'Owner' },
-  { estateName: 'Hilltop Manor', roleName: 'guard', roleDisplayName: 'Security' },
+  { estateName: 'Test Estate One', roleName: 'admin', roleDisplayName: 'Administrator' },
+  { estateName: 'Test Estate Two', roleName: 'owner', roleDisplayName: 'Owner' },
+  { estateName: 'Test Estate Two', roleName: 'tenant', roleDisplayName: 'Tenant' },
+  { estateName: 'Test Estate Three', roleName: 'owner', roleDisplayName: 'Owner' },
+  { estateName: 'Test Estate Four', roleName: 'owner', roleDisplayName: 'Owner' },
+  { estateName: 'Test Estate Five', roleName: 'guard', roleDisplayName: 'Security' },
 ];
 
 const meta: Meta<typeof SwitchEstate> = {
@@ -55,7 +44,7 @@ const meta: Meta<typeof SwitchEstate> = {
   args: {
     estates,
     roles,
-    currentEstateName: 'Ballito Hills',
+    currentEstateName: 'Test Estate Two',
     currentRoleName: 'Owner',
     onSwitch: fn(),
   },

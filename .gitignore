@@ -3,6 +3,8 @@ dist
 storybook-static
 *.log
 .DS_Store
+# Pasted design-reference screenshots (not part of the library)
+/img*.png
 .idea
 build
 *.iml

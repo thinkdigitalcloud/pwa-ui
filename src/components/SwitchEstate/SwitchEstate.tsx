@@ -49,7 +49,7 @@ export interface SwitchEstateProps {
 
   /** Header title. Ignored if `header` is provided. */
   title?: string;
-  /** Centred subtitle above the list. Pass `null` to hide. */
+  /** Centred subtitle above the list. Hidden by default; pass a string to show. */
   subtitle?: string | null;
   /** Role action-sheet title. */
   roleSheetTitle?: string;
@@ -60,6 +60,8 @@ export interface SwitchEstateProps {
 
   /** Background colour for highlighting the active role row. */
   activeRoleColor?: string;
+  /** Colour of the selected-estate check mark (defaults to the theme success green). */
+  checkColor?: string;
 
   /** Full Header props override (takes precedence over `title`). */
   header?: PageProps['header'];
@@ -106,11 +108,12 @@ export function SwitchEstate({
   onSwitch,
   loading = false,
   title = 'Select Estate',
-  subtitle = 'Select an Estate',
+  subtitle = null,
   roleSheetTitle = 'Select a role',
   cancelLabel = 'Cancel',
   loadingLabel = 'Loading',
   activeRoleColor = '#FBB019',
+  checkColor,
   header,
   bottomNav,
   backgroundColor = '#ffffff',
@@ -170,7 +173,7 @@ export function SwitchEstate({
               onClick={() => openRolesFor(estate)}
             >
               {estate.name === selectedEstateName && (
-                <Check color={theme.colors.secondary} />
+                <Check color={checkColor ?? theme.colors.success} />
               )}
               <EstateImage imageUrl={estate.imageUrl} name={estate.name} />
             </EstateRow>

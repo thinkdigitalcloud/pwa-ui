@@ -46,6 +46,7 @@ const meta: Meta<typeof SwitchEstate> = {
     (Story) => (
       <div
         style={{
+          width: '100%',
           height: 720,
           maxHeight: '90vh',
           overflow: 'hidden',

@@ -28,9 +28,12 @@ const preview: Preview = {
   decorators: [
     (Story, context) => {
       const themeKey = (context.globals.theme as keyof typeof themes) || 'light';
+      // Full-page stories (layout: 'fullscreen') span the full width; component
+      // stories sit in a 390px phone-width frame.
+      const fullscreen = context.parameters?.layout === 'fullscreen';
       return (
         <ThemeProvider theme={themes[themeKey]}>
-          <div style={{ width: 390, maxWidth: '100%' }}>
+          <div style={fullscreen ? { width: '100%' } : { width: 390, maxWidth: '100%' }}>
             <Story />
           </div>
         </ThemeProvider>

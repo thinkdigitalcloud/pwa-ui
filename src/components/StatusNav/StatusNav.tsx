@@ -12,13 +12,15 @@ export interface StatusNavProps<T extends string = string> {
   onChange: (value: T) => void;
   /** Stretch to the full container width (default 80%, centred — the apps' look). */
   fullWidth?: boolean;
+  /** Explicit width (any CSS length, e.g. "60%" / "320px"). Overrides `fullWidth`. */
+  width?: string;
 }
 
-const Container = styled.div<{ $fullWidth: boolean }>`
+const Container = styled.div<{ $width: string }>`
   display: flex;
   flex-direction: row;
   align-items: center;
-  width: ${({ $fullWidth }) => ($fullWidth ? '100%' : '80%')};
+  width: ${({ $width }) => $width};
   height: 40px;
   margin: 20px auto 0;
   background: ${({ theme }) => theme.colors.background};
@@ -53,9 +55,11 @@ export function StatusNav<T extends string = string>({
   value,
   onChange,
   fullWidth = false,
+  width,
 }: StatusNavProps<T>) {
+  const resolvedWidth = width ?? (fullWidth ? '100%' : '80%');
   return (
-    <Container $fullWidth={fullWidth} role="tablist">
+    <Container $width={resolvedWidth} role="tablist">
       {items.map((item) => (
         <Item
           key={item.value}

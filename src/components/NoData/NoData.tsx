@@ -1,6 +1,6 @@
 import React from 'react';
-import styled from 'styled-components';
-import { MdOutlineSearchOff } from 'react-icons/md';
+import styled, { useTheme } from 'styled-components';
+import { PiFolderOpen } from 'react-icons/pi';
 import { Text } from '../Text';
 import { Button } from '../Button';
 
@@ -9,7 +9,7 @@ export interface NoDataProps {
   text: string;
   /** Optional bold title above the message. */
   title?: string;
-  /** Custom illustration; defaults to a "search off" glyph. */
+  /** Custom illustration; defaults to an open-folder glyph in the theme primary. */
   icon?: React.ReactNode;
   /** Renders a call-to-action button when provided. */
   onAction?: () => void;
@@ -35,9 +35,12 @@ export function NoData({
   onAction,
   actionLabel = 'Okay',
 }: NoDataProps) {
+  const theme = useTheme();
   return (
     <Container>
-      {icon ?? <MdOutlineSearchOff size={120} color="#B8BBC0" aria-hidden />}
+      {icon ?? (
+        <PiFolderOpen size={80} color={theme.colors.primary} aria-hidden />
+      )}
       {title && <Text variant="heading">{title}</Text>}
       <Text variant="body" color="#7B7B7B">
         {text}

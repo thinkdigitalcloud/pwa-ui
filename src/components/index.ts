@@ -23,3 +23,4 @@ export * from './ProfileBase';
 export * from './Modal';
 export * from './SelectModal';
 export * from './AddFromContacts';
+export * from './SwitchEstate';

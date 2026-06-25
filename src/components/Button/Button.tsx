@@ -22,6 +22,8 @@ export interface ButtonProps
   block?: boolean;
   /** Fully rounded (pill) corners. */
   rounded?: boolean;
+  /** Uppercase the label (default true — the estate apps' button style). */
+  uppercase?: boolean;
   /** Show a spinner and disable interaction. */
   loading?: boolean;
   /** Icon rendered before the label. */
@@ -80,6 +82,7 @@ const StyledButton = styled.button<{
   $size: ButtonSize;
   $block: boolean;
   $rounded: boolean;
+  $uppercase: boolean;
 }>`
   display: inline-flex;
   align-items: center;
@@ -94,8 +97,8 @@ const StyledButton = styled.button<{
   width: ${({ $block }) => ($block ? '100%' : 'auto')};
   font-family: ${({ theme }) => theme.typography.fontFamily};
   font-weight: ${({ theme }) => theme.typography.weightLabel};
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
+  text-transform: ${({ $uppercase }) => ($uppercase ? 'uppercase' : 'none')};
+  letter-spacing: ${({ $uppercase }) => ($uppercase ? '0.02em' : 'normal')};
   cursor: pointer;
   transition: opacity 0.15s ease, transform 0.05s ease;
   ${({ $size }) => sizeStyles[$size]};
@@ -138,6 +141,7 @@ export function Button({
   size = 'md',
   block = false,
   rounded = false,
+  uppercase = true,
   loading = false,
   leftIcon,
   rightIcon,
@@ -151,6 +155,7 @@ export function Button({
       $size={size}
       $block={block}
       $rounded={rounded}
+      $uppercase={uppercase}
       disabled={disabled || loading}
       {...rest}
     >

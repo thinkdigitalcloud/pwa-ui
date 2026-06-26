@@ -136,10 +136,10 @@ const Footer = styled.div`
   left: 0;
   width: 100%;
   height: 40px;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding: 0 12px;
   background: rgba(255, 255, 255, 0.6);
 `;
 
@@ -150,6 +150,7 @@ const Badge = styled.div`
   height: 28px;
   min-width: 96px;
   padding: 0 10px;
+  margin-right: 12px;
 `;
 
 const ActionChip = styled.div`
@@ -159,4 +160,5 @@ const ActionChip = styled.div`
   height: 24px;
   padding: 0 15px;
   background: #fff;
+  margin-right: 12px;
 `;

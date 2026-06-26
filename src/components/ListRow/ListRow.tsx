@@ -10,6 +10,8 @@ export interface ListRowProps {
   icon?: React.ReactNode;
   /** Show a trailing arrow. */
   hasArrow?: boolean;
+  /** Override the trailing arrow colour. */
+  arrowColor?: string;
   /** Show a "NEW" banner in the top-right corner. */
   isNew?: boolean;
   newLabel?: string;
@@ -74,10 +76,10 @@ const RowText = styled(Text)`
   font-weight: ${({ theme }) => theme.typography.weightBody};
 `;
 
-const Arrow = styled(FiArrowRight)`
+const Arrow = styled(FiArrowRight)<{ $color?: string }>`
   flex: 0 0 auto;
-  color: ${({ theme }) =>
-    (theme.bottomBar && theme.bottomBar.background) || theme.colors.textMuted};
+  color: ${({ $color, theme }) =>
+    $color || (theme.bottomBar && theme.bottomBar.background) || theme.colors.textMuted};
 `;
 
 const NewBanner = styled.span`
@@ -97,6 +99,7 @@ export function ListRow({
   description,
   icon,
   hasArrow = false,
+  arrowColor,
   isNew = false,
   newLabel = 'New',
   onClick,
@@ -113,7 +116,7 @@ export function ListRow({
             </Text>
           )}
         </Labels>
-        {hasArrow && <Arrow size={20} aria-hidden />}
+        {hasArrow && <Arrow size={20} $color={arrowColor} aria-hidden />}
       </Body>
       {isNew && <NewBanner>{newLabel}</NewBanner>}
     </Container>

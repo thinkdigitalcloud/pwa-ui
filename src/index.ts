@@ -9,3 +9,5 @@ export * from './theme';
 export * from './components';
 export * from './hooks';
 export { scale, ms, msPx } from './utils/scale';
+export { convertBookingTime } from './utils/bookingTime';
+export type { TimeSlot, TimeSlotAvailability, ResourceTimes } from './utils/bookingTime';

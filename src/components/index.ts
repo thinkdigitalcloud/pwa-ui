@@ -13,6 +13,7 @@ export * from './SectionTitle';
 export * from './StatusNav';
 export * from './NoData';
 export * from './Tile';
+export * from './Card';
 export * from './CategoryCard';
 export * from './InformationCard';
 export * from './VisitorCard';

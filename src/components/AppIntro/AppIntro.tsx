@@ -1,14 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import styled, { useTheme } from 'styled-components';
+import styled from 'styled-components';
 import { PiUserCirclePlus } from 'react-icons/pi';
 import { Text } from '../Text';
 import { Page } from '../Page';
 import { Toggle } from '../Toggle';
 import { SelectModal, type SelectOption } from '../SelectModal';
 import { Spinner } from '../Spinner';
-import { balwinTheme } from '../../theme/themes';
-import type { AppTheme } from '../../theme/types';
+import { useResolvedTheme } from '../../theme/useResolvedTheme';
 
 /** Free-text identity fields (Information step). */
 export interface AppIntroInformation {
@@ -114,11 +113,13 @@ export type AppIntroFieldLabels = Partial<
 
 /**
  * Colour overrides. Anything omitted falls back to the active styled-components
- * theme, and if the component is used with no ThemeProvider, to the balwin theme.
+ * theme, and if the component is used with no ThemeProvider, to the gocity theme.
  */
 export interface AppIntroColors {
-  /** Next/Done label, error banner, and vehicle toggle "on" track. */
+  /** Next/Done label and vehicle toggle "on" track. */
   accent?: string;
+  /** Validation / error message text. Defaults to the theme danger colour (red). */
+  error?: string;
   /** Policy-accept toggle "on" track. */
   success?: string;
   /** Body/heading/input text. */
@@ -266,12 +267,6 @@ const ALL_DIGITS = /^\d+$/;
 
 const isEmpty = (v?: string) => !v || v.trim().length === 0;
 
-/** Resolve the styled-components theme, falling back to balwin when absent. */
-function useResolvedTheme(): AppTheme {
-  const raw = useTheme() as Partial<AppTheme>;
-  return raw && raw.colors ? (raw as AppTheme) : balwinTheme;
-}
-
 /**
  * Multi-step onboarding wizard. Fully presentational and configurable per brand:
  * the step set (`slides`), the Information / Address field sets and their
@@ -307,6 +302,9 @@ export function AppIntro({
 }: AppIntroProps) {
   const t = useResolvedTheme();
   const accent = colors?.accent ?? t.colors.danger;
+  // Error/validation text is always a distinct danger colour (red), independent
+  // of `accent` — brands may set accent to white for the Next/Done label.
+  const errorColor = colors?.error ?? t.colors.danger;
   const success = colors?.success ?? t.colors.success;
   const textColor = colors?.text ?? t.colors.text;
   const labelColor = colors?.labelText ?? t.colors.darkGrey;
@@ -577,7 +575,7 @@ export function AppIntro({
         </Title>
 
         {!!stepError && (
-          <Text variant="small" color={accent} style={{ marginTop: 8, textAlign: 'center' }}>
+          <Text variant="small" color={errorColor} style={{ marginTop: 8, textAlign: 'center' }}>
             {stepError}
           </Text>
         )}
@@ -848,9 +846,9 @@ const StyledInput = styled.input`
   border: none;
   outline: none;
   padding: 4px 0;
-  /* RN field values use getProfileValueTextStyle: 16px, semibold (FONT_WEIGHT_LABEL 600). */
+  /* Field values: 16px, medium weight (not bold). */
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
 `;
 
 const SelectTrigger = styled.button<{ $placeholder: boolean }>`
@@ -860,9 +858,9 @@ const SelectTrigger = styled.button<{ $placeholder: boolean }>`
   border: none;
   outline: none;
   padding: 4px 0;
-  /* Match the input value typography (getProfileValueTextStyle 16/600). */
+  /* Match the input value typography (16px, medium weight — not bold). */
   font-size: 16px;
-  font-weight: ${({ $placeholder }) => ($placeholder ? 400 : 600)};
+  font-weight: ${({ $placeholder }) => ($placeholder ? 400 : 500)};
   text-align: left;
   cursor: pointer;
   opacity: ${({ $placeholder }) => ($placeholder ? 0.55 : 1)};

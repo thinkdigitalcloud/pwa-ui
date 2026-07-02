@@ -10,14 +10,14 @@ import { Spinner } from '../Spinner';
 import { balwinTheme } from '../../theme/themes';
 import type { AppTheme } from '../../theme/types';
 
-/** Free-text identity fields (slide 2). */
+/** Free-text identity fields (Information step). */
 export interface AppIntroInformation {
   firstName: string;
   lastName: string;
   idNumber: string;
 }
 
-/** Contact numbers (slide 3). */
+/** Contact numbers (Contact step). */
 export interface AppIntroContacts {
   home?: string;
   work?: string;
@@ -26,7 +26,7 @@ export interface AppIntroContacts {
   emergencyContactNumber?: string;
 }
 
-/** Address fields (slide 4). */
+/** Address fields (Address step). */
 export interface AppIntroAddress {
   standNo?: string;
   streetNoOrUnitNo?: string;
@@ -38,7 +38,7 @@ export interface AppIntroAddress {
   addressType?: string;
 }
 
-/** Vehicle fields (slide 5). */
+/** Vehicle fields (Vehicle step). */
 export interface AppIntroVehicle {
   make?: string;
   model?: string;
@@ -84,6 +84,23 @@ export interface AppIntroSlide {
   text: string;
   form: 'welcome' | 'information' | 'contact' | 'address' | 'vehicle' | 'policy';
 }
+
+/** Configurable Information-step fields (in render order). */
+export type AppIntroInfoField = 'firstName' | 'lastName' | 'idNumber';
+
+/** Configurable Address-step fields (in render order). `estate` writes `context`. */
+export type AppIntroAddressField =
+  | 'addressType'
+  | 'standNo'
+  | 'estate'
+  | 'streetNoOrUnitNo'
+  | 'streetName'
+  | 'suburbName'
+  | 'localityOrCity'
+  | 'addressPostalCode';
+
+/** Overridable field labels, keyed by field name. */
+export type AppIntroFieldLabels = Partial<Record<AppIntroInfoField | AppIntroAddressField, string>>;
 
 /**
  * Colour overrides. Anything omitted falls back to the active styled-components
@@ -133,13 +150,24 @@ export interface AppIntroProps {
   initialVehicle?: Partial<AppIntroVehicle> | null;
   initialAcceptedPolicy?: boolean;
 
+  /** Illustration on the welcome slide. Falls back to a Phosphor icon if unset. */
+  welcomeImage?: string;
   /** Illustration shown on the vehicle slide when a vehicle IS provided. */
   vehicleImage?: string;
   /** Illustration shown on the vehicle slide when "no vehicle" is checked. */
   noVehicleImage?: string;
 
-  /** Override the slide titles/subtitles (order & count must match the flow). */
+  /** Override the slide titles/subtitles and set the step order (drives which
+   *  form groups render — omit the `vehicle` slide to skip it entirely). */
   slides?: AppIntroSlide[];
+  /** Information-step fields to render, in order. Defaults to name/surname/ID. */
+  informationFields?: AppIntroInfoField[];
+  /** Address-step fields to render, in order. Defaults to the full balwin set. */
+  addressFields?: AppIntroAddressField[];
+  /** Which address fields are required (intersected with the rendered set). */
+  requiredAddressFields?: AppIntroAddressField[];
+  /** Per-field label overrides (e.g. `{ addressPostalCode: 'Postal Code' }`). */
+  fieldLabels?: AppIntroFieldLabels;
 
   /** Force the saving overlay (in addition to the internal await of onComplete). */
   loading?: boolean;
@@ -166,6 +194,40 @@ const DEFAULT_SLIDES: AppIntroSlide[] = [
   { title: 'Privacy Policy', text: 'Please provide more information about yourself.', form: 'policy' },
 ];
 
+const DEFAULT_INFO_FIELDS: AppIntroInfoField[] = ['firstName', 'lastName', 'idNumber'];
+const DEFAULT_ADDRESS_FIELDS: AppIntroAddressField[] = [
+  'addressType',
+  'standNo',
+  'estate',
+  'streetNoOrUnitNo',
+  'streetName',
+  'suburbName',
+  'localityOrCity',
+  'addressPostalCode',
+];
+const DEFAULT_REQUIRED_ADDRESS_FIELDS: AppIntroAddressField[] = [
+  'standNo',
+  'estate',
+  'streetNoOrUnitNo',
+  'streetName',
+  'suburbName',
+  'localityOrCity',
+  'addressPostalCode',
+];
+const DEFAULT_FIELD_LABELS: Record<AppIntroInfoField | AppIntroAddressField, string> = {
+  firstName: 'Name',
+  lastName: 'Surname',
+  idNumber: 'ID/Passport Number',
+  addressType: 'Address Type',
+  standNo: 'Stand No',
+  estate: 'Estate',
+  streetNoOrUnitNo: 'Unit/Street No',
+  streetName: 'Street Name',
+  suburbName: 'Suburb',
+  localityOrCity: 'City',
+  addressPostalCode: 'Code',
+};
+
 const DEFAULT_POLICY: Required<AppIntroPolicyConfig> = {
   termsHeading: 'TERMS & CONDITIONS',
   termsContent: '',
@@ -187,10 +249,13 @@ function useResolvedTheme(): AppTheme {
 }
 
 /**
- * Multi-step onboarding wizard (Welcome → Information → Contact → Address →
- * Vehicle → Privacy Policy). Fully presentational: seed values, estate options
- * and policy content come in as props, and the collected data is handed back via
- * `onComplete` — the host app owns all persistence (API / Firestore / storage).
+ * Multi-step onboarding wizard. Fully presentational and configurable per brand:
+ * the step set (`slides`), the Information / Address field sets and their
+ * required subset, labels, colours and the welcome illustration all come in as
+ * props, so balwin (Welcome→Info→Contact→Address→Vehicle→Policy, with ID + full
+ * address) and anch (no vehicle step, name/surname only, reduced address) are the
+ * same component with different props. Collected data is handed back via
+ * `onComplete` — the host app owns all persistence.
  */
 export function AppIntro({
   estates = [],
@@ -202,9 +267,14 @@ export function AppIntro({
   initialAddress,
   initialVehicle,
   initialAcceptedPolicy = false,
+  welcomeImage,
   vehicleImage,
   noVehicleImage,
   slides = DEFAULT_SLIDES,
+  informationFields = DEFAULT_INFO_FIELDS,
+  addressFields = DEFAULT_ADDRESS_FIELDS,
+  requiredAddressFields = DEFAULT_REQUIRED_ADDRESS_FIELDS,
+  fieldLabels,
   loading = false,
   colors,
   onComplete,
@@ -221,6 +291,7 @@ export function AppIntro({
   const fontFamily = t.typography.fontFamily;
 
   const policy = { ...DEFAULT_POLICY, ...policyConfig };
+  const labels = { ...DEFAULT_FIELD_LABELS, ...fieldLabels };
 
   const [information, setInformation] = useState<AppIntroInformation>({
     firstName: '',
@@ -293,40 +364,59 @@ export function AppIntro({
     return '';
   };
 
-  // RN parity: AppIntroScreen onNextPress per-step validation. Returns error string or ''.
+  // RN parity: per-step validation, keyed off the current slide's form so it is
+  // robust to brands with a different step set/order. Returns an error or ''.
   const validateStep = () => {
-    if (activeIndex === 1) {
-      if (isEmpty(information.firstName.replace(/\s/g, ''))) return 'Please enter your name';
-      if (information.firstName.length < 2) return 'Your name should contain at least 2 characters';
-      if (ALL_DIGITS.test(information.firstName.replace(/\s/gi, ''))) return 'Your name should include at least 1 alphabetical letter';
-      if (isEmpty(information.lastName.replace(/\s/g, ''))) return 'Please enter your surname';
-      if (information.lastName.length < 2) return 'Your surname should contain at least 2 characters';
-      if (ALL_DIGITS.test(information.lastName.replace(/\s/gi, ''))) return 'Your surname should include at least 1 alphabetical letter';
-      if (isEmpty(information.idNumber.replace(/\s/g, ''))) return 'Please enter your ID/Passport Number';
-      if (information.idNumber.length < 6) return 'ID/Passport Number must be at least 6 characters';
+    const { form } = slides[activeIndex];
+
+    if (form === 'information') {
+      if (informationFields.includes('firstName')) {
+        if (isEmpty(information.firstName.replace(/\s/g, ''))) return 'Please enter your name';
+        if (information.firstName.length < 2) return 'Your name should contain at least 2 characters';
+        if (ALL_DIGITS.test(information.firstName.replace(/\s/gi, ''))) return 'Your name should include at least 1 alphabetical letter';
+      }
+      if (informationFields.includes('lastName')) {
+        if (isEmpty(information.lastName.replace(/\s/g, ''))) return 'Please enter your surname';
+        if (information.lastName.length < 2) return 'Your surname should contain at least 2 characters';
+        if (ALL_DIGITS.test(information.lastName.replace(/\s/gi, ''))) return 'Your surname should include at least 1 alphabetical letter';
+      }
+      if (informationFields.includes('idNumber')) {
+        if (isEmpty(information.idNumber.replace(/\s/g, ''))) return 'Please enter your ID/Passport Number';
+        if (information.idNumber.length < 6) return 'ID/Passport Number must be at least 6 characters';
+      }
     }
-    if (activeIndex === 2) return validateContacts();
-    if (activeIndex === 3) {
+
+    if (form === 'contact') return validateContacts();
+
+    if (form === 'address') {
       const isResident = (addressInfo.addressType || 'residential').toLowerCase() === 'residential';
-      if (isResident && isEmpty(addressInfo.standNo)) return 'Please enter your stand number';
-      if (isResident && Number.isNaN(parseInt(addressInfo.standNo || '', 10))) return 'stand number must be a number';
-      if (isEmpty(addressInfo.context)) return 'Please enter your estate';
-      if (isEmpty((addressInfo.streetNoOrUnitNo || '').replace(/\s/g, ''))) return 'Please enter your unit/street number';
-      if (Number.isNaN(parseInt(addressInfo.streetNoOrUnitNo || '', 10))) return 'Unit/Street number must start with a number';
-      if (isEmpty((addressInfo.streetName || '').replace(/\s/g, ''))) return 'Please enter your street name';
-      if (isEmpty((addressInfo.suburbName || '').replace(/\s/g, ''))) return 'Please enter your suburb';
-      if (isEmpty((addressInfo.localityOrCity || '').replace(/\s/g, ''))) return 'Please enter your city';
-      if (isEmpty((addressInfo.addressPostalCode || '').replace(/\s/g, ''))) return 'Please enter your postal code';
+      const req = (k: AppIntroAddressField) => requiredAddressFields.includes(k) && addressFields.includes(k);
+      if (req('addressType') && isEmpty(addressInfo.addressType)) return 'Please select your address type';
+      if (req('standNo') && isResident && isEmpty(addressInfo.standNo)) return 'Please enter your stand number';
+      if (req('standNo') && isResident && Number.isNaN(parseInt(addressInfo.standNo || '', 10))) return 'stand number must be a number';
+      if (req('estate') && isEmpty(addressInfo.context)) return 'Please enter your estate';
+      if (req('streetNoOrUnitNo')) {
+        if (isEmpty((addressInfo.streetNoOrUnitNo || '').replace(/\s/g, ''))) return 'Please enter your unit/street number';
+        if (Number.isNaN(parseInt(addressInfo.streetNoOrUnitNo || '', 10))) return 'Unit/Street number must start with a number';
+      }
+      if (req('streetName') && isEmpty((addressInfo.streetName || '').replace(/\s/g, ''))) return 'Please enter your street name';
+      if (req('suburbName') && isEmpty((addressInfo.suburbName || '').replace(/\s/g, ''))) return 'Please enter your suburb';
+      if (req('localityOrCity') && isEmpty((addressInfo.localityOrCity || '').replace(/\s/g, ''))) return 'Please enter your city';
+      if (req('addressPostalCode') && isEmpty((addressInfo.addressPostalCode || '').replace(/\s/g, ''))) return 'Please enter your postal code';
     }
-    if (activeIndex === 4 && !noVehicleChecked) {
+
+    if (form === 'vehicle' && !noVehicleChecked) {
       if (isEmpty(vehicle.make)) return 'Please enter your vehicle make';
       if (isEmpty(vehicle.model)) return 'Please enter your vehicle model';
       if (isEmpty(vehicle.colour)) return 'Please enter your vehicle color';
       if (isEmpty(vehicle.registrationNumber)) return 'Please enter your vehicle registration number';
     }
-    if (activeIndex === 5 && !acceptedPolicy) return 'Terms and conditions not accepted';
+
+    if (form === 'policy' && !acceptedPolicy) return 'Terms and conditions not accepted';
     return '';
   };
+
+  const hasVehicleStep = slides.some((s) => s.form === 'vehicle');
 
   const finish = async () => {
     setBusy(true);
@@ -338,8 +428,8 @@ export function AppIntro({
           ...addressInfo,
           addressType: addressInfo.addressType || 'Residential',
         },
-        hasVehicle: !noVehicleChecked,
-        vehicle: noVehicleChecked ? null : vehicle,
+        hasVehicle: hasVehicleStep && !noVehicleChecked,
+        vehicle: hasVehicleStep && !noVehicleChecked ? vehicle : null,
         acceptedPrivacyPolicy: acceptedPolicy,
       });
     } finally {
@@ -374,6 +464,79 @@ export function AppIntro({
   );
   const showOverlay = loading || busy;
 
+  const renderAddressField = (f: AppIntroAddressField) => {
+    if (f === 'addressType') {
+      return (
+        <FieldSelect
+          key={f}
+          label={labels.addressType}
+          title="Select Address Type"
+          placeholder="Select address type"
+          value={addressInfo.addressType}
+          options={addressTypes}
+          labelColor={labelColor}
+          textColor={textColor}
+          font={fontFamily}
+          onSelect={(val) => {
+            if (val === addressTypes[1]?.value) {
+              patchAddress({
+                addressType: 'Work',
+                context: workDefaults?.estate || '',
+                suburbName: workDefaults?.suburb || '',
+                localityOrCity: workDefaults?.city || '',
+                addressPostalCode: workDefaults?.code || '',
+              });
+            } else {
+              patchAddress({
+                addressType: 'Residential',
+                context: '',
+                suburbName: '',
+                localityOrCity: '',
+                addressPostalCode: '',
+              });
+            }
+          }}
+        />
+      );
+    }
+    if (f === 'estate') {
+      return (
+        <FieldSelect
+          key={f}
+          label={labels.estate}
+          title="Select an Estate"
+          placeholder="Select an estate"
+          value={addressInfo.context}
+          options={estateOptions}
+          disabled={addressInfo.addressType === 'Work'}
+          labelColor={labelColor}
+          textColor={textColor}
+          font={fontFamily}
+          onSelect={(val) => {
+            const match = estates.find((e) => e.estateName === val);
+            patchAddress({
+              context: val,
+              suburbName: match?.suburb || addressInfo.suburbName || '',
+              localityOrCity: match?.city || addressInfo.localityOrCity || '',
+              addressPostalCode: match?.code || addressInfo.addressPostalCode || '',
+            });
+          }}
+        />
+      );
+    }
+    return (
+      <FieldInput
+        key={f}
+        label={labels[f]}
+        value={addressInfo[f]}
+        onChange={(v) => onChangeAddress(f, v)}
+        labelColor={labelColor}
+        textColor={textColor}
+        font={fontFamily}
+      />
+    );
+  };
+
   return (
     <Page backgroundColor={background} padded={false}>
       {showOverlay &&
@@ -397,8 +560,12 @@ export function AppIntro({
         <StepBody>
           {slide.form === 'welcome' && (
             <Welcome>
-              <PiUserCirclePlus size={120} color={textColor} />
-              <Text color={textColor} style={{ textAlign: 'center', marginTop: 80 }}>
+              {welcomeImage ? (
+                <WelcomeImage src={welcomeImage} alt="" />
+              ) : (
+                <PiUserCirclePlus size={120} color={textColor} />
+              )}
+              <Text color={textColor} style={{ textAlign: 'center', marginTop: welcomeImage ? 24 : 80 }}>
                 {slide.text}
               </Text>
             </Welcome>
@@ -406,9 +573,18 @@ export function AppIntro({
 
           {slide.form === 'information' && (
             <Form>
-              <FieldInput label="Name" value={information.firstName} onChange={(v) => onChangeDetails('firstName', v)} labelColor={labelColor} textColor={textColor} font={fontFamily} />
-              <FieldInput label="Surname" value={information.lastName} onChange={(v) => onChangeDetails('lastName', v)} labelColor={labelColor} textColor={textColor} font={fontFamily} />
-              <FieldInput label="ID/Passport Number" value={information.idNumber} maxLength={15} onChange={(v) => onChangeDetails('idNumber', v.replace(/\s/g, ''))} labelColor={labelColor} textColor={textColor} font={fontFamily} />
+              {informationFields.map((f) => (
+                <FieldInput
+                  key={f}
+                  label={labels[f]}
+                  value={information[f]}
+                  maxLength={f === 'idNumber' ? 15 : undefined}
+                  onChange={(v) => onChangeDetails(f, f === 'idNumber' ? v.replace(/\s/g, '') : v)}
+                  labelColor={labelColor}
+                  textColor={textColor}
+                  font={fontFamily}
+                />
+              ))}
             </Form>
           )}
 
@@ -422,65 +598,7 @@ export function AppIntro({
             </Form>
           )}
 
-          {slide.form === 'address' && (
-            <Form>
-              <FieldSelect
-                label="Address Type"
-                title="Select Address Type"
-                placeholder="Select address type"
-                value={addressInfo.addressType}
-                options={addressTypes}
-                labelColor={labelColor}
-                textColor={textColor}
-                font={fontFamily}
-                onSelect={(val) => {
-                  if (val === addressTypes[1]?.value) {
-                    patchAddress({
-                      addressType: 'Work',
-                      context: workDefaults?.estate || '',
-                      suburbName: workDefaults?.suburb || '',
-                      localityOrCity: workDefaults?.city || '',
-                      addressPostalCode: workDefaults?.code || '',
-                    });
-                  } else {
-                    patchAddress({
-                      addressType: 'Residential',
-                      context: '',
-                      suburbName: '',
-                      localityOrCity: '',
-                      addressPostalCode: '',
-                    });
-                  }
-                }}
-              />
-              <FieldInput label="Stand No" value={addressInfo.standNo} onChange={(v) => onChangeAddress('standNo', v)} labelColor={labelColor} textColor={textColor} font={fontFamily} />
-              <FieldSelect
-                label="Estate"
-                title="Select an Estate"
-                placeholder="Select an estate"
-                value={addressInfo.context}
-                options={estateOptions}
-                disabled={addressInfo.addressType === 'Work'}
-                labelColor={labelColor}
-                textColor={textColor}
-                font={fontFamily}
-                onSelect={(val) => {
-                  const match = estates.find((e) => e.estateName === val);
-                  patchAddress({
-                    context: val,
-                    suburbName: match?.suburb || addressInfo.suburbName || '',
-                    localityOrCity: match?.city || addressInfo.localityOrCity || '',
-                    addressPostalCode: match?.code || addressInfo.addressPostalCode || '',
-                  });
-                }}
-              />
-              <FieldInput label="Unit/Street No" value={addressInfo.streetNoOrUnitNo} onChange={(v) => onChangeAddress('streetNoOrUnitNo', v)} labelColor={labelColor} textColor={textColor} font={fontFamily} />
-              <FieldInput label="Street Name" value={addressInfo.streetName} onChange={(v) => onChangeAddress('streetName', v)} labelColor={labelColor} textColor={textColor} font={fontFamily} />
-              <FieldInput label="Suburb" value={addressInfo.suburbName} onChange={(v) => onChangeAddress('suburbName', v)} labelColor={labelColor} textColor={textColor} font={fontFamily} />
-              <FieldInput label="City" value={addressInfo.localityOrCity} onChange={(v) => onChangeAddress('localityOrCity', v)} labelColor={labelColor} textColor={textColor} font={fontFamily} />
-              <FieldInput label="Code" value={addressInfo.addressPostalCode} onChange={(v) => onChangeAddress('addressPostalCode', v)} labelColor={labelColor} textColor={textColor} font={fontFamily} />
-            </Form>
-          )}
+          {slide.form === 'address' && <Form>{addressFields.map(renderAddressField)}</Form>}
 
           {slide.form === 'vehicle' && (
             <Form>
@@ -666,6 +784,14 @@ const Welcome = styled.div`
   align-items: center;
   justify-content: center;
   margin-top: 60px;
+`;
+
+const WelcomeImage = styled.img`
+  display: block;
+  width: 80%;
+  max-width: 320px;
+  height: 240px;
+  object-fit: contain;
 `;
 
 const Form = styled.div`

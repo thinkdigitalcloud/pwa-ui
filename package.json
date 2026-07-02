@@ -1,6 +1,6 @@
 {
   "name": "@thinkdigitalcloud/pwa-ui",
-  "version": "0.1.19",
+  "version": "0.1.20",
   "description": "Shared React 18 + TypeScript component library extracted from the TDD PWA estate apps (anch, balwin, gocity, redefine).",
   "license": "MIT",
   "author": "TDD Games",

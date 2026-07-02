@@ -51,3 +51,7 @@ export * from './LeadList';
 export * from './LeadShareForm';
 export * from './AppIntro';
 export * from './DataUsage';
+export * from './CreditCard';
+export * from './ConfirmationModal';
+export * from './VehicleTile';
+export * from './VisitorAccessTile';

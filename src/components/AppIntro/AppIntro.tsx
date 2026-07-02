@@ -800,8 +800,8 @@ const Container = styled.div`
 const Title = styled(Text)`
   text-align: center;
   margin-top: 10px;
-  /* RN AppIntro titleText is Gotham Bold 800 (getGothamBoldFont). */
-  font-weight: 800;
+  /* Slide title: medium weight (not bold). */
+  font-weight: 500;
 `;
 
 const StepBody = styled.div`

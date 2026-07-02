@@ -61,3 +61,7 @@ export * from './EventNotificationsCard';
 export * from './ProfilePage';
 export * from './ProfileInnerPage';
 export * from './AboutPage';
+export * from './AuthLayout';
+export * from './SignInPage';
+export * from './SignUpPage';
+export * from './ForgotPasswordPage';

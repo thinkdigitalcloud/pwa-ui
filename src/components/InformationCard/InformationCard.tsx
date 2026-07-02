@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { Text } from '../Text';
 import { useResolvedTheme } from '../../theme/useResolvedTheme';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface InformationCardProps {
   /** Primary highlighted line (e.g. estate / vehicle make). */
@@ -15,6 +16,8 @@ export interface InformationCardProps {
   lineColor?: string;
   /** Render flat — no shadow and a zero-width border. */
   flat?: boolean;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 const Card = styled.div<{ $clickable: boolean; $flat: boolean }>`
@@ -46,13 +49,7 @@ const Lines = styled.div`
   min-width: 0;
 `;
 
-/**
- * Generic info card with a highlighted title + muted detail lines and an
- * optional thumbnail. Generalises the apps' `InformationTile` / `VehicleTile`
- * (decoupled from Redux estate lookups — pass data in directly). Title and line
- * colours are theme-aware (overridable), and `flat` renders it borderless.
- */
-export function InformationCard({
+function InformationCardContent({
   title,
   lines = [],
   image,
@@ -78,5 +75,19 @@ export function InformationCard({
         ))}
       </Lines>
     </Card>
+  );
+}
+
+/**
+ * Generic info card with a highlighted title + muted detail lines and an
+ * optional thumbnail. Generalises the apps' `InformationTile` / `VehicleTile`
+ * (decoupled from Redux estate lookups — pass data in directly). Title and line
+ * colours are theme-aware (overridable), and `flat` renders it borderless.
+ */
+export function InformationCard({ brand, ...props }: InformationCardProps) {
+  return (
+    <BrandScope brand={brand}>
+      <InformationCardContent {...props} />
+    </BrandScope>
   );
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface SectionTitleProps {
   /** Title text (alternatively pass `children`). */
@@ -8,6 +9,8 @@ export interface SectionTitleProps {
   /** Text colour; defaults to a muted grey (the apps' `#b7bbbf`). */
   color?: string;
   align?: 'left' | 'center' | 'right';
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 const Container = styled.div<{ $align: 'left' | 'center' | 'right' }>`
@@ -29,8 +32,7 @@ const Label = styled.span<{ $color: string; $align: 'left' | 'center' | 'right' 
   font-family: ${({ theme }) => theme.typography.fontFamilyHeading};
 `;
 
-/** Centred, muted section heading — balwin's `SecondaryTitle`. */
-export function SectionTitle({
+function SectionTitleContent({
   text,
   children,
   color = '#b7bbbf',
@@ -42,5 +44,14 @@ export function SectionTitle({
         {children ?? text}
       </Label>
     </Container>
+  );
+}
+
+/** Centred, muted section heading — balwin's `SecondaryTitle`. */
+export function SectionTitle({ brand, ...props }: SectionTitleProps) {
+  return (
+    <BrandScope brand={brand}>
+      <SectionTitleContent {...props} />
+    </BrandScope>
   );
 }

@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { Page, type PageProps } from '../Page';
 import { NoData } from '../NoData';
 import { FacilityCard } from '../FacilityCard';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface BookingFacilityItem {
   id?: string;
@@ -19,13 +20,11 @@ export interface MakeBookingProps {
   header?: PageProps['header'];
   bottomNav?: PageProps['bottomNav'];
   backgroundColor?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * The `/MakeBooking` "Facilities" page: a list of bookable facilities as image
- * cards, or an empty state. Data + selection handler come from the parent.
- */
-export function MakeBooking({
+function MakeBookingContent({
   facilities,
   onSelect,
   emptyText = 'No Facilities Found.',
@@ -58,6 +57,18 @@ export function MakeBooking({
         </EmptyWrap>
       )}
     </Page>
+  );
+}
+
+/**
+ * The `/MakeBooking` "Facilities" page: a list of bookable facilities as image
+ * cards, or an empty state. Data + selection handler come from the parent.
+ */
+export function MakeBooking({ brand, ...props }: MakeBookingProps) {
+  return (
+    <BrandScope brand={brand}>
+      <MakeBookingContent {...props} />
+    </BrandScope>
   );
 }
 

@@ -3,6 +3,7 @@ import styled, { useTheme } from 'styled-components';
 import { PiFolderOpen } from 'react-icons/pi';
 import { Text } from '../Text';
 import { Button } from '../Button';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface NoDataProps {
   /** Message shown beneath the icon. */
@@ -14,6 +15,8 @@ export interface NoDataProps {
   /** Renders a call-to-action button when provided. */
   onAction?: () => void;
   actionLabel?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 const Container = styled.div`
@@ -27,8 +30,7 @@ const Container = styled.div`
   text-align: center;
 `;
 
-/** Empty-state placeholder (the apps' `NoData`). */
-export function NoData({
+function NoDataContent({
   text,
   title,
   icon,
@@ -49,5 +51,14 @@ export function NoData({
         <Button variant="secondary" text={actionLabel} onClick={onAction} />
       )}
     </Container>
+  );
+}
+
+/** Empty-state placeholder (the apps' `NoData`). */
+export function NoData({ brand, ...props }: NoDataProps) {
+  return (
+    <BrandScope brand={brand}>
+      <NoDataContent {...props} />
+    </BrandScope>
   );
 }

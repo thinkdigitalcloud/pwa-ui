@@ -2,6 +2,7 @@ import { useState } from 'react';
 import styled, { useTheme } from 'styled-components';
 import { Page, type PageProps } from '../Page';
 import { Button } from '../Button';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface LeadShareValues {
   name: string;
@@ -20,15 +21,11 @@ export interface LeadShareFormProps {
   header?: PageProps['header'];
   bottomNav?: PageProps['bottomNav'];
   backgroundColor?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * Editable lead/visitor form for the share-PIN step: name, phone, email
- * (read-only by default) and license plate, plus a confirm button that emits the
- * current values. Port of balwin's `LeadSharePinScreen` with the share/toast/
- * navigation side effects lifted to the parent's `onSubmit`.
- */
-export function LeadShareForm({
+function LeadShareFormContent({
   initialValues,
   loading = false,
   onSubmit,
@@ -93,6 +90,20 @@ export function LeadShareForm({
         />
       </Form>
     </Page>
+  );
+}
+
+/**
+ * Editable lead/visitor form for the share-PIN step: name, phone, email
+ * (read-only by default) and license plate, plus a confirm button that emits the
+ * current values. Port of balwin's `LeadSharePinScreen` with the share/toast/
+ * navigation side effects lifted to the parent's `onSubmit`.
+ */
+export function LeadShareForm({ brand, ...props }: LeadShareFormProps) {
+  return (
+    <BrandScope brand={brand}>
+      <LeadShareFormContent {...props} />
+    </BrandScope>
   );
 }
 

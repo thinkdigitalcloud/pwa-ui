@@ -5,6 +5,7 @@ import { Button } from '../Button';
 import { StatusNav } from '../StatusNav';
 import { FacilityCard } from '../FacilityCard';
 import { Text } from '../Text';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export type BookingCategory = 'requested' | 'upcoming' | 'past';
 
@@ -35,6 +36,8 @@ export interface BookingsProps {
   header?: PageProps['header'];
   bottomNav?: PageProps['bottomNav'];
   backgroundColor?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 const DEFAULT_EMPTY: Record<BookingCategory, string> = {
@@ -59,12 +62,7 @@ function badgeFor(theme: ReturnType<typeof useTheme>, status?: string) {
   return s ? { label: s.charAt(0) + s.slice(1).toLowerCase(), color: theme.colors.secondary } : undefined;
 }
 
-/**
- * The `/bookings` landing: a "Make a booking" CTA, a requested/upcoming/past
- * segmented filter, and the matching booking cards (or an empty message).
- * Grouping/navigation are the parent's job — pass pre-grouped data + handlers.
- */
-export function Bookings({
+function BookingsContent({
   grouped,
   onOpenBooking,
   onMakeBooking,
@@ -119,6 +117,19 @@ export function Bookings({
         </List>
       </Column>
     </Page>
+  );
+}
+
+/**
+ * The `/bookings` landing: a "Make a booking" CTA, a requested/upcoming/past
+ * segmented filter, and the matching booking cards (or an empty message).
+ * Grouping/navigation are the parent's job — pass pre-grouped data + handlers.
+ */
+export function Bookings({ brand, ...props }: BookingsProps) {
+  return (
+    <BrandScope brand={brand}>
+      <BookingsContent {...props} />
+    </BrandScope>
   );
 }
 

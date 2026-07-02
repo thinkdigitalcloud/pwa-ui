@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface StatusNavItem<T extends string = string> {
   label: string;
@@ -14,6 +15,8 @@ export interface StatusNavProps<T extends string = string> {
   fullWidth?: boolean;
   /** Explicit width (any CSS length, e.g. "60%" / "320px"). Overrides `fullWidth`. */
   width?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 const Container = styled.div<{ $width: string }>`
@@ -45,12 +48,7 @@ const Item = styled.button<{ $selected: boolean }>`
   transition: background 0.15s ease;
 `;
 
-/**
- * Segmented status/tab bar. Generalises balwin's `StatusNav` (hard-coded
- * status1/2/3) to a data-driven items array. Selected segment uses the theme
- * secondary colour with inverse text; the rest use light grey.
- */
-export function StatusNav<T extends string = string>({
+function StatusNavContent<T extends string = string>({
   items,
   value,
   onChange,
@@ -73,5 +71,21 @@ export function StatusNav<T extends string = string>({
         </Item>
       ))}
     </Container>
+  );
+}
+
+/**
+ * Segmented status/tab bar. Generalises balwin's `StatusNav` (hard-coded
+ * status1/2/3) to a data-driven items array. Selected segment uses the theme
+ * secondary colour with inverse text; the rest use light grey.
+ */
+export function StatusNav<T extends string = string>({
+  brand,
+  ...props
+}: StatusNavProps<T>) {
+  return (
+    <BrandScope brand={brand}>
+      <StatusNavContent {...props} />
+    </BrandScope>
   );
 }

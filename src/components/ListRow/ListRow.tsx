@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { FiArrowRight } from 'react-icons/fi';
 import { Text } from '../Text';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface ListRowProps {
   title: string;
@@ -16,6 +17,8 @@ export interface ListRowProps {
   isNew?: boolean;
   newLabel?: string;
   onClick?: () => void;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 // Reproduces the TDD estate apps' profile/menu row: a small rounded icon chip
@@ -94,7 +97,7 @@ const NewBanner = styled.span`
   background: ${({ theme }) => theme.colors.warning};
 `;
 
-export function ListRow({
+function ListRowContent({
   title,
   description,
   icon,
@@ -120,5 +123,13 @@ export function ListRow({
       </Body>
       {isNew && <NewBanner>{newLabel}</NewBanner>}
     </Container>
+  );
+}
+
+export function ListRow({ brand, ...props }: ListRowProps) {
+  return (
+    <BrandScope brand={brand}>
+      <ListRowContent {...props} />
+    </BrandScope>
   );
 }

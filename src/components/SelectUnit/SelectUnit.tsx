@@ -4,6 +4,7 @@ import { Page, type PageProps } from '../Page';
 import { Spinner } from '../Spinner';
 import { Text } from '../Text';
 import { SelectTile } from '../SelectTile';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface UnitOption {
   unitNo: string | number;
@@ -27,14 +28,11 @@ export interface SelectUnitProps {
   header?: PageProps['header'];
   bottomNav?: PageProps['bottomNav'];
   backgroundColor?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * The `/accounttypes` "Levy Statements" landing: a responsive grid of the
- * user's units; selecting one proceeds to the account-type screen. Data +
- * handler come from the parent.
- */
-export function SelectUnit({
+function SelectUnitContent({
   units,
   onSelectUnit,
   loading = false,
@@ -77,6 +75,19 @@ export function SelectUnit({
         )}
       </Column>
     </Page>
+  );
+}
+
+/**
+ * The `/accounttypes` "Levy Statements" landing: a responsive grid of the
+ * user's units; selecting one proceeds to the account-type screen. Data +
+ * handler come from the parent.
+ */
+export function SelectUnit({ brand, ...props }: SelectUnitProps) {
+  return (
+    <BrandScope brand={brand}>
+      <SelectUnitContent {...props} />
+    </BrandScope>
   );
 }
 

@@ -6,6 +6,7 @@ import { Button } from '../Button';
 import { Modal } from '../Modal';
 import { Text } from '../Text';
 import { OtpInput } from '../OtpInput';
+import { Brand, BrandScope } from '../../theme/brands';
 
 /** Result of validating the delete-account OTP. */
 export type OtpResult = 'VERIFIED' | 'INCORRECT' | 'EXPIRED' | 'INVALID';
@@ -37,6 +38,8 @@ export interface PersonalInformationProps {
   header?: PageProps['header'];
   bottomNav?: PageProps['bottomNav'];
   backgroundColor?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 const DEFAULT_MENU: PersonalInfoMenuItem[] = [
@@ -48,13 +51,7 @@ const DEFAULT_MENU: PersonalInfoMenuItem[] = [
 
 type Stage = 'none' | 'warning' | 'otp' | 'error';
 
-/**
- * The `/PersonalInformation` screen: a menu into the profile sub-lists plus a
- * Delete Account flow (warning → OTP verification → deletion). The OTP send /
- * verify / delete side-effects are parametrised callbacks; the modal state
- * machine is handled internally.
- */
-export function PersonalInformation({
+function PersonalInformationContent({
   menuItems = DEFAULT_MENU,
   onSelect,
   email = '',
@@ -205,6 +202,20 @@ export function PersonalInformation({
         </FooterRow>
       </Modal>
     </Page>
+  );
+}
+
+/**
+ * The `/PersonalInformation` screen: a menu into the profile sub-lists plus a
+ * Delete Account flow (warning → OTP verification → deletion). The OTP send /
+ * verify / delete side-effects are parametrised callbacks; the modal state
+ * machine is handled internally.
+ */
+export function PersonalInformation({ brand, ...props }: PersonalInformationProps) {
+  return (
+    <BrandScope brand={brand}>
+      <PersonalInformationContent {...props} />
+    </BrandScope>
   );
 }
 

@@ -1,6 +1,7 @@
 import styled, { useTheme } from 'styled-components';
 import { Text } from '../Text';
 import { Toggle } from '../Toggle';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface PreferenceToggleRowProps {
   label: string;
@@ -15,14 +16,11 @@ export interface PreferenceToggleRowProps {
   noDivider?: boolean;
   /** Extra left padding (px) added to the base inset — indents the label. */
   indent?: number;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * A label + switch tile — the row used by Notification Preferences ("Access
- * Alert") and the Access Control "Permissions" section. Full-width, padded,
- * with a bottom divider and the estate-app themed `Toggle`.
- */
-export function PreferenceToggleRow({
+function PreferenceToggleRowContent({
   label,
   value,
   onChange,
@@ -45,6 +43,19 @@ export function PreferenceToggleRow({
         onChange={onChange}
       />
     </Row>
+  );
+}
+
+/**
+ * A label + switch tile — the row used by Notification Preferences ("Access
+ * Alert") and the Access Control "Permissions" section. Full-width, padded,
+ * with a bottom divider and the estate-app themed `Toggle`.
+ */
+export function PreferenceToggleRow({ brand, ...props }: PreferenceToggleRowProps) {
+  return (
+    <BrandScope brand={brand}>
+      <PreferenceToggleRowContent {...props} />
+    </BrandScope>
   );
 }
 

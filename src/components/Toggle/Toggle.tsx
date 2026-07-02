@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface ToggleProps {
   value: boolean;
@@ -9,6 +10,8 @@ export interface ToggleProps {
   thumbColor?: string;
   /** Track colour overrides per state (the estate apps' `trackColor`). */
   trackColor?: { true?: string; false?: string };
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 const Track = styled.button<{
@@ -43,9 +46,7 @@ const Knob = styled.span<{ $on: boolean; $color?: string }>`
   transform: translateX(${({ $on }) => ($on ? '20px' : '0')});
 `;
 
-/** iOS-style on/off switch (the apps' `Toggle`/`Switch`). Honours per-state
- * track colours and a knob colour when supplied, else uses the theme. */
-export function Toggle({
+function ToggleContent({
   value,
   onChange,
   disabled = false,
@@ -68,5 +69,15 @@ export function Toggle({
     >
       <Knob $on={value} $color={thumbColor} />
     </Track>
+  );
+}
+
+/** iOS-style on/off switch (the apps' `Toggle`/`Switch`). Honours per-state
+ * track colours and a knob colour when supplied, else uses the theme. */
+export function Toggle({ brand, ...props }: ToggleProps) {
+  return (
+    <BrandScope brand={brand}>
+      <ToggleContent {...props} />
+    </BrandScope>
   );
 }

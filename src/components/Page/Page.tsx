@@ -5,6 +5,7 @@ import {
   BottomNavigation,
   type BottomNavigationProps,
 } from '../BottomNavigation';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface PageProps {
   /** Props forwarded to the top Header. Omit to render no header. */
@@ -16,6 +17,8 @@ export interface PageProps {
   /** Add horizontal/vertical padding to the content area. */
   padded?: boolean;
   children: React.ReactNode;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 /** Fixed height of the floating (absolutely-positioned) Header. */
@@ -47,11 +50,7 @@ const Content = styled.main<{ $padded: boolean; $hasHeader: boolean }>`
     `}
 `;
 
-/**
- * Screen scaffold combining an optional Header, a scrollable content region,
- * and an optional BottomNavigation — the apps' `Page` / `ScreenLayout`.
- */
-export function Page({
+function PageContent({
   header,
   bottomNav,
   backgroundColor,
@@ -66,5 +65,17 @@ export function Page({
       </Content>
       {bottomNav && <BottomNavigation {...bottomNav} />}
     </Shell>
+  );
+}
+
+/**
+ * Screen scaffold combining an optional Header, a scrollable content region,
+ * and an optional BottomNavigation — the apps' `Page` / `ScreenLayout`.
+ */
+export function Page({ brand, ...props }: PageProps) {
+  return (
+    <BrandScope brand={brand}>
+      <PageContent {...props} />
+    </BrandScope>
   );
 }

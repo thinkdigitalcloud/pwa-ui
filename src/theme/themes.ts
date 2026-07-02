@@ -134,6 +134,28 @@ export const gocityTheme = createTheme('gocity', {
   bottomActive: '#1B578C',
 });
 
+/** gocityalpha — same civic blue palette as gocity (alpha estate flavour). */
+export const gocityAlphaTheme: AppTheme = { ...gocityTheme, name: 'gocityalpha' };
+
+/** gowaterfall — Waterfall City precinct. Placeholder teal palette until the final brand colours are supplied. */
+export const goWaterfallTheme = createTheme('gowaterfall', {
+  primary: '#0B5E6E',
+  secondary: '#0F8A9D',
+  headerBackground: '#0B5E6E',
+  headerText: '#FFFFFF',
+  bottomActive: '#0F8A9D',
+});
+
+/** renprop — Renprop residential. Placeholder navy + gold palette until the final brand colours are supplied. */
+export const renpropTheme = createTheme('renprop', {
+  primary: '#22304A',
+  secondary: '#B08D3E',
+  headerBackground: '#22304A',
+  headerText: '#FFFFFF',
+  bottomActive: '#B08D3E',
+  onlineGradient: ['#22304A', '#22304A'],
+});
+
 /** redefine-app-pwa — black + red brand. */
 export const redefineTheme = createTheme('redefine', {
   primary: '#000000',
@@ -150,7 +172,10 @@ export const themes = {
   anch: anchTheme,
   balwin: balwinTheme,
   gocity: gocityTheme,
+  gocityalpha: gocityAlphaTheme,
+  gowaterfall: goWaterfallTheme,
   redefine: redefineTheme,
+  renprop: renpropTheme,
 } as const;
 
 export type ThemeName = keyof typeof themes;

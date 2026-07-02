@@ -5,6 +5,7 @@ import { NoData } from '../NoData';
 import { Button } from '../Button';
 import { Spinner } from '../Spinner';
 import { Text } from '../Text';
+import { Brand, BrandScope } from '../../theme/brands';
 
 /** One row of a profile list (address / account / contact / vehicle). */
 export interface ProfileListItemData {
@@ -34,15 +35,11 @@ export interface ProfileListPageProps {
   header?: PageProps['header'];
   bottomNav?: PageProps['bottomNav'];
   backgroundColor?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * Generic profile sub-list page (the apps' Addresses / Accounts / Contacts /
- * Vehicles screens, which were identical): a list of deletable items each with
- * a thumbnail + text lines that open on tap, an empty state, and a green
- * "Add …" button. Data + handlers come from the parent.
- */
-export function ProfileListPage({
+function ProfileListPageContent({
   items,
   onItemClick,
   onItemDelete,
@@ -115,6 +112,20 @@ export function ProfileListPage({
         </AddWrap>
       </Column>
     </Page>
+  );
+}
+
+/**
+ * Generic profile sub-list page (the apps' Addresses / Accounts / Contacts /
+ * Vehicles screens, which were identical): a list of deletable items each with
+ * a thumbnail + text lines that open on tap, an empty state, and a green
+ * "Add …" button. Data + handlers come from the parent.
+ */
+export function ProfileListPage({ brand, ...props }: ProfileListPageProps) {
+  return (
+    <BrandScope brand={brand}>
+      <ProfileListPageContent {...props} />
+    </BrandScope>
   );
 }
 

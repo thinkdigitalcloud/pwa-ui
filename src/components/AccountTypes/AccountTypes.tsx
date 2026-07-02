@@ -4,6 +4,7 @@ import { Page, type PageProps } from '../Page';
 import { Spinner } from '../Spinner';
 import { Text } from '../Text';
 import { NoData } from '../NoData';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface AccountTypeItem {
   name: string;
@@ -34,15 +35,11 @@ export interface AccountTypesProps {
   header?: PageProps['header'];
   bottomNav?: PageProps['bottomNav'];
   backgroundColor?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * The `/accounttypesselect` page (balwin BillTypeScreen): the selected unit's
- * account types as logo cards, grouped by section, with a header "add account"
- * action and a NoData empty state. Data + handlers come from the parent; the
- * multi-account picker (when a type has several accounts) is the parent's job.
- */
-export function AccountTypes({
+function AccountTypesContent({
   sections,
   onSelectType,
   onAddAccount,
@@ -110,6 +107,20 @@ export function AccountTypes({
         )}
       </Container>
     </Page>
+  );
+}
+
+/**
+ * The `/accounttypesselect` page (balwin BillTypeScreen): the selected unit's
+ * account types as logo cards, grouped by section, with a header "add account"
+ * action and a NoData empty state. Data + handlers come from the parent; the
+ * multi-account picker (when a type has several accounts) is the parent's job.
+ */
+export function AccountTypes({ brand, ...props }: AccountTypesProps) {
+  return (
+    <BrandScope brand={brand}>
+      <AccountTypesContent {...props} />
+    </BrandScope>
   );
 }
 

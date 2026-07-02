@@ -5,6 +5,7 @@ import { BsBuilding } from 'react-icons/bs';
 import { Page, type PageProps } from '../Page';
 import { Spinner } from '../Spinner';
 import { Text } from '../Text';
+import { Brand, BrandScope } from '../../theme/brands';
 
 /** An estate the user can switch into. */
 export interface SwitchEstateEstate {
@@ -69,6 +70,8 @@ export interface SwitchEstateProps {
   bottomNav?: PageProps['bottomNav'];
   /** Page background. */
   backgroundColor?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 const EstateImage = ({ imageUrl, name }: { imageUrl?: string; name: string }) => {
@@ -93,14 +96,7 @@ const EstateImage = ({ imageUrl, name }: { imageUrl?: string; name: string }) =>
   );
 };
 
-/**
- * Estate-switching screen (the apps' `/SwitchEstate`). Renders the user's
- * estates as full-width rows; tapping one opens a role action-sheet, and
- * confirming a role fires `onSwitch`. All data — estates, roles, the current
- * estate and current role — is supplied by the parent, so the component holds
- * no data-fetching or store logic and is fully reusable across apps.
- */
-export function SwitchEstate({
+function SwitchEstateContent({
   estates,
   roles,
   currentEstateName,
@@ -214,6 +210,21 @@ export function SwitchEstate({
         </Backdrop>
       )}
     </Page>
+  );
+}
+
+/**
+ * Estate-switching screen (the apps' `/SwitchEstate`). Renders the user's
+ * estates as full-width rows; tapping one opens a role action-sheet, and
+ * confirming a role fires `onSwitch`. All data — estates, roles, the current
+ * estate and current role — is supplied by the parent, so the component holds
+ * no data-fetching or store logic and is fully reusable across apps.
+ */
+export function SwitchEstate({ brand, ...props }: SwitchEstateProps) {
+  return (
+    <BrandScope brand={brand}>
+      <SwitchEstateContent {...props} />
+    </BrandScope>
   );
 }
 

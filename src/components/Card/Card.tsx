@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface CardProps {
   children?: React.ReactNode;
@@ -9,13 +10,10 @@ export interface CardProps {
   onClick?: () => void;
   style?: React.CSSProperties;
   className?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * Generic surface container — the framework-agnostic replacement for MUI's
- * `<Card>`. A plain rounded box on `theme.colors.surface`; forwards `className`
- * so it composes with `styled(Card)` for per-call-site layout.
- */
 const Surface = styled.div<{ $elevation: number; $clickable: boolean }>`
   background: ${({ theme }) => theme.colors.surface};
   color: ${({ theme }) => theme.colors.text};
@@ -30,7 +28,7 @@ const Surface = styled.div<{ $elevation: number; $clickable: boolean }>`
   cursor: ${({ $clickable }) => ($clickable ? 'pointer' : 'default')};
 `;
 
-export function Card({
+function CardContent({
   children,
   elevation = 1,
   onClick,
@@ -47,5 +45,18 @@ export function Card({
     >
       {children}
     </Surface>
+  );
+}
+
+/**
+ * Generic surface container — the framework-agnostic replacement for MUI's
+ * `<Card>`. A plain rounded box on `theme.colors.surface`; forwards `className`
+ * so it composes with `styled(Card)` for per-call-site layout.
+ */
+export function Card({ brand, ...props }: CardProps) {
+  return (
+    <BrandScope brand={brand}>
+      <CardContent {...props} />
+    </BrandScope>
   );
 }

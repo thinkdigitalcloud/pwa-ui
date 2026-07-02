@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { FiCheck } from 'react-icons/fi';
 import { Text } from '../Text';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface CheckboxProps {
   checked: boolean;
@@ -12,6 +13,8 @@ export interface CheckboxProps {
   /** Box edge length in px. */
   size?: number;
   id?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 const Wrapper = styled.label<{ $disabled: boolean }>`
@@ -45,8 +48,7 @@ const HiddenInput = styled.input`
   height: 0;
 `;
 
-/** Accessible, theme-aware checkbox with an optional label. */
-export function Checkbox({
+function CheckboxContent({
   checked,
   onChange,
   label,
@@ -68,5 +70,14 @@ export function Checkbox({
       </Box>
       {label != null && <Text variant="body">{label}</Text>}
     </Wrapper>
+  );
+}
+
+/** Accessible, theme-aware checkbox with an optional label. */
+export function Checkbox({ brand, ...props }: CheckboxProps) {
+  return (
+    <BrandScope brand={brand}>
+      <CheckboxContent {...props} />
+    </BrandScope>
   );
 }

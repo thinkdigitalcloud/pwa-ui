@@ -1,6 +1,7 @@
 import React from 'react';
 import styled, { useTheme } from 'styled-components';
 import { Text } from '../Text';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface FormFieldProps {
   /** Field label (semibold, above the control). */
@@ -8,14 +9,11 @@ export interface FormFieldProps {
   children: React.ReactNode;
   /** Hide the bottom divider. */
   noDivider?: boolean;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * A labelled form field — a semibold label above its control, with a full-width
- * bottom divider. The control (text input, select trigger, etc.) is passed as
- * children. Matches the estate apps' profile/address/account form rows.
- */
-export function FormField({ label, children, noDivider = false }: FormFieldProps) {
+function FormFieldContent({ label, children, noDivider = false }: FormFieldProps) {
   const theme = useTheme();
   return (
     <Container $divider={theme.colors.lightGrey} $noDivider={noDivider}>
@@ -24,6 +22,19 @@ export function FormField({ label, children, noDivider = false }: FormFieldProps
       </Label>
       {children}
     </Container>
+  );
+}
+
+/**
+ * A labelled form field — a semibold label above its control, with a full-width
+ * bottom divider. The control (text input, select trigger, etc.) is passed as
+ * children. Matches the estate apps' profile/address/account form rows.
+ */
+export function FormField({ brand, ...props }: FormFieldProps) {
+  return (
+    <BrandScope brand={brand}>
+      <FormFieldContent {...props} />
+    </BrandScope>
   );
 }
 

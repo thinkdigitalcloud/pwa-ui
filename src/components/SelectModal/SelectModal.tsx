@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { Modal } from '../Modal';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface SelectOption<T = string> {
   label: string;
@@ -17,6 +18,8 @@ export interface SelectModalProps<T = string> {
   onSelect: (value: T) => void;
   /** When set, renders a Cancel button below the list (the apps' picker). */
   cancelLabel?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 const List = styled.div`
@@ -86,12 +89,7 @@ const Cancel = styled.button`
   cursor: pointer;
 `;
 
-/**
- * Centred option picker. The selected row is filled with the brand primary
- * colour (matching the TDD estate apps' SelectModal / role picker); an optional
- * branded Cancel button sits below the list.
- */
-export function SelectModal<T extends string | number = string>({
+function SelectModalContent<T extends string | number = string>({
   open,
   onClose,
   title = 'Select',
@@ -131,5 +129,21 @@ export function SelectModal<T extends string | number = string>({
         })}
       </List>
     </Modal>
+  );
+}
+
+/**
+ * Centred option picker. The selected row is filled with the brand primary
+ * colour (matching the TDD estate apps' SelectModal / role picker); an optional
+ * branded Cancel button sits below the list.
+ */
+export function SelectModal<T extends string | number = string>({
+  brand,
+  ...props
+}: SelectModalProps<T>) {
+  return (
+    <BrandScope brand={brand}>
+      <SelectModalContent<T> {...props} />
+    </BrandScope>
   );
 }

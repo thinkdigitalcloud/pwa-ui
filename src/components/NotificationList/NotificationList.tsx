@@ -10,6 +10,7 @@ import {
   NotificationTile,
   type NotificationItem,
 } from '../NotificationTile';
+import { Brand, BrandScope } from '../../theme/brands';
 
 /** Resolve the id used for selection (backend id preferred, falls back to `id`). */
 const keyOf = (n: NotificationItem) => n.notificationId ?? n.id;
@@ -38,14 +39,11 @@ export interface NotificationListProps {
   header?: PageProps['header'];
   bottomNav?: PageProps['bottomNav'];
   backgroundColor?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * The `/notifications/:section` inner page: a list of `NotificationTile`s with
- * RN-parity long-press multi-select. Selection + edit-mode are managed here;
- * the parent supplies the data and the async bulk-action handlers.
- */
-export function NotificationList({
+function NotificationListContent({
   notifications,
   onOpen,
   onMarkRead,
@@ -175,6 +173,19 @@ export function NotificationList({
         </EmptyWrap>
       )}
     </Page>
+  );
+}
+
+/**
+ * The `/notifications/:section` inner page: a list of `NotificationTile`s with
+ * RN-parity long-press multi-select. Selection + edit-mode are managed here;
+ * the parent supplies the data and the async bulk-action handlers.
+ */
+export function NotificationList({ brand, ...props }: NotificationListProps) {
+  return (
+    <BrandScope brand={brand}>
+      <NotificationListContent {...props} />
+    </BrandScope>
   );
 }
 

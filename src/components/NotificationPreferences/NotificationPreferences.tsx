@@ -2,6 +2,7 @@ import styled, { useTheme } from 'styled-components';
 import { Page, type PageProps } from '../Page';
 import { Spinner } from '../Spinner';
 import { PreferenceToggleRow } from '../PreferenceToggleRow';
+import { Brand, BrandScope } from '../../theme/brands';
 
 /** A single on/off notification preference row. */
 export interface NotificationPreferenceItem {
@@ -32,15 +33,11 @@ export interface NotificationPreferencesProps {
   header?: PageProps['header'];
   bottomNav?: PageProps['bottomNav'];
   backgroundColor?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * The `/NotificationPreferences` screen: a list of subscribe/unsubscribe
- * toggles (e.g. "Access Alert"). Data-agnostic — the parent supplies the
- * preferences and handles the side-effects in `onChange`; while `loading` the
- * rows are disabled behind a spinner (RN parity).
- */
-export function NotificationPreferences({
+function NotificationPreferencesContent({
   preferences,
   onChange,
   loading = false,
@@ -79,6 +76,20 @@ export function NotificationPreferences({
         </List>
       )}
     </Page>
+  );
+}
+
+/**
+ * The `/NotificationPreferences` screen: a list of subscribe/unsubscribe
+ * toggles (e.g. "Access Alert"). Data-agnostic — the parent supplies the
+ * preferences and handles the side-effects in `onChange`; while `loading` the
+ * rows are disabled behind a spinner (RN parity).
+ */
+export function NotificationPreferences({ brand, ...props }: NotificationPreferencesProps) {
+  return (
+    <BrandScope brand={brand}>
+      <NotificationPreferencesContent {...props} />
+    </BrandScope>
   );
 }
 

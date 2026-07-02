@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { FiMinus, FiPlus } from 'react-icons/fi';
 import { Text } from '../Text';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface StepperProps {
   value: number;
@@ -8,6 +9,8 @@ export interface StepperProps {
   min?: number;
   max?: number;
   step?: number;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 const Row = styled.div`
@@ -34,11 +37,7 @@ const RoundButton = styled.button`
   }
 `;
 
-/**
- * Increment/decrement control with bounds — the apps' `AddSubtractByOne`,
- * generalised with min/max/step.
- */
-export function Stepper({
+function StepperContent({
   value,
   onChange,
   min = 0,
@@ -66,5 +65,17 @@ export function Stepper({
         <FiPlus size={16} />
       </RoundButton>
     </Row>
+  );
+}
+
+/**
+ * Increment/decrement control with bounds — the apps' `AddSubtractByOne`,
+ * generalised with min/max/step.
+ */
+export function Stepper({ brand, ...props }: StepperProps) {
+  return (
+    <BrandScope brand={brand}>
+      <StepperContent {...props} />
+    </BrandScope>
   );
 }

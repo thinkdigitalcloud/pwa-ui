@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import styled from 'styled-components';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface OtpInputProps {
   /** Current OTP value (controlled). */
@@ -8,13 +9,11 @@ export interface OtpInputProps {
   /** Number of digit boxes. */
   length?: number;
   autoFocus?: boolean;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * Segmented numeric OTP entry — `length` single-digit boxes with auto-advance
- * and backspace-to-previous. Controlled via a single `value` string.
- */
-export function OtpInput({ value, onChange, length = 6, autoFocus = false }: OtpInputProps) {
+function OtpInputContent({ value, onChange, length = 6, autoFocus = false }: OtpInputProps) {
   const inputs = useRef<Array<HTMLInputElement | null>>([]);
   const digits = Array.from({ length }, (_, i) => value[i] ?? '');
 
@@ -50,6 +49,18 @@ export function OtpInput({ value, onChange, length = 6, autoFocus = false }: Otp
         />
       ))}
     </Row>
+  );
+}
+
+/**
+ * Segmented numeric OTP entry — `length` single-digit boxes with auto-advance
+ * and backspace-to-previous. Controlled via a single `value` string.
+ */
+export function OtpInput({ brand, ...props }: OtpInputProps) {
+  return (
+    <BrandScope brand={brand}>
+      <OtpInputContent {...props} />
+    </BrandScope>
   );
 }
 

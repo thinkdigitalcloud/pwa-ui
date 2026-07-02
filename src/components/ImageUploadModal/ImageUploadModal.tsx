@@ -9,6 +9,7 @@ import {
 } from 'react-icons/io5';
 import { Modal } from '../Modal';
 import { Spinner } from '../Spinner';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export type CameraFacing = 'user' | 'environment';
 
@@ -38,15 +39,11 @@ export interface ImageUploadModalProps {
   cameraLabel?: string;
   galleryLabel?: string;
   cancelLabel?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * Camera + gallery image-capture modal (the apps' `ImageUploadModal`). Presents
- * Camera/Gallery options; Camera opens a live preview with a front/rear toggle
- * and a capture button. Both paths hand a `Blob`/`File` to `onSelect`. The
- * camera uses the native `getUserMedia` API — no extra dependencies.
- */
-export function ImageUploadModal({
+function ImageUploadModalContent({
   open,
   onClose,
   onSelect,
@@ -205,6 +202,20 @@ export function ImageUploadModal({
         </Body>
       )}
     </Modal>
+  );
+}
+
+/**
+ * Camera + gallery image-capture modal (the apps' `ImageUploadModal`). Presents
+ * Camera/Gallery options; Camera opens a live preview with a front/rear toggle
+ * and a capture button. Both paths hand a `Blob`/`File` to `onSelect`. The
+ * camera uses the native `getUserMedia` API — no extra dependencies.
+ */
+export function ImageUploadModal({ brand, ...props }: ImageUploadModalProps) {
+  return (
+    <BrandScope brand={brand}>
+      <ImageUploadModalContent {...props} />
+    </BrandScope>
   );
 }
 

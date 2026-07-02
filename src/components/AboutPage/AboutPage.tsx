@@ -3,6 +3,7 @@ import { Page, type PageProps } from '../Page';
 import { ListRow } from '../ListRow';
 import { Text } from '../Text';
 import { useResolvedTheme } from '../../theme/useResolvedTheme';
+import { Brand, BrandScope } from '../../theme/brands';
 
 /** A label/value info row (e.g. App Version → 2.0.1). */
 export interface AboutRow {
@@ -30,15 +31,11 @@ export interface AboutPageProps {
   links?: AboutLink[];
   bottomNav?: PageProps['bottomNav'];
   backgroundColor?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * The `/about` screen. In the apps this is minimal (a single "App Version" row),
- * so `rows` drives the core content; the optional logo / app name / description
- * and `links` (terms, privacy, website…) let richer About pages reuse the same
- * layout.
- */
-export function AboutPage({
+function AboutPageContent({
   title = 'About',
   onBack,
   noBackButton = false,
@@ -90,6 +87,20 @@ export function AboutPage({
         </Links>
       )}
     </Page>
+  );
+}
+
+/**
+ * The `/about` screen. In the apps this is minimal (a single "App Version" row),
+ * so `rows` drives the core content; the optional logo / app name / description
+ * and `links` (terms, privacy, website…) let richer About pages reuse the same
+ * layout.
+ */
+export function AboutPage({ brand, ...props }: AboutPageProps) {
+  return (
+    <BrandScope brand={brand}>
+      <AboutPageContent {...props} />
+    </BrandScope>
   );
 }
 

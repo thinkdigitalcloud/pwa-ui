@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { Text } from '../Text';
 import { useResolvedTheme } from '../../theme/useResolvedTheme';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface EventNotificationsCardProps {
   title: string;
@@ -13,13 +14,11 @@ export interface EventNotificationsCardProps {
   headerColor?: string;
   /** Header text colour; defaults to white. */
   headerTextColor?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * Event notification card (the apps' `EventNotificationsCard`): a coloured
- * header bar with the title + date badge over a tappable cover image.
- */
-export function EventNotificationsCard({
+function EventNotificationsCardContent({
   title,
   date,
   image,
@@ -38,6 +37,18 @@ export function EventNotificationsCard({
       </HeaderBar>
       {image && <Cover style={{ backgroundImage: `url("${image}")` }} />}
     </Card>
+  );
+}
+
+/**
+ * Event notification card (the apps' `EventNotificationsCard`): a coloured
+ * header bar with the title + date badge over a tappable cover image.
+ */
+export function EventNotificationsCard({ brand, ...props }: EventNotificationsCardProps) {
+  return (
+    <BrandScope brand={brand}>
+      <EventNotificationsCardContent {...props} />
+    </BrandScope>
   );
 }
 

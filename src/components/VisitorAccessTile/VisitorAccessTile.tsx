@@ -1,6 +1,7 @@
 import { FiShare, FiTrash2 } from 'react-icons/fi';
 import { VisitorCard, type VisitorCardAction } from '../VisitorCard';
 import { useResolvedTheme } from '../../theme/useResolvedTheme';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface VisitorAccessTileProps {
   name: string;
@@ -22,14 +23,11 @@ export interface VisitorAccessTileProps {
   /** Show the avatar (the apps' VisitorAccessTile hid it). */
   showAvatar?: boolean;
   avatarUrl?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * Upcoming/visitor-access row (the apps' `VisitorAccessTile`) — a preset over
- * `VisitorCard`: mobile, date and the `from – to` range become the detail lines,
- * and Share / Remove become trailing actions.
- */
-export function VisitorAccessTile({
+function VisitorAccessTileContent({
   name,
   mobile,
   date,
@@ -76,5 +74,18 @@ export function VisitorAccessTile({
       avatarUrl={avatarUrl}
       actions={actions}
     />
+  );
+}
+
+/**
+ * Upcoming/visitor-access row (the apps' `VisitorAccessTile`) — a preset over
+ * `VisitorCard`: mobile, date and the `from – to` range become the detail lines,
+ * and Share / Remove become trailing actions.
+ */
+export function VisitorAccessTile({ brand, ...props }: VisitorAccessTileProps) {
+  return (
+    <BrandScope brand={brand}>
+      <VisitorAccessTileContent {...props} />
+    </BrandScope>
   );
 }

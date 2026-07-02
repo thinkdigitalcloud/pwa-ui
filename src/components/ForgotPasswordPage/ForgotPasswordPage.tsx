@@ -1,5 +1,6 @@
 import { AuthLayout, AuthTextField } from '../AuthLayout';
 import { Button } from '../Button';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface ForgotPasswordPageProps {
   email: string;
@@ -15,13 +16,11 @@ export interface ForgotPasswordPageProps {
   submitLabel?: string;
   /** Disable the submit button (e.g. until the email is valid). */
   submitDisabled?: boolean;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * Forgot Password screen — title/subtitle + a single email field + submit.
- * Presentational; the email is controlled and submit is a callback.
- */
-export function ForgotPasswordPage({
+function ForgotPasswordPageContent({
   email,
   onEmailChange,
   onSubmit,
@@ -49,5 +48,17 @@ export function ForgotPasswordPage({
       />
       <Button text={submitLabel} block uppercase={false} disabled={loading || submitDisabled} onClick={onSubmit} style={{ marginTop: 16 }} />
     </AuthLayout>
+  );
+}
+
+/**
+ * Forgot Password screen — title/subtitle + a single email field + submit.
+ * Presentational; the email is controlled and submit is a callback.
+ */
+export function ForgotPasswordPage({ brand, ...props }: ForgotPasswordPageProps) {
+  return (
+    <BrandScope brand={brand}>
+      <ForgotPasswordPageContent {...props} />
+    </BrandScope>
   );
 }

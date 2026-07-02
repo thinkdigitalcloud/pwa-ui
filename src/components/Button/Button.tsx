@@ -1,5 +1,6 @@
 import React from 'react';
 import styled, { css, type DefaultTheme } from 'styled-components';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export type ButtonVariant =
   | 'primary'
@@ -30,6 +31,8 @@ export interface ButtonProps
   leftIcon?: React.ReactNode;
   /** Icon rendered after the label. */
   rightIcon?: React.ReactNode;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 function backgroundFor(theme: DefaultTheme, variant: ButtonVariant): string {
@@ -130,11 +133,7 @@ const Spinner = styled.span`
   }
 `;
 
-/**
- * Theme-aware button. Unifies the divergent per-app Button components
- * (anch/balwin/gocity/redefine) behind one variant/size API.
- */
-export function Button({
+function ButtonContent({
   text,
   children,
   variant = 'primary',
@@ -164,5 +163,17 @@ export function Button({
       {children ?? text}
       {!loading && rightIcon}
     </StyledButton>
+  );
+}
+
+/**
+ * Theme-aware button. Unifies the divergent per-app Button components
+ * (anch/balwin/gocity/redefine) behind one variant/size API.
+ */
+export function Button({ brand, ...props }: ButtonProps) {
+  return (
+    <BrandScope brand={brand}>
+      <ButtonContent {...props} />
+    </BrandScope>
   );
 }

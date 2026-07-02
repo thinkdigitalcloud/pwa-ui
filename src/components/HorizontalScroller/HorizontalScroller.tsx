@@ -1,11 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface HorizontalScrollerProps {
   children: React.ReactNode;
   /** Gap between items in px. */
   gap?: number;
   className?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 const Track = styled.div<{ $gap: number }>`
@@ -29,8 +32,7 @@ const Track = styled.div<{ $gap: number }>`
   }
 `;
 
-/** Horizontally scrollable row of tiles/cards (the apps' `HorizontalTileSlider`). */
-export function HorizontalScroller({
+function HorizontalScrollerContent({
   children,
   gap = 12,
   className,
@@ -39,5 +41,14 @@ export function HorizontalScroller({
     <Track $gap={gap} className={className}>
       {children}
     </Track>
+  );
+}
+
+/** Horizontally scrollable row of tiles/cards (the apps' `HorizontalTileSlider`). */
+export function HorizontalScroller({ brand, ...props }: HorizontalScrollerProps) {
+  return (
+    <BrandScope brand={brand}>
+      <HorizontalScrollerContent {...props} />
+    </BrandScope>
   );
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Spinner } from '../Spinner';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface ProfileBaseProps {
   /** Profile photo URL. When absent, the `homeBanner` cover image is shown. */
@@ -19,6 +20,8 @@ export interface ProfileBaseProps {
   /** Height of the image block. Defaults to `40vh`. */
   imageHeight?: string;
   children?: React.ReactNode;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 const Container = styled.div`
@@ -53,13 +56,7 @@ const Pic = styled.img<{ $blur?: number }>`
   ${({ $blur }) => ($blur ? `filter: blur(${$blur}px);` : '')}
 `;
 
-/**
- * Profile header banner (status strip + 40vh cover/profile image + optional
- * loading overlay + children). Presentational: the consuming app supplies
- * `photoURL`/`homeBanner` from its own auth/Redux context; theming comes from
- * the styled-components `ThemeProvider`.
- */
-export function ProfileBase({
+function ProfileBaseContent({
   photoURL,
   homeBanner,
   blurRadius,
@@ -88,5 +85,19 @@ export function ProfileBase({
       {loading && <Spinner fullscreen />}
       {children}
     </Container>
+  );
+}
+
+/**
+ * Profile header banner (status strip + 40vh cover/profile image + optional
+ * loading overlay + children). Presentational: the consuming app supplies
+ * `photoURL`/`homeBanner` from its own auth/Redux context; theming comes from
+ * the styled-components `ThemeProvider`.
+ */
+export function ProfileBase({ brand, ...props }: ProfileBaseProps) {
+  return (
+    <BrandScope brand={brand}>
+      <ProfileBaseContent {...props} />
+    </BrandScope>
   );
 }

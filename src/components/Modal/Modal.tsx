@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 import { FiX } from 'react-icons/fi';
 import { Text } from '../Text';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface ModalProps {
   open: boolean;
@@ -21,6 +22,8 @@ export interface ModalProps {
   /** Footer content (typically action buttons). */
   footer?: React.ReactNode;
   children?: React.ReactNode;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 const Backdrop = styled.div`
@@ -80,8 +83,7 @@ const CloseButton = styled.button<{ $center?: boolean; $color?: string }>`
       : ''}
 `;
 
-/** Accessible modal dialog with backdrop, Escape-to-close, and optional footer. */
-export function Modal({
+function ModalContent({
   open,
   onClose,
   title,
@@ -144,5 +146,14 @@ export function Modal({
       </Sheet>
     </Backdrop>,
     document.body,
+  );
+}
+
+/** Accessible modal dialog with backdrop, Escape-to-close, and optional footer. */
+export function Modal({ brand, ...props }: ModalProps) {
+  return (
+    <BrandScope brand={brand}>
+      <ModalContent {...props} />
+    </BrandScope>
   );
 }

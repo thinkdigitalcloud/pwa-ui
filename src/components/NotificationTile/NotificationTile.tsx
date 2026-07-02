@@ -14,6 +14,7 @@ import {
 } from 'react-icons/io5';
 import { FiLock, FiUsers } from 'react-icons/fi';
 import { BsChevronRight, BsCheck2 } from 'react-icons/bs';
+import { Brand, BrandScope } from '../../theme/brands';
 
 /** A single notification/message record. */
 export interface NotificationItem {
@@ -45,6 +46,8 @@ export interface NotificationTileProps {
   selected?: boolean;
   /** Fallback image when `notification.image` is empty. */
   defaultImage?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 const ICON_BY_KEY = {
@@ -109,12 +112,7 @@ const PLACEHOLDER =
     `<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56"><rect width="56" height="56" fill="#e3e6ea"/></svg>`,
   );
 
-/**
- * A single notification row (RN parity: circular image + type badge, title,
- * description, timestamps, and a chevron/check affordance). Supports long-press
- * to enter multi-select via `onLongPress`.
- */
-export function NotificationTile({
+function NotificationTileContent({
   notification,
   onClick,
   onLongPress,
@@ -194,6 +192,19 @@ export function NotificationTile({
         )}
       </Trailing>
     </Card>
+  );
+}
+
+/**
+ * A single notification row (RN parity: circular image + type badge, title,
+ * description, timestamps, and a chevron/check affordance). Supports long-press
+ * to enter multi-select via `onLongPress`.
+ */
+export function NotificationTile({ brand, ...props }: NotificationTileProps) {
+  return (
+    <BrandScope brand={brand}>
+      <NotificationTileContent {...props} />
+    </BrandScope>
   );
 }
 

@@ -98,13 +98,39 @@ export function App() {
 }
 ```
 
+### Branding
+
+The library serves six estate brands, modelled by the `Brand` enum:
+`gocityalpha`, `balwin`, `gowaterfall`, `anch`, `redefine`, `renprop`. Wrap a
+brand app in `BrandProvider` — it sets the active brand (readable via
+`useBrand()`) and applies that brand's theme:
+
+```tsx
+import { BrandProvider, Brand } from '@thinkdigitalcloud/pwa-ui';
+
+<BrandProvider brand={Brand.Balwin}>
+  <App />
+</BrandProvider>
+```
+
+Every component also accepts an optional `brand` prop that re-brands just that
+component (useful for previews and the odd cross-brand screen):
+
+```tsx
+<Button text="Make booking" brand={Brand.Renprop} />
+```
+
+The Storybook toolbar has a Brand switcher, and each story exposes a `brand`
+control, since some components look different across brands.
+
 ### Theming
 
-Five ready-made themes ship with the library — one per source app plus a neutral
-default: `lightTheme`, `anchTheme`, `balwinTheme`, `gocityTheme`, `redefineTheme`
-(also exported as the `themes` map). Build your own with the same `AppTheme`
-contract. The Storybook toolbar has a theme switcher to preview any component
-under every brand.
+Ready-made themes ship with the library — one per brand plus a neutral
+default: `lightTheme`, `anchTheme`, `balwinTheme`, `gocityTheme`,
+`gocityAlphaTheme`, `goWaterfallTheme`, `redefineTheme`, `renpropTheme`
+(also exported as the `themes` map, and keyed by brand as `brandThemes`).
+Build your own with the same `AppTheme` contract and pass it via
+`ThemeProvider`, or as `BrandProvider`'s `theme` override.
 
 ## Components
 

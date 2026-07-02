@@ -5,6 +5,7 @@ import { Toggle } from '../Toggle';
 import { Button } from '../Button';
 import { Text } from '../Text';
 import { useResolvedTheme } from '../../theme/useResolvedTheme';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface SignUpValues {
   firstName: string;
@@ -47,6 +48,8 @@ export interface SignUpPageProps {
   submitLabel?: string;
   labels?: Partial<Record<keyof SignUpValues, string>>;
   acceptText?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 const DEFAULT_USER_TYPES = [
@@ -65,13 +68,7 @@ const DEFAULT_LABELS: Record<keyof SignUpValues, string> = {
   confirmPassword: 'Re-Type Password',
 };
 
-/**
- * Sign Up screen — the apps' 8-field registration form (name, surname, mobile,
- * email, user type, conditional estate, password, confirm) plus terms links and
- * an accept toggle. Presentational: values/errors and every action come from
- * props; the estate field shows when userType === `residentValue`.
- */
-export function SignUpPage({
+function SignUpPageContent({
   values,
   onChange,
   errors = {},
@@ -155,6 +152,20 @@ export function SignUpPage({
 
       <Button text={submitLabel} block uppercase={false} disabled={loading} onClick={onSubmit} style={{ marginTop: 8 }} />
     </AuthLayout>
+  );
+}
+
+/**
+ * Sign Up screen — the apps' 8-field registration form (name, surname, mobile,
+ * email, user type, conditional estate, password, confirm) plus terms links and
+ * an accept toggle. Presentational: values/errors and every action come from
+ * props; the estate field shows when userType === `residentValue`.
+ */
+export function SignUpPage({ brand, ...props }: SignUpPageProps) {
+  return (
+    <BrandScope brand={brand}>
+      <SignUpPageContent {...props} />
+    </BrandScope>
   );
 }
 

@@ -5,6 +5,7 @@ import { Modal } from '../Modal';
 import { Button } from '../Button';
 import { Text } from '../Text';
 import { useResolvedTheme } from '../../theme/useResolvedTheme';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface ConfirmationModalProps {
   open: boolean;
@@ -25,14 +26,11 @@ export interface ConfirmationModalProps {
   confirmColor?: string;
   /** Cancel button colour; defaults to the theme danger. */
   cancelColor?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * Generic yes/no confirmation dialog (the apps' `ConfirmationModal`) built on the
- * library `Modal` + `Button`. Unifies the per-screen inline confirm/cancel
- * prompts; labels, colours and the icon are all parametrised.
- */
-export function ConfirmationModal({
+function ConfirmationModalContent({
   open,
   text,
   onConfirm,
@@ -65,6 +63,19 @@ export function ConfirmationModal({
         <Button text={confirmLabel} uppercase={false} onClick={onConfirm} style={{ flex: 1, background: confirm }} />
       </FooterRow>
     </Modal>
+  );
+}
+
+/**
+ * Generic yes/no confirmation dialog (the apps' `ConfirmationModal`) built on the
+ * library `Modal` + `Button`. Unifies the per-screen inline confirm/cancel
+ * prompts; labels, colours and the icon are all parametrised.
+ */
+export function ConfirmationModal({ brand, ...props }: ConfirmationModalProps) {
+  return (
+    <BrandScope brand={brand}>
+      <ConfirmationModalContent {...props} />
+    </BrandScope>
   );
 }
 

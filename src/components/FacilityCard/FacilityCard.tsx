@@ -1,5 +1,6 @@
 import styled, { useTheme } from 'styled-components';
 import { Text } from '../Text';
+import { Brand, BrandScope } from '../../theme/brands';
 
 /** Coloured status badge shown bottom-right (e.g. Requested / Booked). */
 export interface FacilityCardBadge {
@@ -25,6 +26,8 @@ export interface FacilityCardProps {
   /** Fallback image when `image` is empty/broken. */
   placeholder?: string;
   onClick?: () => void;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 const PLACEHOLDER =
@@ -33,14 +36,7 @@ const PLACEHOLDER =
     `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="150"><rect width="400" height="150" fill="#c8ccd2"/></svg>`,
   );
 
-/**
- * Image card used across the booking flow — a full-bleed photo with the
- * facility name (as a translucent header bar or an overlaid caption) and an
- * optional footer holding a status badge or an action chip. Isolated from
- * balwin's ServiceTile / BookingStatusTile / ResourceTile, which were the same
- * card with different slots.
- */
-export function FacilityCard({
+function FacilityCardContent({
   title,
   image,
   titleStyle = 'bar',
@@ -93,6 +89,21 @@ export function FacilityCard({
         </Footer>
       )}
     </Card>
+  );
+}
+
+/**
+ * Image card used across the booking flow — a full-bleed photo with the
+ * facility name (as a translucent header bar or an overlaid caption) and an
+ * optional footer holding a status badge or an action chip. Isolated from
+ * balwin's ServiceTile / BookingStatusTile / ResourceTile, which were the same
+ * card with different slots.
+ */
+export function FacilityCard({ brand, ...props }: FacilityCardProps) {
+  return (
+    <BrandScope brand={brand}>
+      <FacilityCardContent {...props} />
+    </BrandScope>
   );
 }
 

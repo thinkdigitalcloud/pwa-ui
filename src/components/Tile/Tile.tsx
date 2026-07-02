@@ -1,5 +1,6 @@
 import React from 'react';
 import styled, { useTheme } from 'styled-components';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface TileProps {
   heading: string;
@@ -14,6 +15,8 @@ export interface TileProps {
   onClick?: () => void;
   style?: React.CSSProperties;
   className?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 // Reproduces the TDD estate apps' home Tile: a gradient card (theme.tileGradient
@@ -141,7 +144,7 @@ const RowIcon = styled.span`
   font-size: 24px;
 `;
 
-export function Tile({
+function TileContent({
   heading,
   description,
   icon,
@@ -192,5 +195,13 @@ export function Tile({
       </Row>
       {disabled && <Backdrop aria-hidden />}
     </Card>
+  );
+}
+
+export function Tile({ brand, ...props }: TileProps) {
+  return (
+    <BrandScope brand={brand}>
+      <TileContent {...props} />
+    </BrandScope>
   );
 }

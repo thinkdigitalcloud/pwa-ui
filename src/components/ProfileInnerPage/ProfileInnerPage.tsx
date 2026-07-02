@@ -4,6 +4,7 @@ import { Page, type PageProps } from '../Page';
 import { type HeaderAction } from '../Header';
 import { Spinner } from '../Spinner';
 import { useResolvedTheme } from '../../theme/useResolvedTheme';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface ProfileInnerPageProps {
   title: string;
@@ -36,16 +37,11 @@ export interface ProfileInnerPageProps {
   backgroundColor?: string;
   padded?: boolean;
   children: React.ReactNode;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * Shared layout shell for the profile inner (sub) pages. Wraps `Page` with a
- * back-titled `Header` whose right-side actions (save / edit / delete / share /
- * refresh) are driven by which callbacks you pass, plus a loading overlay and an
- * optional sticky footer action. The submit action lives in the header — the
- * apps' form-page convention — while list pages keep their action in `footer`.
- */
-export function ProfileInnerPage({
+function ProfileInnerPageContent({
   title,
   onBack,
   noBackButton = false,
@@ -98,6 +94,21 @@ export function ProfileInnerPage({
       <Content>{children}</Content>
       {footer && <Footer>{footer}</Footer>}
     </Page>
+  );
+}
+
+/**
+ * Shared layout shell for the profile inner (sub) pages. Wraps `Page` with a
+ * back-titled `Header` whose right-side actions (save / edit / delete / share /
+ * refresh) are driven by which callbacks you pass, plus a loading overlay and an
+ * optional sticky footer action. The submit action lives in the header — the
+ * apps' form-page convention — while list pages keep their action in `footer`.
+ */
+export function ProfileInnerPage({ brand, ...props }: ProfileInnerPageProps) {
+  return (
+    <BrandScope brand={brand}>
+      <ProfileInnerPageContent {...props} />
+    </BrandScope>
   );
 }
 

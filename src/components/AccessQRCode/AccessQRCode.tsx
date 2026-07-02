@@ -4,6 +4,7 @@ import { Avatar } from '../Avatar';
 import { Text } from '../Text';
 import { Spinner } from '../Spinner';
 import { useResolvedTheme } from '../../theme/useResolvedTheme';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface AccessQRCodeProps {
   /**
@@ -30,15 +31,11 @@ export interface AccessQRCodeProps {
   fgColor?: string;
   /** QR background colour. */
   bgColor?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * Access-control QR code (the apps' `AccessQRCode`) — presentational only. The
- * value string (with its timestamp/encryption/proximity logic) is built and
- * refreshed by the host app and passed in; this renders the QR with an optional
- * profile header and loading / not-permitted states.
- */
-export function AccessQRCode({
+function AccessQRCodeContent({
   value,
   size = 220,
   loading = false,
@@ -77,6 +74,20 @@ export function AccessQRCode({
         )}
       </QrBox>
     </Wrapper>
+  );
+}
+
+/**
+ * Access-control QR code (the apps' `AccessQRCode`) — presentational only. The
+ * value string (with its timestamp/encryption/proximity logic) is built and
+ * refreshed by the host app and passed in; this renders the QR with an optional
+ * profile header and loading / not-permitted states.
+ */
+export function AccessQRCode({ brand, ...props }: AccessQRCodeProps) {
+  return (
+    <BrandScope brand={brand}>
+      <AccessQRCodeContent {...props} />
+    </BrandScope>
   );
 }
 

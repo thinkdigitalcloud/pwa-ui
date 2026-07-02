@@ -9,6 +9,7 @@ import { Spinner } from '../Spinner';
 import { TimeSlotPicker } from '../TimeSlotPicker';
 import { ms } from '../../utils/scale';
 import type { TimeSlot, TimeSlotAvailability, ResourceTimes } from '../../utils/bookingTime';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface ResourceBookingResource {
   name: string;
@@ -48,6 +49,8 @@ export interface ResourceBookingProps {
   header?: PageProps['header'];
   bottomNav?: PageProps['bottomNav'];
   backgroundColor?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 const PLACEHOLDER =
@@ -56,15 +59,7 @@ const PLACEHOLDER =
     `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200"><rect width="400" height="200" fill="#c8ccd2"/></svg>`,
   );
 
-/**
- * Resource detail + scheduling page for the booking flow: image banner, a "Book
- * Now" action, Description / Facilities / Images cards, and the schedule → date
- * picker → time picker → confirm modal sequence. Port of balwin's
- * `BookingCalendarView`. The modal step is internal; the parent supplies data
- * and the real side-effecting actions (fetch availability, submit, navigate).
- * `showConfirmed` is parent-controlled because it follows a network result.
- */
-export function ResourceBooking({
+function ResourceBookingContent({
   resource,
   date,
   timeLabel = '',
@@ -228,6 +223,22 @@ export function ResourceBooking({
         </Modal>
       </MainContainer>
     </Page>
+  );
+}
+
+/**
+ * Resource detail + scheduling page for the booking flow: image banner, a "Book
+ * Now" action, Description / Facilities / Images cards, and the schedule → date
+ * picker → time picker → confirm modal sequence. Port of balwin's
+ * `BookingCalendarView`. The modal step is internal; the parent supplies data
+ * and the real side-effecting actions (fetch availability, submit, navigate).
+ * `showConfirmed` is parent-controlled because it follows a network result.
+ */
+export function ResourceBooking({ brand, ...props }: ResourceBookingProps) {
+  return (
+    <BrandScope brand={brand}>
+      <ResourceBookingContent {...props} />
+    </BrandScope>
   );
 }
 

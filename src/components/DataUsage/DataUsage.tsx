@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 import { Text } from '../Text';
 import { useResolvedTheme } from '../../theme/useResolvedTheme';
+import { Brand, BrandScope } from '../../theme/brands';
 
 /**
  * Colour overrides. Anything omitted falls back to the active styled-components
@@ -37,15 +38,11 @@ export interface DataUsageProps {
   onDecline: () => void;
   /** Colour overrides; unset values fall back to the theme (balwin by default). */
   colors?: DataUsageColors;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * Data-use consent modal. A full-screen dialog with a scrollable HTML body, a
- * warning line, and Accept / Decline actions. Fully presentational and
- * controlled: content comes in as props and the choice is reported via
- * `onAccept` / `onDecline` — the host app owns gating, logout and persistence.
- */
-export function DataUsage({
+function DataUsageContent({
   open,
   heading = 'Data Use',
   content = '',
@@ -97,6 +94,20 @@ export function DataUsage({
       </Modal>
     </Backdrop>,
     document.body,
+  );
+}
+
+/**
+ * Data-use consent modal. A full-screen dialog with a scrollable HTML body, a
+ * warning line, and Accept / Decline actions. Fully presentational and
+ * controlled: content comes in as props and the choice is reported via
+ * `onAccept` / `onDecline` — the host app owns gating, logout and persistence.
+ */
+export function DataUsage({ brand, ...props }: DataUsageProps) {
+  return (
+    <BrandScope brand={brand}>
+      <DataUsageContent {...props} />
+    </BrandScope>
   );
 }
 

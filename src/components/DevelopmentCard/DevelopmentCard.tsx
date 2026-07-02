@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { NoData } from '../NoData';
 import { Text } from '../Text';
 import { useResolvedTheme } from '../../theme/useResolvedTheme';
+import { Brand, BrandScope } from '../../theme/brands';
 
 /** A single development/estate entry (unified across the brands' shapes). */
 export interface DevelopmentItem {
@@ -20,14 +21,11 @@ export interface DevelopmentCardProps {
   emptyText?: string;
   /** Fallback cover image when an item has none. */
   fallbackImage?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * List of development/estate promo cards (the apps' `DevelopmentCard`). Unifies
- * anch's `estates`+`priceRange` and balwin's `sales[]` shapes behind a single
- * `DevelopmentItem`; navigation is a parametrised `onSelect` callback.
- */
-export function DevelopmentCard({
+function DevelopmentCardContent({
   developments = [],
   onSelect,
   emptyText = 'No developments available',
@@ -65,6 +63,19 @@ export function DevelopmentCard({
         );
       })}
     </List>
+  );
+}
+
+/**
+ * List of development/estate promo cards (the apps' `DevelopmentCard`). Unifies
+ * anch's `estates`+`priceRange` and balwin's `sales[]` shapes behind a single
+ * `DevelopmentItem`; navigation is a parametrised `onSelect` callback.
+ */
+export function DevelopmentCard({ brand, ...props }: DevelopmentCardProps) {
+  return (
+    <BrandScope brand={brand}>
+      <DevelopmentCardContent {...props} />
+    </BrandScope>
   );
 }
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { FiSearch, FiX } from 'react-icons/fi';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface SearchBarProps {
   value: string;
@@ -10,6 +11,8 @@ export interface SearchBarProps {
   /** Called when the clear (✕) button is pressed. */
   onClear?: () => void;
   autoFocus?: boolean;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 const Wrapper = styled.div`
@@ -52,8 +55,7 @@ const IconButton = styled.button`
   color: ${({ theme }) => theme.colors.textMuted};
 `;
 
-/** Themed search input with a leading icon and a clear button. */
-export function SearchBar({
+function SearchBarContent({
   value,
   onChange,
   placeholder = 'Search…',
@@ -82,5 +84,14 @@ export function SearchBar({
         </IconButton>
       )}
     </Wrapper>
+  );
+}
+
+/** Themed search input with a leading icon and a clear button. */
+export function SearchBar({ brand, ...props }: SearchBarProps) {
+  return (
+    <BrandScope brand={brand}>
+      <SearchBarContent {...props} />
+    </BrandScope>
   );
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface VirtualNumericKeyboardProps {
   /** Called with the pressed digit ('0'–'9'). */
@@ -10,16 +11,13 @@ export interface VirtualNumericKeyboardProps {
   deleteLabel?: React.ReactNode;
   /** Disable all keys. */
   disabled?: boolean;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
-/**
- * On-screen numeric keypad (the apps' `VirtualNumericKeyboard`): three columns
- * of 1–9, then a blank, 0, and a delete key. Purely presentational — the parent
- * owns the entered value via `onKeyPress`/`onDelete`.
- */
-export function VirtualNumericKeyboard({
+function VirtualNumericKeyboardContent({
   onKeyPress,
   onDelete,
   deleteLabel = 'x',
@@ -40,6 +38,22 @@ export function VirtualNumericKeyboard({
         {deleteLabel}
       </Key>
     </Grid>
+  );
+}
+
+/**
+ * On-screen numeric keypad (the apps' `VirtualNumericKeyboard`): three columns
+ * of 1–9, then a blank, 0, and a delete key. Purely presentational — the parent
+ * owns the entered value via `onKeyPress`/`onDelete`.
+ */
+export function VirtualNumericKeyboard({
+  brand,
+  ...props
+}: VirtualNumericKeyboardProps) {
+  return (
+    <BrandScope brand={brand}>
+      <VirtualNumericKeyboardContent {...props} />
+    </BrandScope>
   );
 }
 

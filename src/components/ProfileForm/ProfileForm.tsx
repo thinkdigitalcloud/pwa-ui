@@ -5,6 +5,7 @@ import { Button } from '../Button';
 import { Spinner } from '../Spinner';
 import { FormField } from '../FormField';
 import { SelectModal } from '../SelectModal';
+import { Brand, BrandScope } from '../../theme/brands';
 
 /** A text input field. */
 export interface ProfileTextField {
@@ -43,15 +44,11 @@ export interface ProfileFormProps {
   header?: PageProps['header'];
   bottomNav?: PageProps['bottomNav'];
   backgroundColor?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * Schema-driven profile form (the apps' Add/Edit Address / Account / Vehicle
- * screens, which were the same form with different fields). Renders labelled
- * text inputs and modal-backed selects, with a header save action and a green
- * Save button. Values + handlers come from the parent.
- */
-export function ProfileForm({
+function ProfileFormContent({
   fields,
   values,
   onChange,
@@ -121,6 +118,20 @@ export function ProfileForm({
         ) : null,
       )}
     </Page>
+  );
+}
+
+/**
+ * Schema-driven profile form (the apps' Add/Edit Address / Account / Vehicle
+ * screens, which were the same form with different fields). Renders labelled
+ * text inputs and modal-backed selects, with a header save action and a green
+ * Save button. Values + handlers come from the parent.
+ */
+export function ProfileForm({ brand, ...props }: ProfileFormProps) {
+  return (
+    <BrandScope brand={brand}>
+      <ProfileFormContent {...props} />
+    </BrandScope>
   );
 }
 

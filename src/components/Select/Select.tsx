@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { SelectModal, type SelectOption } from '../SelectModal';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export type SelectSize = 'sm' | 'md' | 'lg';
 
@@ -21,6 +22,8 @@ export interface SelectProps<T extends string | number = string> {
   cancelLabel?: string;
   name?: string;
   id?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 const sizeStyles: Record<SelectSize, ReturnType<typeof css>> = {
@@ -90,13 +93,7 @@ const Caret = styled.span`
   border-top: 6px solid currentColor;
 `;
 
-/**
- * Tappable picker field that opens a `SelectModal` of options — ported from
- * anch-pwa's `ReactNative/Select`. Looks like an input with a caret rather than
- * a native `<select>` dropdown. Controlled (`value`) or uncontrolled
- * (`defaultValue`); reports selection via `onChange`.
- */
-export function Select<T extends string | number = string>({
+function SelectContent<T extends string | number = string>({
   options,
   value,
   defaultValue,
@@ -168,5 +165,22 @@ export function Select<T extends string | number = string>({
         cancelLabel={cancelLabel}
       />
     </>
+  );
+}
+
+/**
+ * Tappable picker field that opens a `SelectModal` of options — ported from
+ * anch-pwa's `ReactNative/Select`. Looks like an input with a caret rather than
+ * a native `<select>` dropdown. Controlled (`value`) or uncontrolled
+ * (`defaultValue`); reports selection via `onChange`.
+ */
+export function Select<T extends string | number = string>({
+  brand,
+  ...props
+}: SelectProps<T>) {
+  return (
+    <BrandScope brand={brand}>
+      <SelectContent<T> {...props} />
+    </BrandScope>
   );
 }

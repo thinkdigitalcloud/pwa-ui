@@ -1,5 +1,6 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export type TextVariant =
   | 'body'
@@ -18,6 +19,8 @@ export interface TextProps
   /** Render as a different element (e.g. `p`, `h1`, `label`). */
   as?: keyof JSX.IntrinsicElements;
   children?: React.ReactNode;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 const variantStyles: Record<TextVariant, ReturnType<typeof css>> = {
@@ -62,8 +65,7 @@ const StyledText = styled.span<{ $variant: TextVariant; $color?: string }>`
   ${({ $variant }) => variantStyles[$variant]};
 `;
 
-/** Typed typography primitive — the single source of truth for text styling. */
-export function Text({
+function TextContent({
   variant = 'body',
   color,
   as,
@@ -74,5 +76,14 @@ export function Text({
     <StyledText as={as} $variant={variant} $color={color} {...rest}>
       {children}
     </StyledText>
+  );
+}
+
+/** Typed typography primitive — the single source of truth for text styling. */
+export function Text({ brand, ...props }: TextProps) {
+  return (
+    <BrandScope brand={brand}>
+      <TextContent {...props} />
+    </BrandScope>
   );
 }

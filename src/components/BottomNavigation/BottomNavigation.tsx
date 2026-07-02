@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface BottomNavItem {
   key: string;
@@ -16,6 +17,8 @@ export interface BottomNavigationProps {
   onSelect: (key: string) => void;
   /** Show text labels under icons. */
   showLabels?: boolean;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 // Reproduces the TDD estate apps' tab bar: a fixed bottom bar where the active
@@ -111,7 +114,7 @@ const Label = styled.span`
   font-family: ${({ theme }) => theme.typography.fontFamily};
 `;
 
-export function BottomNavigation({ items, active, onSelect, showLabels = false }: BottomNavigationProps) {
+function BottomNavigationContent({ items, active, onSelect, showLabels = false }: BottomNavigationProps) {
   return (
     <Bar>
       {items.map((item) => {
@@ -133,5 +136,13 @@ export function BottomNavigation({ items, active, onSelect, showLabels = false }
         );
       })}
     </Bar>
+  );
+}
+
+export function BottomNavigation({ brand, ...props }: BottomNavigationProps) {
+  return (
+    <BrandScope brand={brand}>
+      <BottomNavigationContent {...props} />
+    </BrandScope>
   );
 }

@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { Text } from '../Text';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface SpinnerProps {
   /** Diameter in px. */
@@ -10,6 +11,8 @@ export interface SpinnerProps {
   text?: string;
   /** Cover the whole parent with a centred overlay (the apps' `Loading`). */
   fullscreen?: boolean;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 const Ring = styled.span<{ $size: number; $color?: string }>`
@@ -40,11 +43,7 @@ const Centered = styled.div<{ $fullscreen: boolean }>`
       : ''}
 `;
 
-/**
- * Loading spinner. Replaces the per-app `react-spinners/ClipLoader`-based
- * `Loading` component with a dependency-free CSS spinner.
- */
-export function Spinner({ size = 30, color, text, fullscreen = false }: SpinnerProps) {
+function SpinnerContent({ size = 30, color, text, fullscreen = false }: SpinnerProps) {
   return (
     <Centered $fullscreen={fullscreen} role="status" aria-live="polite">
       <Ring $size={size} $color={color} aria-hidden />
@@ -54,5 +53,17 @@ export function Spinner({ size = 30, color, text, fullscreen = false }: SpinnerP
         </Text>
       )}
     </Centered>
+  );
+}
+
+/**
+ * Loading spinner. Replaces the per-app `react-spinners/ClipLoader`-based
+ * `Loading` component with a dependency-free CSS spinner.
+ */
+export function Spinner({ brand, ...props }: SpinnerProps) {
+  return (
+    <BrandScope brand={brand}>
+      <SpinnerContent {...props} />
+    </BrandScope>
   );
 }

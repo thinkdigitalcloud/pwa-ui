@@ -1,20 +1,18 @@
 import React from 'react';
 import styled, { useTheme } from 'styled-components';
 import { Text } from '../Text';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface SelectTileProps {
   label: string;
   /** Leading icon node (react-icons glyph, <img />, …). */
   icon?: React.ReactNode;
   onClick?: () => void;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * A small bordered, shadowed selectable card — an icon above a label. Used in
- * responsive pick-one grids (e.g. the "Select Unit Number" tiles). The grid
- * layout is the parent's responsibility.
- */
-export function SelectTile({ label, icon, onClick }: SelectTileProps) {
+function SelectTileContent({ label, icon, onClick }: SelectTileProps) {
   const theme = useTheme();
   return (
     <Card type="button" onClick={onClick} $border={theme.colors.lightGrey} $bg={theme.colors.surface}>
@@ -23,6 +21,19 @@ export function SelectTile({ label, icon, onClick }: SelectTileProps) {
         {label}
       </Text>
     </Card>
+  );
+}
+
+/**
+ * A small bordered, shadowed selectable card — an icon above a label. Used in
+ * responsive pick-one grids (e.g. the "Select Unit Number" tiles). The grid
+ * layout is the parent's responsibility.
+ */
+export function SelectTile({ brand, ...props }: SelectTileProps) {
+  return (
+    <BrandScope brand={brand}>
+      <SelectTileContent {...props} />
+    </BrandScope>
   );
 }
 

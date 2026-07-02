@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { FaCcVisa, FaCcMastercard, FaCcAmex, FaCcDiscover } from 'react-icons/fa';
 import { useResolvedTheme } from '../../theme/useResolvedTheme';
+import { Brand as BrandEnum, BrandScope } from '../../theme/brands';
 
 export type CardBrand = 'visa' | 'mastercard' | 'amex' | 'discover' | 'unknown';
 
@@ -27,6 +28,8 @@ export interface CreditCardProps {
   gradient?: [string, string];
   /** Notified when the detected brand changes (the apps' `type` callback). */
   onBrandChange?: (brand: CardBrand) => void;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: BrandEnum;
 }
 
 const BRAND_ICON: Record<CardBrand, JSX.Element | null> = {
@@ -61,13 +64,7 @@ function formatNumber(num: string, brand: CardBrand): string {
   return out.join(' ');
 }
 
-/**
- * Presentational credit-card visual — the flippy card face from the apps'
- * `CreditCard` (which wrapped `react-credit-cards`), reimplemented dependency-free
- * with styled-components. Brand is detected from the number and surfaced via
- * `onBrandChange`; pass `focused` to highlight the field being edited.
- */
-export function CreditCard({
+function CreditCardContent({
   number = '',
   name,
   expiry,
@@ -121,6 +118,20 @@ export function CreditCard({
         </Face>
       </Card>
     </Scene>
+  );
+}
+
+/**
+ * Presentational credit-card visual — the flippy card face from the apps'
+ * `CreditCard` (which wrapped `react-credit-cards`), reimplemented dependency-free
+ * with styled-components. Brand is detected from the number and surfaced via
+ * `onBrandChange`; pass `focused` to highlight the field being edited.
+ */
+export function CreditCard({ brand, ...props }: CreditCardProps) {
+  return (
+    <BrandScope brand={brand}>
+      <CreditCardContent {...props} />
+    </BrandScope>
   );
 }
 

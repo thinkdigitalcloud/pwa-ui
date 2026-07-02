@@ -9,6 +9,7 @@ import { Avatar } from '../Avatar';
 import { Text } from '../Text';
 import { Spinner } from '../Spinner';
 import { useResolvedTheme } from '../../theme/useResolvedTheme';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface ProfileMenuItem {
   key: string;
@@ -34,15 +35,11 @@ export interface ProfilePageProps {
   loading?: boolean;
   bottomNav?: PageProps['bottomNav'];
   backgroundColor?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * The main `/profile` screen: a banner + overlapping avatar (with optional
- * camera-upload badge) over the user's name/email, a tappable menu, and a
- * full-width Logout button. Presentational — data and handlers come from props;
- * theming from the ThemeProvider (gocity fallback).
- */
-export function ProfilePage({
+function ProfilePageContent({
   name,
   email,
   photoUrl,
@@ -111,6 +108,20 @@ export function ProfilePage({
         </Card>
       </ProfileBase>
     </Page>
+  );
+}
+
+/**
+ * The main `/profile` screen: a banner + overlapping avatar (with optional
+ * camera-upload badge) over the user's name/email, a tappable menu, and a
+ * full-width Logout button. Presentational — data and handlers come from props;
+ * theming from the ThemeProvider (gocity fallback).
+ */
+export function ProfilePage({ brand, ...props }: ProfilePageProps) {
+  return (
+    <BrandScope brand={brand}>
+      <ProfilePageContent {...props} />
+    </BrandScope>
   );
 }
 

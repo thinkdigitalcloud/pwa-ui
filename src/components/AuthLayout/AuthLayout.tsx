@@ -4,6 +4,7 @@ import { FiArrowLeft, FiEye, FiEyeOff } from 'react-icons/fi';
 import { Text } from '../Text';
 import { Spinner } from '../Spinner';
 import { useResolvedTheme } from '../../theme/useResolvedTheme';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface AuthLayoutProps {
   /** Brand logo shown at the top. */
@@ -21,15 +22,11 @@ export interface AuthLayoutProps {
   backgroundColor?: string;
   backgroundImage?: string;
   children: React.ReactNode;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * Presentational shell for the auth screens (Sign In / Sign Up / Forgot
- * Password): a scrollable, centred column with an optional logo, title/subtitle,
- * error banner, loading overlay, form body and footer. No auth logic — the
- * concrete pages compose this and report actions via callbacks.
- */
-export function AuthLayout({
+function AuthLayoutContent({
   logo,
   title,
   subtitle,
@@ -76,6 +73,20 @@ export function AuthLayout({
   );
 }
 
+/**
+ * Presentational shell for the auth screens (Sign In / Sign Up / Forgot
+ * Password): a scrollable, centred column with an optional logo, title/subtitle,
+ * error banner, loading overlay, form body and footer. No auth logic — the
+ * concrete pages compose this and report actions via callbacks.
+ */
+export function AuthLayout({ brand, ...props }: AuthLayoutProps) {
+  return (
+    <BrandScope brand={brand}>
+      <AuthLayoutContent {...props} />
+    </BrandScope>
+  );
+}
+
 /** Labelled underline text input with an optional inline error (auth forms). */
 export interface AuthTextFieldProps {
   label?: string;
@@ -88,9 +99,11 @@ export interface AuthTextFieldProps {
   maxLength?: number;
   disabled?: boolean;
   onEnter?: () => void;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-export function AuthTextField({
+function AuthTextFieldContent({
   label,
   value,
   onChange,
@@ -122,6 +135,14 @@ export function AuthTextField({
   );
 }
 
+export function AuthTextField({ brand, ...props }: AuthTextFieldProps) {
+  return (
+    <BrandScope brand={brand}>
+      <AuthTextFieldContent {...props} />
+    </BrandScope>
+  );
+}
+
 /** Labelled password input with a show/hide eye toggle + inline error. */
 export interface AuthPasswordFieldProps {
   label?: string;
@@ -132,9 +153,11 @@ export interface AuthPasswordFieldProps {
   error?: string;
   maxLength?: number;
   onEnter?: () => void;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-export function AuthPasswordField({
+function AuthPasswordFieldContent({
   label,
   value,
   onChange,
@@ -166,6 +189,14 @@ export function AuthPasswordField({
       </PasswordRow>
       {error && <Text variant="small" color={theme.colors.danger}>{error}</Text>}
     </FieldWrap>
+  );
+}
+
+export function AuthPasswordField({ brand, ...props }: AuthPasswordFieldProps) {
+  return (
+    <BrandScope brand={brand}>
+      <AuthPasswordFieldContent {...props} />
+    </BrandScope>
   );
 }
 

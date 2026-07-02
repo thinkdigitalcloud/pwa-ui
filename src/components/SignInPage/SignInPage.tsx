@@ -3,6 +3,7 @@ import { AuthLayout, AuthTextField, AuthPasswordField } from '../AuthLayout';
 import { Button } from '../Button';
 import { Text } from '../Text';
 import { useResolvedTheme } from '../../theme/useResolvedTheme';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface SignInPageProps {
   logo?: string;
@@ -27,14 +28,11 @@ export interface SignInPageProps {
   helpLabel?: string;
   backgroundColor?: string;
   backgroundImage?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * Sign In screen (email + password) — presentational. Inputs are controlled via
- * props; submit / sign-up / forgot-password / help are callbacks. Composes
- * `AuthLayout`.
- */
-export function SignInPage({
+function SignInPageContent({
   logo,
   email,
   onEmailChange,
@@ -98,6 +96,19 @@ export function SignInPage({
         </Half>
       </ButtonRow>
     </AuthLayout>
+  );
+}
+
+/**
+ * Sign In screen (email + password) — presentational. Inputs are controlled via
+ * props; submit / sign-up / forgot-password / help are callbacks. Composes
+ * `AuthLayout`.
+ */
+export function SignInPage({ brand, ...props }: SignInPageProps) {
+  return (
+    <BrandScope brand={brand}>
+      <SignInPageContent {...props} />
+    </BrandScope>
   );
 }
 

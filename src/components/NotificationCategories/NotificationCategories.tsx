@@ -11,6 +11,7 @@ import {
 } from 'react-icons/io5';
 import { Page, type PageProps } from '../Page';
 import { Text } from '../Text';
+import { Brand, BrandScope } from '../../theme/brands';
 
 const ICON_BY_KEY: Record<string, React.ComponentType<{ size?: number; color?: string }>> = {
   'mail-outline': FaRegEnvelope,
@@ -50,6 +51,8 @@ export interface NotificationCategoriesProps {
   header?: PageProps['header'];
   bottomNav?: PageProps['bottomNav'];
   backgroundColor?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 function renderIcon(
@@ -64,12 +67,7 @@ function renderIcon(
   return icon;
 }
 
-/**
- * The `/notifications` "Messages" landing: an intro line with an optional help
- * link, then a bordered list of message categories each showing its unread
- * count. Data-agnostic — categories, counts and handlers come from the parent.
- */
-export function NotificationCategories({
+function NotificationCategoriesContent({
   categories,
   onSelectCategory,
   helpText = "Find what you're looking for quickly by filtering your messages.",
@@ -122,6 +120,19 @@ export function NotificationCategories({
         </List>
       </Container>
     </Page>
+  );
+}
+
+/**
+ * The `/notifications` "Messages" landing: an intro line with an optional help
+ * link, then a bordered list of message categories each showing its unread
+ * count. Data-agnostic — categories, counts and handlers come from the parent.
+ */
+export function NotificationCategories({ brand, ...props }: NotificationCategoriesProps) {
+  return (
+    <BrandScope brand={brand}>
+      <NotificationCategoriesContent {...props} />
+    </BrandScope>
   );
 }
 

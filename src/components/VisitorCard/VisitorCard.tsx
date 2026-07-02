@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { Avatar } from '../Avatar';
 import { Text } from '../Text';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface VisitorCardAction {
   key: string;
@@ -26,6 +27,8 @@ export interface VisitorCardProps {
   actions?: VisitorCardAction[];
   /** Click handler for the whole row. */
   onClick?: () => void;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 const Container = styled.div<{ $clickable: boolean }>`
@@ -73,13 +76,7 @@ const StatusPill = styled.span<{ $color: string }>`
   color: ${({ $color }) => $color};
 `;
 
-/**
- * Avatar + details + trailing-action list row. Generalises balwin's
- * `Tiles/*VisitorTile` family (Pending / Verified / ShortTermLetter /
- * VisitorAccess) into one data-driven component, decoupled from the Firebase
- * record shapes — pass `name`, `lines`, and the `actions` you want.
- */
-export function VisitorCard({
+function VisitorCardContent({
   name,
   lines = [],
   status,
@@ -129,5 +126,19 @@ export function VisitorCard({
         </Actions>
       )}
     </Container>
+  );
+}
+
+/**
+ * Avatar + details + trailing-action list row. Generalises balwin's
+ * `Tiles/*VisitorTile` family (Pending / Verified / ShortTermLetter /
+ * VisitorAccess) into one data-driven component, decoupled from the Firebase
+ * record shapes — pass `name`, `lines`, and the `actions` you want.
+ */
+export function VisitorCard({ brand, ...props }: VisitorCardProps) {
+  return (
+    <BrandScope brand={brand}>
+      <VisitorCardContent {...props} />
+    </BrandScope>
   );
 }

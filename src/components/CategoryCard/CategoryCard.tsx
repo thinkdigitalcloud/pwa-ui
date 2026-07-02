@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { Text } from '../Text';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface CategoryCardProps {
   heading: string;
@@ -9,6 +10,8 @@ export interface CategoryCardProps {
   /** Image URL; rendered on the right when valid. */
   image?: string;
   onClick?: () => void;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 const Wrapper = styled.div<{ $clickable: boolean }>`
@@ -55,8 +58,7 @@ function isValidUrl(url?: string): boolean {
   }
 }
 
-/** Lifestyle/event listing card with optional image and price (the apps' `CategoryCard`). */
-export function CategoryCard({
+function CategoryCardContent({
   heading,
   description,
   time,
@@ -85,5 +87,14 @@ export function CategoryCard({
       </Row>
       <Divider />
     </Wrapper>
+  );
+}
+
+/** Lifestyle/event listing card with optional image and price (the apps' `CategoryCard`). */
+export function CategoryCard({ brand, ...props }: CategoryCardProps) {
+  return (
+    <BrandScope brand={brand}>
+      <CategoryCardContent {...props} />
+    </BrandScope>
   );
 }

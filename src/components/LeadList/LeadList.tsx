@@ -4,6 +4,7 @@ import { Page, type PageProps } from '../Page';
 import { Avatar } from '../Avatar';
 import { Text } from '../Text';
 import { Spinner } from '../Spinner';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface LeadVisitor {
   firstName?: string;
@@ -23,15 +24,11 @@ export interface LeadListProps {
   header?: PageProps['header'];
   bottomNav?: PageProps['bottomNav'];
   backgroundColor?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * Visitor list for the sales-agent lead-exit flow: each row is an avatar, the
- * visitor's name / phone / plate / nominated agent, and a chevron. Port of
- * balwin's `LeadExitScreen` with data fetching and navigation lifted to the
- * parent (`visitors` + `onSelect`).
- */
-export function LeadList({
+function LeadListContent({
   visitors,
   loading = false,
   onSelect,
@@ -94,6 +91,20 @@ export function LeadList({
         <ScreenTitle style={{ color: theme.colors.text }}>{emptyText}</ScreenTitle>
       )}
     </Page>
+  );
+}
+
+/**
+ * Visitor list for the sales-agent lead-exit flow: each row is an avatar, the
+ * visitor's name / phone / plate / nominated agent, and a chevron. Port of
+ * balwin's `LeadExitScreen` with data fetching and navigation lifted to the
+ * parent (`visitors` + `onSelect`).
+ */
+export function LeadList({ brand, ...props }: LeadListProps) {
+  return (
+    <BrandScope brand={brand}>
+      <LeadListContent {...props} />
+    </BrandScope>
   );
 }
 

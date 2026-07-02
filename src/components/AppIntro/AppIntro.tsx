@@ -8,6 +8,7 @@ import { Toggle } from '../Toggle';
 import { SelectModal, type SelectOption } from '../SelectModal';
 import { Spinner } from '../Spinner';
 import { useResolvedTheme } from '../../theme/useResolvedTheme';
+import { Brand, BrandScope } from '../../theme/brands';
 
 /** Free-text identity fields (Information step). */
 export interface AppIntroInformation {
@@ -196,6 +197,8 @@ export interface AppIntroProps {
   onComplete: (data: AppIntroData) => void | Promise<void>;
   /** Notified whenever the active step changes. */
   onStepChange?: (index: number) => void;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 const DEFAULT_ADDRESS_TYPES = [
@@ -272,16 +275,7 @@ const ALL_DIGITS = /^\d+$/;
 
 const isEmpty = (v?: string) => !v || v.trim().length === 0;
 
-/**
- * Multi-step onboarding wizard. Fully presentational and configurable per brand:
- * the step set (`slides`), the Information / Address field sets and their
- * required subset, labels, colours and the welcome illustration all come in as
- * props, so balwin (Welcome→Info→Contact→Address→Vehicle→Policy, with ID + full
- * address) and anch (no vehicle step, name/surname only, reduced address) are the
- * same component with different props. Collected data is handed back via
- * `onComplete` — the host app owns all persistence.
- */
-export function AppIntro({
+function AppIntroContent({
   estates = [],
   addressTypes = DEFAULT_ADDRESS_TYPES,
   policyConfig,
@@ -716,6 +710,23 @@ export function AppIntro({
         </Footer>
       </Container>
     </Page>
+  );
+}
+
+/**
+ * Multi-step onboarding wizard. Fully presentational and configurable per brand:
+ * the step set (`slides`), the Information / Address field sets and their
+ * required subset, labels, colours and the welcome illustration all come in as
+ * props, so balwin (Welcome→Info→Contact→Address→Vehicle→Policy, with ID + full
+ * address) and anch (no vehicle step, name/surname only, reduced address) are the
+ * same component with different props. Collected data is handed back via
+ * `onComplete` — the host app owns all persistence.
+ */
+export function AppIntro({ brand, ...props }: AppIntroProps) {
+  return (
+    <BrandScope brand={brand}>
+      <AppIntroContent {...props} />
+    </BrandScope>
   );
 }
 

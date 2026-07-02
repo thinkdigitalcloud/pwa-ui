@@ -5,6 +5,7 @@ import { Spinner } from '../Spinner';
 import { Text } from '../Text';
 import { PreferenceToggleRow } from '../PreferenceToggleRow';
 import { VirtualNumericKeyboard } from '../VirtualNumericKeyboard';
+import { Brand, BrandScope } from '../../theme/brands';
 
 const DEFAULT_FACE_IMAGE =
   'https://storage.googleapis.com/tdglobal-dev/public/defaultProfile.png';
@@ -60,16 +61,11 @@ export interface AccessControlSettingsProps {
   header?: PageProps['header'];
   bottomNav?: PageProps['bottomNav'];
   backgroundColor?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * The `/access` "Access Control Settings" screen. A PIN gate (create+confirm a
- * new PIN, or authenticate an existing one via the parametrized `verifyPin`)
- * protects the settings sections (permissions, access locations, face profile,
- * gallagher) and a diagnostics modal. All data and the PIN check come from the
- * parent; entry/auth state is managed internally.
- */
-export function AccessControlSettings({
+function AccessControlSettingsContent({
   hasPin,
   verifyPin,
   onSetPin,
@@ -322,6 +318,21 @@ export function AccessControlSettings({
         </Backdrop>
       )}
     </Page>
+  );
+}
+
+/**
+ * The `/access` "Access Control Settings" screen. A PIN gate (create+confirm a
+ * new PIN, or authenticate an existing one via the parametrized `verifyPin`)
+ * protects the settings sections (permissions, access locations, face profile,
+ * gallagher) and a diagnostics modal. All data and the PIN check come from the
+ * parent; entry/auth state is managed internally.
+ */
+export function AccessControlSettings({ brand, ...props }: AccessControlSettingsProps) {
+  return (
+    <BrandScope brand={brand}>
+      <AccessControlSettingsContent {...props} />
+    </BrandScope>
   );
 }
 

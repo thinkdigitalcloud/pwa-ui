@@ -5,6 +5,7 @@ import {
   useContactPicker,
   type PickedContact,
 } from '../../hooks/useContactPicker';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface AddFromContactsProps
   extends Omit<ButtonProps, 'onClick' | 'children' | 'text' | 'leftIcon'> {
@@ -23,17 +24,11 @@ export interface AddFromContactsProps
    * by default. Set `false` to render a disabled button instead.
    */
   hideWhenUnsupported?: boolean;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * Theme-aware "Add from Contacts" button backed by the web Contact Picker API.
- *
- * Unifies the per-app implementations (e.g. balwin/anch visitor capture) behind
- * one parametrised, theme-driven component. Honours the active styled-components
- * theme via the shared `Button`, so it brands itself per app automatically —
- * no Redux/theme plumbing required at the call site.
- */
-export function AddFromContacts({
+function AddFromContactsContent({
   onPick,
   label = 'Add from Contacts',
   icon = <PiAddressBook size={18} aria-hidden />,
@@ -64,5 +59,21 @@ export function AddFromContacts({
       onClick={handleClick}
       {...rest}
     />
+  );
+}
+
+/**
+ * Theme-aware "Add from Contacts" button backed by the web Contact Picker API.
+ *
+ * Unifies the per-app implementations (e.g. balwin/anch visitor capture) behind
+ * one parametrised, theme-driven component. Honours the active styled-components
+ * theme via the shared `Button`, so it brands itself per app automatically —
+ * no Redux/theme plumbing required at the call site.
+ */
+export function AddFromContacts({ brand, ...props }: AddFromContactsProps) {
+  return (
+    <BrandScope brand={brand}>
+      <AddFromContactsContent {...props} />
+    </BrandScope>
   );
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import styled from 'styled-components';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface AvatarProps {
   /** Image URL; falls back to initials if absent or it fails to load. */
@@ -12,6 +13,8 @@ export interface AvatarProps {
   round?: boolean;
   borderColor?: string;
   backgroundColor?: string;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 function initials(name?: string): string {
@@ -49,8 +52,7 @@ const Img = styled.img`
   object-fit: cover;
 `;
 
-/** Image avatar with an initials fallback (the tiles' `react-avatar` usage). */
-export function Avatar({
+function AvatarContent({
   src,
   name,
   size = 48,
@@ -76,5 +78,14 @@ export function Avatar({
         initials(name)
       )}
     </Wrapper>
+  );
+}
+
+/** Image avatar with an initials fallback (the tiles' `react-avatar` usage). */
+export function Avatar({ brand, ...props }: AvatarProps) {
+  return (
+    <BrandScope brand={brand}>
+      <AvatarContent {...props} />
+    </BrandScope>
   );
 }

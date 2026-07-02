@@ -8,6 +8,7 @@ import {
   type TimeSlotAvailability,
   type ResourceTimes,
 } from '../../utils/bookingTime';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface TimeSlotPickerProps {
   open: boolean;
@@ -22,15 +23,11 @@ export interface TimeSlotPickerProps {
   emptyText?: string;
   /** Number of slot columns in the grid. Minimum 2; defaults to 3. */
   columns?: number;
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
-/**
- * Time-slot picker modal. Builds a resource's bookable slots from its open/close
- * window, marks already-booked slots disabled, and lets the user pick a start
- * then end slot — emitting the chosen pair. Generalises balwin's
- * `BookingTimeSlotsModal`; selection algorithm preserved verbatim.
- */
-export function TimeSlotPicker({
+function TimeSlotPickerContent({
   open,
   onClose,
   availability = [],
@@ -178,6 +175,20 @@ export function TimeSlotPicker({
         )}
       </SlotGrid>
     </Modal>
+  );
+}
+
+/**
+ * Time-slot picker modal. Builds a resource's bookable slots from its open/close
+ * window, marks already-booked slots disabled, and lets the user pick a start
+ * then end slot — emitting the chosen pair. Generalises balwin's
+ * `BookingTimeSlotsModal`; selection algorithm preserved verbatim.
+ */
+export function TimeSlotPicker({ brand, ...props }: TimeSlotPickerProps) {
+  return (
+    <BrandScope brand={brand}>
+      <TimeSlotPickerContent {...props} />
+    </BrandScope>
   );
 }
 

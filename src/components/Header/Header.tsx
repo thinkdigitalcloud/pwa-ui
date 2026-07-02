@@ -8,6 +8,7 @@ import {
   FiTrash2,
   FiRefreshCw,
 } from 'react-icons/fi';
+import { Brand, BrandScope } from '../../theme/brands';
 
 export interface HeaderAction {
   key: string;
@@ -39,6 +40,8 @@ export interface HeaderProps {
   onRefresh?: () => void;
   /** Fully custom actions appended after the convenience ones. */
   actions?: HeaderAction[];
+  /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
+  brand?: Brand;
 }
 
 const Bar = styled.header<{ $shadow: boolean }>`
@@ -99,11 +102,7 @@ const IconButton = styled.button<{ $color?: string }>`
   }
 `;
 
-/**
- * Top app bar with a back button, centred title, and configurable right-side
- * actions. Consolidates the near-identical `Header` from all four apps.
- */
-export function Header({
+function HeaderContent({
   title,
   noBackButton = false,
   onBack,
@@ -162,5 +161,17 @@ export function Header({
         ))}
       </Side>
     </Bar>
+  );
+}
+
+/**
+ * Top app bar with a back button, centred title, and configurable right-side
+ * actions. Consolidates the near-identical `Header` from all four apps.
+ */
+export function Header({ brand, ...props }: HeaderProps) {
+  return (
+    <BrandScope brand={brand}>
+      <HeaderContent {...props} />
+    </BrandScope>
   );
 }

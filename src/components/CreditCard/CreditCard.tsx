@@ -1,8 +1,7 @@
 import { useEffect, useRef } from 'react';
-import styled, { useTheme } from 'styled-components';
+import styled from 'styled-components';
 import { FaCcVisa, FaCcMastercard, FaCcAmex, FaCcDiscover } from 'react-icons/fa';
-import { balwinTheme } from '../../theme/themes';
-import type { AppTheme } from '../../theme/types';
+import { useResolvedTheme } from '../../theme/useResolvedTheme';
 
 export type CardBrand = 'visa' | 'mastercard' | 'amex' | 'discover' | 'unknown';
 
@@ -37,12 +36,6 @@ const BRAND_ICON: Record<CardBrand, JSX.Element | null> = {
   discover: <FaCcDiscover size={38} />,
   unknown: null,
 };
-
-/** Resolve the styled-components theme, falling back to balwin when absent. */
-function useResolvedTheme(): AppTheme {
-  const raw = useTheme() as Partial<AppTheme>;
-  return raw && raw.colors ? (raw as AppTheme) : balwinTheme;
-}
 
 export function detectBrand(num: string): CardBrand {
   const n = num.replace(/\D/g, '');

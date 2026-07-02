@@ -1,9 +1,10 @@
 import React from 'react';
-import styled, { useTheme } from 'styled-components';
+import styled from 'styled-components';
 import { FaQuestion, FaTrash } from 'react-icons/fa';
 import { Modal } from '../Modal';
 import { Button } from '../Button';
 import { Text } from '../Text';
+import { useResolvedTheme } from '../../theme/useResolvedTheme';
 
 export interface ConfirmationModalProps {
   open: boolean;
@@ -42,7 +43,7 @@ export function ConfirmationModal({
   confirmColor,
   cancelColor,
 }: ConfirmationModalProps) {
-  const theme = useTheme();
+  const theme = useResolvedTheme();
   const confirm = confirmColor ?? theme.colors.secondary;
   const cancel = cancelColor ?? theme.colors.danger;
 

@@ -20,6 +20,8 @@ export interface TimeSlotPickerProps {
   /** Injectable formatter; defaults to the bundled convertBookingTime. */
   convertTime?: (value: number) => string;
   emptyText?: string;
+  /** Number of slot columns in the grid. Minimum 2; defaults to 3. */
+  columns?: number;
 }
 
 /**
@@ -37,8 +39,10 @@ export function TimeSlotPicker({
   onTimeSelected,
   convertTime = defaultConvert,
   emptyText = 'No Time Slots Available',
+  columns = 3,
 }: TimeSlotPickerProps) {
   const theme = useTheme();
+  const cols = Math.max(2, Math.floor(columns) || 2);
   const [slots, setSlots] = useState<TimeSlot[]>([]);
   const [selectedStart, setSelectedStart] = useState<TimeSlot | ''>('');
   const [selectedEnd, setSelectedEnd] = useState<TimeSlot | ''>('');
@@ -159,7 +163,7 @@ export function TimeSlotPicker({
 
   return (
     <Modal open={open} onClose={onClose} title="Select Times" centerTitle>
-      <SlotGrid>
+      <SlotGrid $cols={cols}>
         {viewSlots.map((slot, index) => (
           <Slot
             key={`slot_${slot.time}`}
@@ -177,12 +181,11 @@ export function TimeSlotPicker({
   );
 }
 
-const SlotGrid = styled.div`
-  display: flex;
-  flex-wrap: wrap;
+const SlotGrid = styled.div<{ $cols: number }>`
+  display: grid;
+  grid-template-columns: repeat(${({ $cols }) => $cols}, minmax(0, ${ms(75)}px));
+  gap: ${ms(6)}px;
   justify-content: center;
-  align-items: center;
-  max-width: calc(${ms(75)}px * 3 + ${ms(6)}px * 6 + 2px);
   margin: 0 auto;
   max-height: 55vh;
   overflow-y: auto;
@@ -191,14 +194,14 @@ const Slot = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: ${ms(75)}px;
+  width: 100%;
   height: ${ms(40)}px;
-  margin: ${ms(6)}px;
   border: 1px solid;
   cursor: pointer;
   font-size: ${ms(13)}px;
 `;
 const NoSlots = styled.div`
+  grid-column: 1 / -1;
   width: 100%;
   text-align: center;
   padding: ${ms(20)}px 0;

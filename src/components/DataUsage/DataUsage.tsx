@@ -1,14 +1,13 @@
 /* eslint-disable react/no-danger */
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import styled, { useTheme } from 'styled-components';
+import styled from 'styled-components';
 import { Text } from '../Text';
-import { balwinTheme } from '../../theme/themes';
-import type { AppTheme } from '../../theme/types';
+import { useResolvedTheme } from '../../theme/useResolvedTheme';
 
 /**
  * Colour overrides. Anything omitted falls back to the active styled-components
- * theme, and if the component is used with no ThemeProvider, to the balwin theme.
+ * theme, and if the component is used with no ThemeProvider, to the gocity theme.
  */
 export interface DataUsageColors {
   /** Accept button background. */
@@ -38,12 +37,6 @@ export interface DataUsageProps {
   onDecline: () => void;
   /** Colour overrides; unset values fall back to the theme (balwin by default). */
   colors?: DataUsageColors;
-}
-
-/** Resolve the styled-components theme, falling back to balwin when absent. */
-function useResolvedTheme(): AppTheme {
-  const raw = useTheme() as Partial<AppTheme>;
-  return raw && raw.colors ? (raw as AppTheme) : balwinTheme;
 }
 
 /**

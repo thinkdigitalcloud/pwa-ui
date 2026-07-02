@@ -1,6 +1,6 @@
-import { useTheme } from 'styled-components';
 import { FiShare, FiTrash2 } from 'react-icons/fi';
 import { VisitorCard, type VisitorCardAction } from '../VisitorCard';
+import { useResolvedTheme } from '../../theme/useResolvedTheme';
 
 export interface VisitorAccessTileProps {
   name: string;
@@ -44,7 +44,7 @@ export function VisitorAccessTile({
   showAvatar = false,
   avatarUrl,
 }: VisitorAccessTileProps) {
-  const theme = useTheme();
+  const theme = useResolvedTheme();
   const range = from || to ? `${from || ''} - ${to || ''}` : null;
   const lines = [mobile, date, range].filter((v): v is string => Boolean(v));
 

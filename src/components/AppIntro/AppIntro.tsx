@@ -590,7 +590,7 @@ export function AppIntro({
               ) : (
                 <PiUserCirclePlus size={120} color={textColor} />
               )}
-              <Text color={textColor} style={{ textAlign: 'center', marginTop: welcomeImage ? 24 : 80 }}>
+              <Text color={textColor} style={{ textAlign: 'center', marginTop: welcomeImage ? 24 : 80, fontSize: 14 }}>
                 {slide.text}
               </Text>
             </Welcome>
@@ -781,8 +781,10 @@ function FieldSelect({ label, title, placeholder, value, options, onSelect, labe
 }
 
 function FieldLabelText({ color, children }: { color: string; children: React.ReactNode }) {
+  // RN field labels use getProfileLabelTextStyle: 14px, regular (FONT_WEIGHT_BODY
+  // 400) — NOT bold. (Was bodyBold/12 which read too small & too heavy.)
   return (
-    <Text variant="bodyBold" color={color} style={{ fontSize: 12 }}>
+    <Text variant="body" color={color} style={{ fontSize: 14, fontWeight: 400 }}>
       {children}
     </Text>
   );
@@ -800,7 +802,8 @@ const Container = styled.div`
 const Title = styled(Text)`
   text-align: center;
   margin-top: 10px;
-  font-weight: normal;
+  /* RN AppIntro titleText is Gotham Bold 800 (getGothamBoldFont). */
+  font-weight: 800;
 `;
 
 const StepBody = styled.div`
@@ -845,7 +848,9 @@ const StyledInput = styled.input`
   border: none;
   outline: none;
   padding: 4px 0;
-  font-size: 14px;
+  /* RN field values use getProfileValueTextStyle: 16px, semibold (FONT_WEIGHT_LABEL 600). */
+  font-size: 16px;
+  font-weight: 600;
 `;
 
 const SelectTrigger = styled.button<{ $placeholder: boolean }>`
@@ -855,7 +860,9 @@ const SelectTrigger = styled.button<{ $placeholder: boolean }>`
   border: none;
   outline: none;
   padding: 4px 0;
-  font-size: 14px;
+  /* Match the input value typography (getProfileValueTextStyle 16/600). */
+  font-size: 16px;
+  font-weight: ${({ $placeholder }) => ($placeholder ? 400 : 600)};
   text-align: left;
   cursor: pointer;
   opacity: ${({ $placeholder }) => ($placeholder ? 0.55 : 1)};

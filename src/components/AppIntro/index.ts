@@ -5,6 +5,7 @@ export type {
   AppIntroColors,
   AppIntroSlide,
   AppIntroInfoField,
+  AppIntroContactField,
   AppIntroAddressField,
   AppIntroFieldLabels,
   AppIntroEstate,

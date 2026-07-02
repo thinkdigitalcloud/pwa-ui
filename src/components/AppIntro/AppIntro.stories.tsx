@@ -89,9 +89,22 @@ export const Anch: Story = {
     slides: ANCH_SLIDES,
     welcomeImage: 'https://picsum.photos/seed/anch-welcome/480/360',
     informationFields: ['firstName', 'lastName'],
+    // anch keeps all five contact fields; shown explicitly to demo the controller.
+    contactFields: ['home', 'work', 'cell', 'emergencyContactName', 'emergencyContactNumber'],
     addressFields: ['addressType', 'streetName', 'estate', 'suburbName', 'localityOrCity', 'addressPostalCode'],
     requiredAddressFields: ['addressType', 'estate', 'streetName'],
     fieldLabels: { addressPostalCode: 'Postal Code' },
     workDefaults: { estate: 'Go City Visitors', suburb: 'Waterfall 5-IR', city: 'Midrand', code: '2090' },
+    // anch design: navy background, cyan field labels, white values/headings,
+    // white Next/Done + active dot (matches the mobile app-intro screens).
+    colors: {
+      background: '#11016e',
+      text: '#ffffff',
+      labelText: '#4db8e8',
+      accent: '#ffffff',
+      success: '#4C8B2B',
+      activeDot: '#ffffff',
+      inactiveDot: 'rgba(255,255,255,0.35)',
+    },
   },
 };

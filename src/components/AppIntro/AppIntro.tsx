@@ -88,6 +88,14 @@ export interface AppIntroSlide {
 /** Configurable Information-step fields (in render order). */
 export type AppIntroInfoField = 'firstName' | 'lastName' | 'idNumber';
 
+/** Configurable Contact-step fields (in render order). */
+export type AppIntroContactField =
+  | 'home'
+  | 'work'
+  | 'cell'
+  | 'emergencyContactName'
+  | 'emergencyContactNumber';
+
 /** Configurable Address-step fields (in render order). `estate` writes `context`. */
 export type AppIntroAddressField =
   | 'addressType'
@@ -100,7 +108,9 @@ export type AppIntroAddressField =
   | 'addressPostalCode';
 
 /** Overridable field labels, keyed by field name. */
-export type AppIntroFieldLabels = Partial<Record<AppIntroInfoField | AppIntroAddressField, string>>;
+export type AppIntroFieldLabels = Partial<
+  Record<AppIntroInfoField | AppIntroContactField | AppIntroAddressField, string>
+>;
 
 /**
  * Colour overrides. Anything omitted falls back to the active styled-components
@@ -162,6 +172,8 @@ export interface AppIntroProps {
   slides?: AppIntroSlide[];
   /** Information-step fields to render, in order. Defaults to name/surname/ID. */
   informationFields?: AppIntroInfoField[];
+  /** Contact-step fields to render, in order. Defaults to home/work/cell/emergency name+number. */
+  contactFields?: AppIntroContactField[];
   /** Address-step fields to render, in order. Defaults to the full balwin set. */
   addressFields?: AppIntroAddressField[];
   /** Which address fields are required (intersected with the rendered set). */
@@ -195,6 +207,13 @@ const DEFAULT_SLIDES: AppIntroSlide[] = [
 ];
 
 const DEFAULT_INFO_FIELDS: AppIntroInfoField[] = ['firstName', 'lastName', 'idNumber'];
+const DEFAULT_CONTACT_FIELDS: AppIntroContactField[] = [
+  'home',
+  'work',
+  'cell',
+  'emergencyContactName',
+  'emergencyContactNumber',
+];
 const DEFAULT_ADDRESS_FIELDS: AppIntroAddressField[] = [
   'addressType',
   'standNo',
@@ -214,10 +233,15 @@ const DEFAULT_REQUIRED_ADDRESS_FIELDS: AppIntroAddressField[] = [
   'localityOrCity',
   'addressPostalCode',
 ];
-const DEFAULT_FIELD_LABELS: Record<AppIntroInfoField | AppIntroAddressField, string> = {
+const DEFAULT_FIELD_LABELS: Record<AppIntroInfoField | AppIntroContactField | AppIntroAddressField, string> = {
   firstName: 'Name',
   lastName: 'Surname',
   idNumber: 'ID/Passport Number',
+  home: 'Home',
+  work: 'Work',
+  cell: 'Cell',
+  emergencyContactName: 'Emergency Contact Name',
+  emergencyContactNumber: 'Emergency Contact Number',
   addressType: 'Address Type',
   standNo: 'Stand No',
   estate: 'Estate',
@@ -272,6 +296,7 @@ export function AppIntro({
   noVehicleImage,
   slides = DEFAULT_SLIDES,
   informationFields = DEFAULT_INFO_FIELDS,
+  contactFields = DEFAULT_CONTACT_FIELDS,
   addressFields = DEFAULT_ADDRESS_FIELDS,
   requiredAddressFields = DEFAULT_REQUIRED_ADDRESS_FIELDS,
   fieldLabels,
@@ -590,11 +615,17 @@ export function AppIntro({
 
           {slide.form === 'contact' && (
             <Form>
-              <FieldInput label="Home" value={contactsInfo.home} onChange={(v) => onChangeContacts('home', v)} labelColor={labelColor} textColor={textColor} font={fontFamily} />
-              <FieldInput label="Work" value={contactsInfo.work} onChange={(v) => onChangeContacts('work', v)} labelColor={labelColor} textColor={textColor} font={fontFamily} />
-              <FieldInput label="Cell" value={contactsInfo.cell} onChange={(v) => onChangeContacts('cell', v)} labelColor={labelColor} textColor={textColor} font={fontFamily} />
-              <FieldInput label="Emergency Contact Name" value={contactsInfo.emergencyContactName} onChange={(v) => onChangeContacts('emergencyContactName', v)} labelColor={labelColor} textColor={textColor} font={fontFamily} />
-              <FieldInput label="Emergency Contact Number" value={contactsInfo.emergencyContactNumber} onChange={(v) => onChangeContacts('emergencyContactNumber', v)} labelColor={labelColor} textColor={textColor} font={fontFamily} />
+              {contactFields.map((f) => (
+                <FieldInput
+                  key={f}
+                  label={labels[f]}
+                  value={contactsInfo[f]}
+                  onChange={(v) => onChangeContacts(f, v)}
+                  labelColor={labelColor}
+                  textColor={textColor}
+                  font={fontFamily}
+                />
+              ))}
             </Form>
           )}
 

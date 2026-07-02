@@ -120,6 +120,11 @@ export interface AppIntroColors {
   accent?: string;
   /** Validation / error message text. Defaults to the theme danger colour (red). */
   error?: string;
+  /** Policy-card heading text (T&C / Privacy). Cards are white, so this must be
+   *  dark. Defaults to the theme primary. */
+  cardHeading?: string;
+  /** Policy-card body + accept-row text. Cards are white → defaults to dark. */
+  cardText?: string;
   /** Policy-accept toggle "on" track. */
   success?: string;
   /** Body/heading/input text. */
@@ -305,6 +310,10 @@ export function AppIntro({
   // Error/validation text is always a distinct danger colour (red), independent
   // of `accent` — brands may set accent to white for the Next/Done label.
   const errorColor = colors?.error ?? t.colors.danger;
+  // Policy cards are white, so their text must be dark regardless of the page
+  // `text` colour (which brands set to white on the navy background).
+  const cardHeading = colors?.cardHeading ?? t.colors.primary;
+  const cardText = colors?.cardText ?? '#212121';
   const success = colors?.success ?? t.colors.success;
   const textColor = colors?.text ?? t.colors.text;
   const labelColor = colors?.labelText ?? t.colors.darkGrey;
@@ -667,19 +676,19 @@ export function AppIntro({
           {slide.form === 'policy' && (
             <Form>
               <PolicyCard>
-                <Text variant="bodyBold" color={textColor} style={{ fontSize: 12 }}>
+                <Text color={cardHeading} style={{ fontSize: 16, fontWeight: 500 }}>
                   {policy.termsHeading}
                 </Text>
-                <CardScroll style={{ color: textColor }} dangerouslySetInnerHTML={{ __html: policy.termsContent }} />
+                <CardScroll style={{ color: cardText }} dangerouslySetInnerHTML={{ __html: policy.termsContent }} />
               </PolicyCard>
               <PolicyCard>
-                <Text variant="bodyBold" color={textColor} style={{ fontSize: 12 }}>
+                <Text color={cardHeading} style={{ fontSize: 16, fontWeight: 500 }}>
                   {policy.privacyHeading}
                 </Text>
-                <CardScroll style={{ color: textColor }} dangerouslySetInnerHTML={{ __html: policy.privacyContent }} />
+                <CardScroll style={{ color: cardText }} dangerouslySetInnerHTML={{ __html: policy.privacyContent }} />
               </PolicyCard>
               <AcceptCard>
-                <Text color={textColor} style={{ flex: 1, paddingRight: 10 }}>
+                <Text color={cardText} style={{ flex: 1, paddingRight: 10 }}>
                   {policy.acceptButtonText}
                 </Text>
                 <Toggle value={acceptedPolicy} onChange={setAcceptedPolicy} trackColor={{ true: success }} aria-label="Accept terms and privacy policy" />
@@ -690,7 +699,7 @@ export function AppIntro({
 
         <Footer>
           <FooterButton onClick={onBack} style={{ textAlign: 'left' }}>
-            {activeIndex !== 0 && <Text color={textColor}>Back</Text>}
+            {activeIndex !== 0 && <Text color={textColor} style={{ fontWeight: 500 }}>Back</Text>}
           </FooterButton>
           <Dots>
             {slides.map((s, i) => (
@@ -700,7 +709,7 @@ export function AppIntro({
             ))}
           </Dots>
           <FooterButton onClick={onNext} style={{ textAlign: 'right', justifyContent: 'flex-end' }}>
-            <Text variant="bodyBold" color={accent}>
+            <Text color={accent} style={{ fontWeight: 500 }}>
               {activeIndex === slides.length - 1 ? 'Done' : 'Next'}
             </Text>
           </FooterButton>

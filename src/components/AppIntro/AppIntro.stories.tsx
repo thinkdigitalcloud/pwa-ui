@@ -103,6 +103,8 @@ export const Anch: Story = {
       labelText: '#4db8e8',
       accent: '#ffffff',
       error: '#D01E2D',
+      cardHeading: '#11016e',
+      cardText: '#212121',
       success: '#4C8B2B',
       activeDot: '#ffffff',
       inactiveDot: 'rgba(255,255,255,0.35)',

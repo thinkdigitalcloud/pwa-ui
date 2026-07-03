@@ -670,13 +670,13 @@ function AppIntroContent({
           {slide.form === 'policy' && (
             <Form>
               <PolicyCard>
-                <Text color={cardHeading} style={{ fontSize: 16, fontWeight: 500 }}>
+                <Text color={cardHeading} style={{ fontSize: 16, fontWeight: 400 }}>
                   {policy.termsHeading}
                 </Text>
                 <CardScroll style={{ color: cardText }} dangerouslySetInnerHTML={{ __html: policy.termsContent }} />
               </PolicyCard>
               <PolicyCard>
-                <Text color={cardHeading} style={{ fontSize: 16, fontWeight: 500 }}>
+                <Text color={cardHeading} style={{ fontSize: 16, fontWeight: 400 }}>
                   {policy.privacyHeading}
                 </Text>
                 <CardScroll style={{ color: cardText }} dangerouslySetInnerHTML={{ __html: policy.privacyContent }} />
@@ -693,7 +693,7 @@ function AppIntroContent({
 
         <Footer>
           <FooterButton onClick={onBack} style={{ textAlign: 'left' }}>
-            {activeIndex !== 0 && <Text color={textColor} style={{ fontWeight: 500 }}>Back</Text>}
+            {activeIndex !== 0 && <Text color={textColor} style={{ fontWeight: 400 }}>Back</Text>}
           </FooterButton>
           <Dots>
             {slides.map((s, i) => (
@@ -703,7 +703,7 @@ function AppIntroContent({
             ))}
           </Dots>
           <FooterButton onClick={onNext} style={{ textAlign: 'right', justifyContent: 'flex-end' }}>
-            <Text color={accent} style={{ fontWeight: 500 }}>
+            <Text color={accent} style={{ fontWeight: 400 }}>
               {activeIndex === slides.length - 1 ? 'Done' : 'Next'}
             </Text>
           </FooterButton>
@@ -821,7 +821,7 @@ const Title = styled(Text)`
   text-align: center;
   margin-top: 10px;
   /* Slide title: medium weight (not bold). */
-  font-weight: 500;
+  font-weight: 400;
 `;
 
 const StepBody = styled.div`
@@ -868,7 +868,7 @@ const StyledInput = styled.input`
   padding: 4px 0;
   /* Field values: 16px, medium weight (not bold). */
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 400;
 `;
 
 const SelectTrigger = styled.button<{ $placeholder: boolean }>`
@@ -880,7 +880,7 @@ const SelectTrigger = styled.button<{ $placeholder: boolean }>`
   padding: 4px 0;
   /* Match the input value typography (16px, medium weight — not bold). */
   font-size: 16px;
-  font-weight: ${({ $placeholder }) => ($placeholder ? 400 : 500)};
+  font-weight: 400;
   text-align: left;
   cursor: pointer;
   opacity: ${({ $placeholder }) => ($placeholder ? 0.55 : 1)};

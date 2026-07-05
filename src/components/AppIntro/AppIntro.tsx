@@ -153,6 +153,8 @@ export interface AppIntroSelectModalStyle {
   optionSelectedBackground?: string;
   /** Selected option row text colour (default: theme textInverse). */
   optionSelectedColor?: string;
+  /** Selected option row font weight (default: theme weightBold). Pass 400 for regular. */
+  optionSelectedFontWeight?: number | string;
 }
 
 /** The complete payload emitted by `onComplete`. */
@@ -523,7 +525,7 @@ function AppIntroContent({
         <FieldSelect
           key={f}
           label={labels.addressType}
-          title="Select Address Type"
+          title={labels.addressType}
           placeholder="Select address type"
           value={addressInfo.addressType}
           options={addressTypes}
@@ -558,7 +560,7 @@ function AppIntroContent({
         <FieldSelect
           key={f}
           label={labels.estate}
-          title="Select an Estate"
+          title={labels.estate}
           placeholder="Select an estate"
           value={addressInfo.context}
           options={estateOptions}
@@ -831,6 +833,7 @@ function FieldSelect({ label, title, placeholder, value, options, onSelect, labe
         cancelBorderRadius={selectModal?.cancelBorderRadius}
         optionSelectedBackground={selectModal?.optionSelectedBackground}
         optionSelectedColor={selectModal?.optionSelectedColor}
+        optionSelectedFontWeight={selectModal?.optionSelectedFontWeight}
       />
     </FieldContainer>
   );

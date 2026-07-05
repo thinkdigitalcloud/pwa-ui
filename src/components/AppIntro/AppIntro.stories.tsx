@@ -118,6 +118,7 @@ export const Anch: Story = {
       cancelBorderRadius: '0px',
       optionSelectedBackground: '#e8e8e8',
       optionSelectedColor: '#212121',
+      optionSelectedFontWeight: 400,
     },
   },
 };

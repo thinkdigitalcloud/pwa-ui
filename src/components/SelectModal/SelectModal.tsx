@@ -26,6 +26,8 @@ export interface SelectModalProps<T = string> {
   optionSelectedBackground?: string;
   /** Selected row text colour (default: theme textInverse). */
   optionSelectedColor?: string;
+  /** Selected row font weight (default: theme weightBold). Pass 400 for regular. */
+  optionSelectedFontWeight?: number | string;
   /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
   brand?: Brand;
 }
@@ -38,7 +40,12 @@ const List = styled.div`
 // Reproduces the TDD estate apps' picker: the selected row is filled with the
 // brand primary colour + light text. The divider + vertical padding live on the
 // inner Label (span), so the border is inset from the row's horizontal padding.
-const Row = styled.button<{ $selected: boolean; $selectedBg?: string; $selectedColor?: string }>`
+const Row = styled.button<{
+  $selected: boolean;
+  $selectedBg?: string;
+  $selectedColor?: string;
+  $selectedWeight?: number | string;
+}>`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -48,8 +55,8 @@ const Row = styled.button<{ $selected: boolean; $selectedBg?: string; $selectedC
   border: none;
   font-family: ${({ theme }) => theme.typography.fontFamily};
   font-size: 16px;
-  font-weight: ${({ $selected, theme }) =>
-    $selected ? theme.typography.weightBold : theme.typography.weightBody};
+  font-weight: ${({ $selected, $selectedWeight, theme }) =>
+    $selected ? $selectedWeight ?? theme.typography.weightBold : theme.typography.weightBody};
   background: ${({ $selected, $selectedBg, theme }) =>
     $selected ? $selectedBg ?? theme.colors.primary : 'transparent'};
   color: ${({ $selected, $selectedColor, theme }) =>
@@ -110,6 +117,7 @@ function SelectModalContent<T extends string | number = string>({
   cancelBorderRadius,
   optionSelectedBackground,
   optionSelectedColor,
+  optionSelectedFontWeight,
 }: SelectModalProps<T>) {
   return (
     <Modal
@@ -139,6 +147,7 @@ function SelectModalContent<T extends string | number = string>({
               $selected={selected}
               $selectedBg={optionSelectedBackground}
               $selectedColor={optionSelectedColor}
+              $selectedWeight={optionSelectedFontWeight}
               onClick={() => {
                 onSelect(option.value);
                 onClose();

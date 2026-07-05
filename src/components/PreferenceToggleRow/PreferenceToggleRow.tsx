@@ -12,7 +12,7 @@ export interface PreferenceToggleRowProps {
   thumbColor?: string;
   /** Per-state track colours. */
   trackColor?: { true?: string; false?: string };
-  /** Hide the bottom divider (e.g. for the last row in a group). */
+  /** @deprecated The row no longer renders a divider; accepted for back-compat. */
   noDivider?: boolean;
   /** Extra left padding (px) added to the base inset — indents the label. */
   indent?: number;
@@ -29,17 +29,16 @@ function PreferenceToggleRowContent({
   disabled = false,
   thumbColor,
   trackColor,
-  noDivider = false,
   indent = 0,
   onLabelClick,
 }: PreferenceToggleRowProps) {
   const theme = useTheme();
   return (
-    <Row $divider={theme.colors.lightGrey} $noDivider={noDivider} $indent={indent}>
+    <Row $indent={indent}>
       <Text
         color={theme.colors.text}
         onClick={onLabelClick}
-        style={onLabelClick ? { cursor: 'pointer' } : undefined}
+        style={{ fontWeight: 500, ...(onLabelClick ? { cursor: 'pointer' } : {}) }}
       >
         {label}
       </Text>
@@ -58,7 +57,7 @@ function PreferenceToggleRowContent({
 /**
  * A label + switch tile — the row used by Notification Preferences ("Access
  * Alert") and the Access Control "Permissions" section. Full-width, padded,
- * with a bottom divider and the estate-app themed `Toggle`.
+ * medium-weight (500) label + the estate-app themed `Toggle`. No divider.
  */
 export function PreferenceToggleRow({ brand, ...props }: PreferenceToggleRowProps) {
   return (
@@ -68,7 +67,7 @@ export function PreferenceToggleRow({ brand, ...props }: PreferenceToggleRowProp
   );
 }
 
-const Row = styled.div<{ $divider: string; $noDivider: boolean; $indent: number }>`
+const Row = styled.div<{ $indent: number }>`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -77,6 +76,4 @@ const Row = styled.div<{ $divider: string; $noDivider: boolean; $indent: number 
   box-sizing: border-box;
   padding: 20px;
   padding-left: ${({ $indent }) => 20 + $indent}px;
-  border-bottom: ${({ $noDivider, $divider }) =>
-    $noDivider ? 'none' : `1px solid ${$divider}`};
 `;

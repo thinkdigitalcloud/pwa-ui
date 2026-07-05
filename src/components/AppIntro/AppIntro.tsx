@@ -140,6 +140,21 @@ export interface AppIntroColors {
   inactiveDot?: string;
 }
 
+/** Style overrides for the option-picker modal (address type / estate picker).
+ *  Lets each brand match its native picker — e.g. anch uses square corners
+ *  (radius 0) and a grey selected row instead of the default rounded card +
+ *  primary-filled selected row. */
+export interface AppIntroSelectModalStyle {
+  /** Card corner radius (default '5px'). */
+  borderRadius?: string;
+  /** Cancel button corner radius (default '4px'). */
+  cancelBorderRadius?: string;
+  /** Selected option row background (default: theme primary). */
+  optionSelectedBackground?: string;
+  /** Selected option row text colour (default: theme textInverse). */
+  optionSelectedColor?: string;
+}
+
 /** The complete payload emitted by `onComplete`. */
 export interface AppIntroNavLabels {
   back?: string;
@@ -200,6 +215,8 @@ export interface AppIntroProps {
   loading?: boolean;
   /** Colour overrides; unset values fall back to the theme (balwin by default). */
   colors?: AppIntroColors;
+  /** Style overrides for the option-picker modal (address type / estate). */
+  selectModal?: AppIntroSelectModalStyle;
 
   /** Called with the collected data when the user finishes the wizard. */
   onComplete: (data: AppIntroData) => void | Promise<void>;
@@ -305,6 +322,7 @@ function AppIntroContent({
   navLabels,
   loading = false,
   colors,
+  selectModal,
   onComplete,
   onStepChange,
 }: AppIntroProps) {
@@ -512,6 +530,7 @@ function AppIntroContent({
           labelColor={labelColor}
           textColor={textColor}
           font={fontFamily}
+          selectModal={selectModal}
           onSelect={(val) => {
             if (val === addressTypes[1]?.value) {
               patchAddress({
@@ -547,6 +566,7 @@ function AppIntroContent({
           labelColor={labelColor}
           textColor={textColor}
           font={fontFamily}
+          selectModal={selectModal}
           onSelect={(val) => {
             const match = estates.find((e) => e.estateName === val);
             patchAddress({
@@ -782,9 +802,10 @@ interface FieldSelectProps {
   textColor: string;
   font: string;
   disabled?: boolean;
+  selectModal?: AppIntroSelectModalStyle;
 }
 
-function FieldSelect({ label, title, placeholder, value, options, onSelect, labelColor, textColor, font, disabled }: FieldSelectProps) {
+function FieldSelect({ label, title, placeholder, value, options, onSelect, labelColor, textColor, font, disabled, selectModal }: FieldSelectProps) {
   const [open, setOpen] = useState(false);
   return (
     <FieldContainer>
@@ -806,6 +827,10 @@ function FieldSelect({ label, title, placeholder, value, options, onSelect, labe
         value={value}
         onSelect={onSelect}
         cancelLabel="Cancel"
+        borderRadius={selectModal?.borderRadius}
+        cancelBorderRadius={selectModal?.cancelBorderRadius}
+        optionSelectedBackground={selectModal?.optionSelectedBackground}
+        optionSelectedColor={selectModal?.optionSelectedColor}
       />
     </FieldContainer>
   );

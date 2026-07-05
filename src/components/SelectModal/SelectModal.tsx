@@ -18,6 +18,14 @@ export interface SelectModalProps<T = string> {
   onSelect: (value: T) => void;
   /** When set, renders a Cancel button below the list (the apps' picker). */
   cancelLabel?: string;
+  /** Card corner radius (default '5px'). Pass '0' for square-cornered brands. */
+  borderRadius?: string;
+  /** Cancel button corner radius (default '4px'). Pass '0' for square corners. */
+  cancelBorderRadius?: string;
+  /** Selected row background (default: theme primary). */
+  optionSelectedBackground?: string;
+  /** Selected row text colour (default: theme textInverse). */
+  optionSelectedColor?: string;
   /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
   brand?: Brand;
 }
@@ -30,7 +38,7 @@ const List = styled.div`
 // Reproduces the TDD estate apps' picker: the selected row is filled with the
 // brand primary colour + light text. The divider + vertical padding live on the
 // inner Label (span), so the border is inset from the row's horizontal padding.
-const Row = styled.button<{ $selected: boolean }>`
+const Row = styled.button<{ $selected: boolean; $selectedBg?: string; $selectedColor?: string }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -42,9 +50,10 @@ const Row = styled.button<{ $selected: boolean }>`
   font-size: 16px;
   font-weight: ${({ $selected, theme }) =>
     $selected ? theme.typography.weightBold : theme.typography.weightBody};
-  background: ${({ $selected, theme }) => ($selected ? theme.colors.primary : 'transparent')};
-  color: ${({ $selected, theme }) =>
-    $selected ? theme.colors.textInverse : theme.colors.text};
+  background: ${({ $selected, $selectedBg, theme }) =>
+    $selected ? $selectedBg ?? theme.colors.primary : 'transparent'};
+  color: ${({ $selected, $selectedColor, theme }) =>
+    $selected ? $selectedColor ?? theme.colors.textInverse : theme.colors.text};
   cursor: pointer;
   text-align: left;
 
@@ -53,8 +62,8 @@ const Row = styled.button<{ $selected: boolean }>`
   }
   ${({ $selected }) => ($selected ? 'span { border-bottom: none; }' : '')}
   &:hover:not(:disabled) {
-    background: ${({ $selected, theme }) =>
-      $selected ? theme.colors.primary : 'rgba(0, 0, 0, 0.04)'};
+    background: ${({ $selected, $selectedBg, theme }) =>
+      $selected ? $selectedBg ?? theme.colors.primary : 'rgba(0, 0, 0, 0.04)'};
   }
   &:disabled {
     opacity: 0.4;
@@ -71,10 +80,10 @@ const Label = styled.span`
 `;
 
 // Cancel reads as a distinct branded action below the list.
-const Cancel = styled.button`
+const Cancel = styled.button<{ $borderRadius?: string }>`
   appearance: none;
   border: none;
-  border-radius: 4px;
+  border-radius: ${({ $borderRadius }) => $borderRadius ?? '4px'};
   width: 90%;
   align-self: center;
   margin: 8px auto 0;
@@ -97,6 +106,10 @@ function SelectModalContent<T extends string | number = string>({
   value,
   onSelect,
   cancelLabel,
+  borderRadius,
+  cancelBorderRadius,
+  optionSelectedBackground,
+  optionSelectedColor,
 }: SelectModalProps<T>) {
   return (
     <Modal
@@ -105,9 +118,15 @@ function SelectModalContent<T extends string | number = string>({
       title={title}
       centerTitle
       closeButtonColor="#000"
-      borderRadius="5px"
+      borderRadius={borderRadius ?? '5px'}
       bodyPadding="0"
-      footer={cancelLabel ? <Cancel type="button" onClick={onClose}>{cancelLabel}</Cancel> : undefined}
+      footer={
+        cancelLabel ? (
+          <Cancel type="button" $borderRadius={cancelBorderRadius} onClick={onClose}>
+            {cancelLabel}
+          </Cancel>
+        ) : undefined
+      }
     >
       <List>
         {options.map((option) => {
@@ -118,6 +137,8 @@ function SelectModalContent<T extends string | number = string>({
               type="button"
               disabled={option.disabled}
               $selected={selected}
+              $selectedBg={optionSelectedBackground}
+              $selectedColor={optionSelectedColor}
               onClick={() => {
                 onSelect(option.value);
                 onClose();

@@ -111,5 +111,13 @@ export const Anch: Story = {
       activeDot: '#ffffff',
       inactiveDot: 'rgba(255,255,255,0.35)',
     },
+    // anch picker matches the mobile app: square card + Cancel button (0 radius),
+    // grey selected row with dark text (instead of the default primary fill).
+    selectModal: {
+      borderRadius: '0px',
+      cancelBorderRadius: '0px',
+      optionSelectedBackground: '#e8e8e8',
+      optionSelectedColor: '#212121',
+    },
   },
 };

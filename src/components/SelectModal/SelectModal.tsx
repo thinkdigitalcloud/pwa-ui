@@ -7,6 +7,10 @@ export interface SelectOption<T = string> {
   label: string;
   value: T;
   disabled?: boolean;
+  /** Optional logo/image; when set the row renders the image instead of the label
+   *  text (falling back to the label if the image is absent). Mirrors the estate
+   *  apps' image picker. */
+  image?: string;
 }
 
 export interface SelectModalProps<T = string> {
@@ -89,6 +93,19 @@ const Label = styled.span`
   border-bottom: 1px solid #eee;
 `;
 
+// Image-option variant (estate logo picker): centre the logo in the row.
+const ImageLabel = styled(Label)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const OptionImage = styled.img`
+  max-height: 56px;
+  max-width: 100%;
+  object-fit: contain;
+`;
+
 // Cancel reads as a distinct branded action below the list.
 const Cancel = styled.button<{ $borderRadius?: string; $vpad?: string }>`
   appearance: none;
@@ -153,7 +170,9 @@ function SelectModalContent<T extends string | number = string>({
               key={String(option.value)}
               type="button"
               disabled={option.disabled}
-              $selected={selected}
+              // Image rows keep the plain white background (like the estate apps'
+              // logo list); only text rows get the selected fill/weight.
+              $selected={selected && !option.image}
               $selectedBg={optionSelectedBackground}
               $selectedColor={optionSelectedColor}
               $selectedWeight={optionSelectedFontWeight}
@@ -162,7 +181,13 @@ function SelectModalContent<T extends string | number = string>({
                 onClose();
               }}
             >
-              <Label>{option.label}</Label>
+              {option.image ? (
+                <ImageLabel>
+                  <OptionImage src={option.image} alt={option.label} />
+                </ImageLabel>
+              ) : (
+                <Label>{option.label}</Label>
+              )}
             </Row>
           );
         })}

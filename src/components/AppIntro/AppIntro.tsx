@@ -54,12 +54,15 @@ export interface AppIntroVehicle {
 /**
  * Estate option for the address slide. `estateName` is shown in the picker;
  * the optional locality fields auto-fill the address when the estate is chosen.
+ * When `imageUrl` is set, the picker renders the estate's logo instead of its
+ * name (matching the mobile app's image-based property picker).
  */
 export interface AppIntroEstate {
   estateName: string;
   suburb?: string;
   city?: string;
   code?: string;
+  imageUrl?: string;
 }
 
 /** Terms & Privacy content for the final slide (typically CMS-provided HTML). */
@@ -541,7 +544,7 @@ function AppIntroContent({
 
   const slide = slides[activeIndex];
   const estateOptions: SelectOption[] = useMemo(
-    () => estates.map((e) => ({ label: e.estateName, value: e.estateName })),
+    () => estates.map((e) => ({ label: e.estateName, value: e.estateName, image: e.imageUrl })),
     [estates],
   );
   const showOverlay = loading || busy;

@@ -87,6 +87,13 @@ export const Anch: Story = {
   ],
   args: {
     slides: ANCH_SLIDES,
+    // anch's property picker shows estate logos (imageUrl) instead of names.
+    estates: [
+      { estateName: 'Anch', suburb: 'Nuland', city: 'Nuland', code: '5391LR', imageUrl: 'https://picsum.photos/seed/anch-logo/220/56' },
+      { estateName: 'Domin', suburb: 'Amsterdam', city: 'Amsterdam', code: '1083HK', imageUrl: 'https://picsum.photos/seed/domin-logo/220/56' },
+      { estateName: 'Fort Isabella', suburb: 'Vught', city: 'Vught', code: '5264pc', imageUrl: 'https://picsum.photos/seed/fort-logo/220/56' },
+      { estateName: 'LeClub', suburb: 'Amsterdam', city: 'Amsterdam', code: '1066VH', imageUrl: 'https://picsum.photos/seed/leclub-logo/220/56' },
+    ],
     welcomeImage: 'https://picsum.photos/seed/anch-welcome/480/360',
     informationFields: ['firstName', 'lastName'],
     // anch keeps all five contact fields; shown explicitly to demo the controller.

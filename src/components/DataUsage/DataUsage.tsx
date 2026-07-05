@@ -13,10 +13,12 @@ import { Brand, BrandScope } from '../../theme/brands';
 export interface DataUsageColors {
   /** Accept button background. */
   accept?: string;
-  /** Decline button background + warning text. */
+  /** Decline button background. */
   decline?: string;
   /** Heading + body content text. */
   text?: string;
+  /** Warning line text (defaults to the decline colour). */
+  warning?: string;
 }
 
 export interface DataUsageProps {
@@ -38,6 +40,24 @@ export interface DataUsageProps {
   onDecline: () => void;
   /** Colour overrides; unset values fall back to the theme (balwin by default). */
   colors?: DataUsageColors;
+  /** Modal card corner radius (default '15px'; pass '0' for square-cornered brands). */
+  borderRadius?: string;
+  /** Button corner radius (default '8px'; pass '0' for square corners). */
+  buttonBorderRadius?: string;
+  /** Heading font size (default '18px'). */
+  titleFontSize?: string;
+  /** Body content font size (default '12px'). */
+  bodyFontSize?: string;
+  /** Warning line font size (default '13px'). */
+  warningFontSize?: string;
+  /** Warning line font weight (default 700). */
+  warningFontWeight?: number | string;
+  /** Button label font size (default '16px'). */
+  buttonFontSize?: string;
+  /** Max width of each button (default '130px'; pass 'none' for full-width split). */
+  buttonMaxWidth?: string;
+  /** When set, buttons size by vertical padding instead of the fixed 50px height. */
+  buttonPaddingVertical?: string;
   /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
   brand?: Brand;
 }
@@ -52,11 +72,21 @@ function DataUsageContent({
   onAccept,
   onDecline,
   colors,
+  borderRadius = '15px',
+  buttonBorderRadius = '8px',
+  titleFontSize = '18px',
+  bodyFontSize = '12px',
+  warningFontSize = '13px',
+  warningFontWeight = 700,
+  buttonFontSize = '16px',
+  buttonMaxWidth = '130px',
+  buttonPaddingVertical,
 }: DataUsageProps) {
   const t = useResolvedTheme();
   const accept = colors?.accept ?? t.colors.success;
   const decline = colors?.decline ?? t.colors.danger;
   const textColor = colors?.text ?? t.colors.text;
+  const warningColor = colors?.warning ?? decline;
   const fontFamily = t.typography.fontFamily;
 
   useEffect(() => {
@@ -73,21 +103,39 @@ function DataUsageContent({
   // Portal to <body> so the modal escapes any ancestor stacking/transform context.
   return createPortal(
     <Backdrop>
-      <Modal style={{ fontFamily }}>
-        <Title color={textColor}>{heading}</Title>
-        <Content style={{ color: textColor }} dangerouslySetInnerHTML={{ __html: content }} />
-        <Text
-          variant="bodyBold"
-          color={decline}
-          style={{ textAlign: 'center', marginTop: 10, fontSize: 13, lineHeight: '18px' }}
-        >
+      <Modal style={{ fontFamily }} $radius={borderRadius}>
+        <Title color={textColor} style={{ fontSize: titleFontSize }}>
+          {heading}
+        </Title>
+        <Content
+          $bodyFontSize={bodyFontSize}
+          style={{ color: textColor }}
+          dangerouslySetInnerHTML={{ __html: content }}
+        />
+        <Warning $color={warningColor} $fontSize={warningFontSize} $weight={warningFontWeight}>
           {warning}
-        </Text>
+        </Warning>
         <Buttons>
-          <ActionButton type="button" onClick={onDecline} style={{ backgroundColor: decline, marginRight: 15, fontFamily }}>
+          <ActionButton
+            type="button"
+            onClick={onDecline}
+            $radius={buttonBorderRadius}
+            $maxWidth={buttonMaxWidth}
+            $padV={buttonPaddingVertical}
+            $fontSize={buttonFontSize}
+            style={{ backgroundColor: decline, marginRight: 15, fontFamily }}
+          >
             {declineLabel}
           </ActionButton>
-          <ActionButton type="button" onClick={onAccept} style={{ backgroundColor: accept, fontFamily }}>
+          <ActionButton
+            type="button"
+            onClick={onAccept}
+            $radius={buttonBorderRadius}
+            $maxWidth={buttonMaxWidth}
+            $padV={buttonPaddingVertical}
+            $fontSize={buttonFontSize}
+            style={{ backgroundColor: accept, fontFamily }}
+          >
             {acceptLabel}
           </ActionButton>
         </Buttons>
@@ -122,12 +170,12 @@ const Backdrop = styled.div`
   padding: 16px;
 `;
 
-const Modal = styled.div`
+const Modal = styled.div<{ $radius: string }>`
   width: 90%;
   max-width: 480px;
   height: 80%;
   background: #fff;
-  border-radius: 15px;
+  border-radius: ${({ $radius }) => $radius};
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -139,7 +187,7 @@ const Title = styled(Text)`
   margin-bottom: 10px;
 `;
 
-const Content = styled.div`
+const Content = styled.div<{ $bodyFontSize: string }>`
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
@@ -149,13 +197,22 @@ const Content = styled.div`
   * {
     max-width: 100%;
     box-sizing: border-box;
-    font-size: 12px !important;
-    line-height: 16px !important;
+    font-size: ${({ $bodyFontSize }) => $bodyFontSize} !important;
+    line-height: 1.4 !important;
   }
 
   p {
     margin: 3px 0;
   }
+`;
+
+const Warning = styled.div<{ $color: string; $fontSize: string; $weight: number | string }>`
+  text-align: center;
+  margin-top: 10px;
+  font-size: ${({ $fontSize }) => $fontSize};
+  line-height: 1.4;
+  font-weight: ${({ $weight }) => $weight};
+  color: ${({ $color }) => $color};
 `;
 
 const Buttons = styled.div`
@@ -165,14 +222,20 @@ const Buttons = styled.div`
   margin-top: 20px;
 `;
 
-const ActionButton = styled.button`
+const ActionButton = styled.button<{
+  $radius: string;
+  $maxWidth: string;
+  $padV?: string;
+  $fontSize: string;
+}>`
   flex: 1;
-  max-width: 130px;
-  height: 50px;
+  max-width: ${({ $maxWidth }) => $maxWidth};
+  height: ${({ $padV }) => ($padV ? 'auto' : '50px')};
+  padding: ${({ $padV }) => ($padV ? `${$padV} 0` : '0')};
   border: none;
-  border-radius: 8px;
+  border-radius: ${({ $radius }) => $radius};
   color: #fff;
-  font-size: 16px;
+  font-size: ${({ $fontSize }) => $fontSize};
   font-weight: 600;
   cursor: pointer;
 `;

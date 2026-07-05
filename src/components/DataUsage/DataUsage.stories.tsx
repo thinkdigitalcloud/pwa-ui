@@ -33,3 +33,22 @@ export const CustomColors: Story = {
     colors: { accept: '#2E7D32', decline: '#C00018' },
   },
 };
+
+/**
+ * anch look: square corners (radius 0), navy Accept + pink Decline, dark heading
+ * & warning, smaller title, larger body, and tighter button vertical padding.
+ */
+export const Anch: Story = {
+  args: {
+    colors: { accept: '#11016e', decline: '#d81e5b', text: '#111', warning: '#111' },
+    borderRadius: '0',
+    buttonBorderRadius: '0',
+    titleFontSize: '25px',
+    bodyFontSize: '16px',
+    warningFontSize: '15px',
+    warningFontWeight: 400,
+    buttonFontSize: '15px',
+    buttonMaxWidth: 'none',
+    buttonPaddingVertical: '11px',
+  },
+};

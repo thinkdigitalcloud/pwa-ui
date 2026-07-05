@@ -102,6 +102,11 @@ function LabeledFieldContent({
   const resolvedTextColor = textColor ?? theme.colors.text;
   const resolvedFont = font ?? theme.typography.fontFamily;
   const isSelect = Array.isArray(options) && options.length > 0;
+  // Show the selected option's label (values can differ from labels, e.g. a
+  // language code vs its display name); fall back to the raw value.
+  const selectedLabel = isSelect
+    ? options!.find((o) => String(o.value) === String(value))?.label ?? value
+    : value;
 
   return (
     <FieldContainer $noDivider={!!noDivider} $divider={dividerColor ?? theme.colors.lightGrey}>
@@ -118,7 +123,7 @@ function LabeledFieldContent({
             style={{ color: resolvedTextColor, fontFamily: resolvedFont, ...valueStyle }}
             onClick={() => setOpen(true)}
           >
-            {value || placeholder || ''}
+            {selectedLabel || placeholder || ''}
           </SelectTrigger>
           <SelectModal
             open={open}

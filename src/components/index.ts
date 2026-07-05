@@ -41,6 +41,7 @@ export * from './OtpInput';
 export * from './ProfileListPage';
 export * from './PersonalInformation';
 export * from './FormField';
+export * from './LabeledField';
 export * from './ProfileForm';
 export * from './SelectTile';
 export * from './SelectUnit';

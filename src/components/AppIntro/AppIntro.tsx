@@ -5,7 +5,8 @@ import { PiUserCirclePlus } from 'react-icons/pi';
 import { Text } from '../Text';
 import { Page } from '../Page';
 import { Toggle } from '../Toggle';
-import { SelectModal, type SelectOption } from '../SelectModal';
+import { type SelectOption } from '../SelectModal';
+import { LabeledField } from '../LabeledField';
 import { Spinner } from '../Spinner';
 import { type CancelButtonSize } from '../../utils/cancelButtonSize';
 import { useResolvedTheme } from '../../theme/useResolvedTheme';
@@ -821,15 +822,16 @@ interface FieldInputProps {
 
 function FieldInput({ label, value, onChange, labelColor, textColor, font, maxLength }: FieldInputProps) {
   return (
-    <FieldContainer>
-      <FieldLabelText color={labelColor}>{label}</FieldLabelText>
-      <StyledInput
-        value={value || ''}
-        maxLength={maxLength}
-        onChange={(e) => onChange(e.target.value)}
-        style={{ color: textColor, fontFamily: font }}
-      />
-    </FieldContainer>
+    <LabeledField
+      label={label}
+      value={value}
+      onChange={onChange}
+      maxLength={maxLength}
+      labelColor={labelColor}
+      textColor={textColor}
+      font={font}
+      dividerColor="#eee"
+    />
   );
 }
 
@@ -848,45 +850,21 @@ interface FieldSelectProps {
 }
 
 function FieldSelect({ label, title, placeholder, value, options, onSelect, labelColor, textColor, font, disabled, selectModal }: FieldSelectProps) {
-  const [open, setOpen] = useState(false);
   return (
-    <FieldContainer>
-      <FieldLabelText color={labelColor}>{label}</FieldLabelText>
-      <SelectTrigger
-        type="button"
-        disabled={disabled}
-        $placeholder={!value}
-        style={{ color: textColor, fontFamily: font }}
-        onClick={() => setOpen(true)}
-      >
-        {value || placeholder}
-      </SelectTrigger>
-      <SelectModal
-        open={open}
-        onClose={() => setOpen(false)}
-        title={title}
-        options={options}
-        value={value}
-        onSelect={onSelect}
-        cancelLabel="Cancel"
-        borderRadius={selectModal?.borderRadius}
-        cancelBorderRadius={selectModal?.cancelBorderRadius}
-        optionSelectedBackground={selectModal?.optionSelectedBackground}
-        optionSelectedColor={selectModal?.optionSelectedColor}
-        optionSelectedFontWeight={selectModal?.optionSelectedFontWeight}
-        cancelButtonSize={selectModal?.cancelButtonSize}
-      />
-    </FieldContainer>
-  );
-}
-
-function FieldLabelText({ color, children }: { color: string; children: React.ReactNode }) {
-  // RN field labels use getProfileLabelTextStyle: 14px, regular (FONT_WEIGHT_BODY
-  // 400) — NOT bold. (Was bodyBold/12 which read too small & too heavy.)
-  return (
-    <Text variant="body" color={color} style={{ fontSize: 14, fontWeight: 400 }}>
-      {children}
-    </Text>
+    <LabeledField
+      label={label}
+      value={value}
+      options={options}
+      onSelect={onSelect}
+      selectTitle={title}
+      placeholder={placeholder}
+      labelColor={labelColor}
+      textColor={textColor}
+      font={font}
+      disabled={disabled}
+      selectModal={selectModal}
+      dividerColor="#eee"
+    />
   );
 }
 
@@ -932,45 +910,6 @@ const Form = styled.div`
   display: flex;
   flex-direction: column;
   margin-top: 15px;
-`;
-
-const FieldContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding-top: 12px;
-  padding-bottom: 6px;
-  border-bottom: 1px solid #eee;
-`;
-
-const StyledInput = styled.input`
-  width: 100%;
-  background: transparent;
-  border: none;
-  outline: none;
-  padding: 4px 0;
-  /* Field values: 16px, medium weight (not bold). */
-  font-size: 16px;
-  font-weight: 400;
-`;
-
-const SelectTrigger = styled.button<{ $placeholder: boolean }>`
-  width: 100%;
-  box-sizing: border-box;
-  background: transparent;
-  border: none;
-  outline: none;
-  padding: 4px 0;
-  /* Match the input value typography (16px, medium weight — not bold). */
-  font-size: 16px;
-  font-weight: 400;
-  text-align: left;
-  cursor: pointer;
-  opacity: ${({ $placeholder }) => ($placeholder ? 0.55 : 1)};
-
-  &:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
 `;
 
 const NoteContainer = styled.div`

@@ -105,13 +105,21 @@ export const lightTheme = createTheme('light', {
   bottomActive: '#133C63',
 });
 
-/** anch-pwa — warm taupe brand. */
-export const anchTheme = createTheme('anch', {
+/** anch-pwa — warm taupe brand. Square everywhere (0 radius) and the picker's
+ *  selected row is filled with the secondary (grey) colour rather than primary. */
+const anchBase = createTheme('anch', {
   primary: '#7B7566',
   secondary: '#58748C',
   bottomActive: '#7B7566',
   onlineGradient: ['#7B7566', '#7B7566'],
 });
+export const anchTheme: AppTheme = {
+  ...anchBase,
+  colors: { ...anchBase.colors, selected: anchBase.colors.secondary },
+  button: { ...anchBase.button, borderRadius: '0' },
+  // Square cards/buttons/modals; keep `pill` for toggles + rounded avatars.
+  radii: { ...anchBase.radii, sm: '0', md: '0', lg: '0' },
+};
 
 /** balwin-app-pwa — navy + green/red accents. */
 export const balwinTheme = createTheme('balwin', {

@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import { Modal } from '../Modal';
 import { Brand, BrandScope } from '../../theme/brands';
 import { CancelButtonSize, cancelButtonVPadding } from '../../utils/cancelButtonSize';
@@ -65,7 +65,7 @@ const Row = styled.button<{
   font-weight: ${({ $selected, $selectedWeight, theme }) =>
     $selected ? $selectedWeight ?? theme.typography.weightBold : theme.typography.weightBody};
   background: ${({ $selected, $selectedBg, theme }) =>
-    $selected ? $selectedBg ?? theme.colors.primary : 'transparent'};
+    $selected ? $selectedBg ?? theme.colors.selected ?? theme.colors.primary : 'transparent'};
   color: ${({ $selected, $selectedColor, theme }) =>
     $selected ? $selectedColor ?? theme.colors.textInverse : theme.colors.text};
   cursor: pointer;
@@ -77,7 +77,7 @@ const Row = styled.button<{
   ${({ $selected }) => ($selected ? 'span { border-bottom: none; }' : '')}
   &:hover:not(:disabled) {
     background: ${({ $selected, $selectedBg, theme }) =>
-      $selected ? $selectedBg ?? theme.colors.primary : 'rgba(0, 0, 0, 0.04)'};
+      $selected ? $selectedBg ?? theme.colors.selected ?? theme.colors.primary : 'rgba(0, 0, 0, 0.04)'};
   }
   &:disabled {
     opacity: 0.4;
@@ -110,7 +110,7 @@ const OptionImage = styled.img`
 const Cancel = styled.button<{ $borderRadius?: string; $vpad?: string }>`
   appearance: none;
   border: none;
-  border-radius: ${({ $borderRadius }) => $borderRadius ?? '4px'};
+  border-radius: ${({ $borderRadius, theme }) => $borderRadius ?? theme.radii.sm};
   width: 90%;
   align-self: center;
   margin: 8px auto 0;
@@ -140,6 +140,7 @@ function SelectModalContent<T extends string | number = string>({
   optionSelectedColor,
   optionSelectedFontWeight,
 }: SelectModalProps<T>) {
+  const theme = useTheme();
   return (
     <Modal
       open={open}
@@ -147,7 +148,7 @@ function SelectModalContent<T extends string | number = string>({
       title={title}
       centerTitle
       closeButtonColor="#000"
-      borderRadius={borderRadius ?? '5px'}
+      borderRadius={borderRadius ?? theme.radii.sm}
       bodyPadding="0"
       footer={
         cancelLabel ? (

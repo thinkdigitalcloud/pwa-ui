@@ -20,6 +20,9 @@ export interface ThemeColors {
   primaryDisabled: string;
   secondary: string;
   secondaryDisabled: string;
+  /** Fill for a selected picker row (SelectModal). Defaults to `primary` when unset;
+   *  brands whose native selection colour differs (anch → secondary/grey) set this. */
+  selected?: string;
 
   /** Page background. */
   background: string;

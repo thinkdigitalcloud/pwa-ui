@@ -22,6 +22,8 @@ export interface HeaderAction {
 
 export interface HeaderProps {
   title: string;
+  /** Title font weight (default 700). Pass 400 for regular. */
+  titleFontWeight?: number | string;
   /** Hide the back button (shown by default). */
   noBackButton?: boolean;
   onBack?: () => void;
@@ -61,11 +63,11 @@ const Bar = styled.header<{ $shadow: boolean }>`
   z-index: 100;
 `;
 
-const Title = styled.h1`
+const Title = styled.h1<{ $weight: number | string }>`
   margin: 0;
   text-align: center;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: ${({ $weight }) => $weight};
   color: ${({ theme }) => theme.headerOptionTextColor || theme.header.text};
   font-family: ${({ theme }) => theme.typography.fontFamilyHeading};
   white-space: nowrap;
@@ -104,6 +106,7 @@ const IconButton = styled.button<{ $color?: string }>`
 
 function HeaderContent({
   title,
+  titleFontWeight = 700,
   noBackButton = false,
   onBack,
   removeShadow = false,
@@ -145,7 +148,7 @@ function HeaderContent({
           </IconButton>
         )}
       </Side>
-      <Title>{title}</Title>
+      <Title $weight={titleFontWeight}>{title}</Title>
       <Side $align="end">
         {rightActions.map((action) => (
           <IconButton

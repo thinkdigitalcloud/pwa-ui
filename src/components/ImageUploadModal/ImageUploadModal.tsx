@@ -42,6 +42,13 @@ export interface ImageUploadModalProps {
   cancelLabel?: string;
   /** Cancel button padding size (small/medium/large → 8/12/16px vertical). */
   cancelButtonSize?: CancelButtonSize;
+  /** Card corner radius (default '24px'). Pass '0' for square-cornered brands. */
+  borderRadius?: string;
+  /** Cancel button corner radius (default '25px'). Pass '0' for square corners. */
+  cancelBorderRadius?: string;
+  /** Cancel button background (default: theme danger). Pass theme primary for a
+   *  brand-coloured (e.g. black) cancel. */
+  cancelColor?: string;
   /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
   brand?: Brand;
 }
@@ -60,6 +67,9 @@ function ImageUploadModalContent({
   galleryLabel = 'Gallery',
   cancelLabel = 'CANCEL',
   cancelButtonSize,
+  borderRadius,
+  cancelBorderRadius,
+  cancelColor,
 }: ImageUploadModalProps) {
   const theme = useTheme();
   const [mode, setMode] = useState<'chooser' | 'camera'>('chooser');
@@ -159,7 +169,7 @@ function ImageUploadModalContent({
   };
 
   return (
-    <Modal open={open} onClose={onClose} hideCloseButton borderRadius="24px" bodyPadding="0">
+    <Modal open={open} onClose={onClose} hideCloseButton borderRadius={borderRadius ?? '24px'} bodyPadding="0">
       {mode === 'camera' ? (
         <Camera>
           <Video ref={videoRef} autoPlay playsInline muted $mirror={facing === 'user'} />
@@ -199,7 +209,7 @@ function ImageUploadModalContent({
             )}
           </Options>
           <input ref={fileRef} type="file" accept={accept} style={{ display: 'none' }} onChange={onFileChange} />
-          <CancelButton type="button" $bg={theme.colors.danger} $vpad={cancelButtonVPadding(cancelButtonSize)} disabled={isLoading} onClick={onClose}>
+          <CancelButton type="button" $bg={cancelColor ?? theme.colors.danger} $radius={cancelBorderRadius} $vpad={cancelButtonVPadding(cancelButtonSize)} disabled={isLoading} onClick={onClose}>
             {isLoading ? <Spinner size={18} color="#fff" /> : <IoClose size={22} color="#fff" />}
             <CancelText>{cancelLabel}</CancelText>
           </CancelButton>
@@ -264,7 +274,7 @@ const OptionLabel = styled.span<{ $color: string }>`
   color: ${({ $color }) => $color};
 `;
 
-const CancelButton = styled.button<{ $bg: string; $vpad?: string }>`
+const CancelButton = styled.button<{ $bg: string; $vpad?: string; $radius?: string }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -273,7 +283,7 @@ const CancelButton = styled.button<{ $bg: string; $vpad?: string }>`
   margin-top: 20px;
   padding: ${({ $vpad }) => $vpad ?? '15px'} 0;
   border: none;
-  border-radius: 25px;
+  border-radius: ${({ $radius }) => $radius ?? '25px'};
   background: ${({ $bg }) => $bg};
   color: #fff;
   cursor: pointer;

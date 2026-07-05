@@ -160,6 +160,19 @@ export interface AppIntroSelectModalStyle {
   cancelButtonSize?: CancelButtonSize;
 }
 
+/** Per-state colours for the Privacy-Policy accept switch, matching each brand's
+ *  native switch (anch: navy knob on a light-grey track). */
+export interface AppIntroToggleStyle {
+  /** Knob colour when accepted/on (default: theme knob). */
+  thumbColorOn?: string;
+  /** Knob colour when off (default: theme knob). */
+  thumbColorOff?: string;
+  /** Track colour when accepted/on (default: colors.success / theme success). */
+  trackColorOn?: string;
+  /** Track colour when off (default: theme grey). */
+  trackColorOff?: string;
+}
+
 /** The complete payload emitted by `onComplete`. */
 export interface AppIntroNavLabels {
   back?: string;
@@ -225,6 +238,11 @@ export interface AppIntroProps {
   /** Lock the estate picker when addressType is "Work" (balwin pins a corporate
    *  estate for Work addresses). Default true; set false to keep it editable. */
   lockEstateForWork?: boolean;
+  /** Corner radius for the Privacy-Policy slide cards (default '10px'). Pass '0'
+   *  for square-cornered brands (anch). */
+  policyCardBorderRadius?: string;
+  /** Colours for the Privacy-Policy accept switch (per-state knob + track). */
+  policyToggle?: AppIntroToggleStyle;
 
   /** Called with the collected data when the user finishes the wizard. */
   onComplete: (data: AppIntroData) => void | Promise<void>;
@@ -332,6 +350,8 @@ function AppIntroContent({
   colors,
   selectModal,
   lockEstateForWork = true,
+  policyCardBorderRadius,
+  policyToggle,
   onComplete,
   onStepChange,
 }: AppIntroProps) {
@@ -707,23 +727,33 @@ function AppIntroContent({
 
           {slide.form === 'policy' && (
             <Form>
-              <PolicyCard>
+              <PolicyCard $radius={policyCardBorderRadius}>
                 <Text color={cardHeading} style={{ fontSize: 16, fontWeight: 400 }}>
                   {policy.termsHeading}
                 </Text>
                 <CardScroll style={{ color: cardText }} dangerouslySetInnerHTML={{ __html: policy.termsContent }} />
               </PolicyCard>
-              <PolicyCard>
+              <PolicyCard $radius={policyCardBorderRadius}>
                 <Text color={cardHeading} style={{ fontSize: 16, fontWeight: 400 }}>
                   {policy.privacyHeading}
                 </Text>
                 <CardScroll style={{ color: cardText }} dangerouslySetInnerHTML={{ __html: policy.privacyContent }} />
               </PolicyCard>
-              <AcceptCard>
+              <AcceptCard $radius={policyCardBorderRadius}>
                 <Text color={cardText} style={{ flex: 1, paddingRight: 10 }}>
                   {policy.acceptButtonText}
                 </Text>
-                <Toggle value={acceptedPolicy} onChange={setAcceptedPolicy} trackColor={{ true: success }} aria-label="Accept terms and privacy policy" />
+                <Toggle
+                  value={acceptedPolicy}
+                  onChange={setAcceptedPolicy}
+                  thumbColor={
+                    policyToggle
+                      ? { true: policyToggle.thumbColorOn, false: policyToggle.thumbColorOff }
+                      : undefined
+                  }
+                  trackColor={{ true: policyToggle?.trackColorOn ?? success, false: policyToggle?.trackColorOff }}
+                  aria-label="Accept terms and privacy policy"
+                />
               </AcceptCard>
             </Form>
           )}
@@ -961,11 +991,11 @@ const SwitchRow = styled.div`
   margin-top: 10px;
 `;
 
-const PolicyCard = styled.div`
+const PolicyCard = styled.div<{ $radius?: string }>`
   width: 100%;
   box-sizing: border-box;
   background: #fff;
-  border-radius: 10px;
+  border-radius: ${({ $radius }) => $radius ?? '10px'};
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
   padding: 15px;
   margin-top: 15px;
@@ -1003,13 +1033,13 @@ const CardScroll = styled.div`
   }
 `;
 
-const AcceptCard = styled.div`
+const AcceptCard = styled.div<{ $radius?: string }>`
   display: flex;
   align-items: center;
   width: 100%;
   box-sizing: border-box;
   background: #fff;
-  border-radius: 10px;
+  border-radius: ${({ $radius }) => $radius ?? '10px'};
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
   padding: 10px 15px;
   margin-top: 15px;

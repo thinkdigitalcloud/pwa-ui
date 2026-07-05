@@ -6,8 +6,9 @@ export interface ToggleProps {
   onChange: (value: boolean) => void;
   disabled?: boolean;
   'aria-label'?: string;
-  /** Knob colour override (the estate apps' `thumbColor`). */
-  thumbColor?: string;
+  /** Knob colour override (the estate apps' `thumbColor`). A single colour, or
+   *  per-state `{ true, false }` (the apps use a different knob colour on/off). */
+  thumbColor?: string | { true?: string; false?: string };
   /** Track colour overrides per state (the estate apps' `trackColor`). */
   trackColor?: { true?: string; false?: string };
   /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
@@ -54,6 +55,12 @@ function ToggleContent({
   thumbColor,
   trackColor,
 }: ToggleProps) {
+  const knobColor =
+    typeof thumbColor === 'string' || thumbColor === undefined
+      ? thumbColor
+      : value
+        ? thumbColor.true
+        : thumbColor.false;
   return (
     <Track
       type="button"
@@ -67,7 +74,7 @@ function ToggleContent({
       disabled={disabled}
       onClick={() => onChange(!value)}
     >
-      <Knob $on={value} $color={thumbColor} />
+      <Knob $on={value} $color={knobColor} />
     </Track>
   );
 }

@@ -123,5 +123,14 @@ export const Anch: Story = {
     },
     // anch's estate is freely editable (RN AddressForm doesn't pin it for Work).
     lockEstateForWork: false,
+    // anch privacy-policy cards are square (0 radius).
+    policyCardBorderRadius: '0px',
+    // anch accept switch: navy knob on a light-grey track (matches the mobile app).
+    policyToggle: {
+      thumbColorOn: '#11016e',
+      thumbColorOff: '#e7e7e7',
+      trackColorOn: '#eee',
+      trackColorOff: '#a9a9a9',
+    },
   },
 };

@@ -46,7 +46,7 @@ const Chip = styled.span`
   width: 34px;
   height: 34px;
   margin: 2px;
-  border-radius: 8px;
+  border-radius: ${({ theme }) => theme.radii.md};
   background: ${({ theme }) => theme.profileIconBackground || theme.tile.iconBackground};
   box-shadow: rgba(0, 0, 0, 0.25) 0px 2px 3.84px;
   overflow: hidden;

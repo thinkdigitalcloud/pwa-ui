@@ -16,6 +16,8 @@ export interface PreferenceToggleRowProps {
   noDivider?: boolean;
   /** Extra left padding (px) added to the base inset — indents the label. */
   indent?: number;
+  /** When set, the label becomes tappable (e.g. to open an edit modal). */
+  onLabelClick?: () => void;
   /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
   brand?: Brand;
 }
@@ -29,11 +31,18 @@ function PreferenceToggleRowContent({
   trackColor,
   noDivider = false,
   indent = 0,
+  onLabelClick,
 }: PreferenceToggleRowProps) {
   const theme = useTheme();
   return (
     <Row $divider={theme.colors.lightGrey} $noDivider={noDivider} $indent={indent}>
-      <Text color={theme.colors.text}>{label}</Text>
+      <Text
+        color={theme.colors.text}
+        onClick={onLabelClick}
+        style={onLabelClick ? { cursor: 'pointer' } : undefined}
+      >
+        {label}
+      </Text>
       <Toggle
         value={value}
         disabled={disabled}

@@ -48,6 +48,7 @@ export const Anch: Story = {
     bodyFontSize: '16px',
     warningFontSize: '15px',
     warningFontWeight: 400,
+    warningTextAlign: 'left',
     buttonFontSize: '15px',
     buttonFontWeight: 400,
     buttonMaxWidth: 'none',

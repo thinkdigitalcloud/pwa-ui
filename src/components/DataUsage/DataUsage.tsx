@@ -54,6 +54,8 @@ export interface DataUsageProps {
   warningFontSize?: string;
   /** Warning line font weight (default 700). */
   warningFontWeight?: number | string;
+  /** Warning line text alignment: 'left' | 'center' | 'right' (default 'center'). */
+  warningTextAlign?: 'left' | 'center' | 'right';
   /** Button label font size (default '16px'). */
   buttonFontSize?: string;
   /** Button label font weight (default 600). Pass 400 for regular. */
@@ -83,6 +85,7 @@ function DataUsageContent({
   bodyFontSize = '12px',
   warningFontSize = '13px',
   warningFontWeight = 700,
+  warningTextAlign = 'center',
   buttonFontSize = '16px',
   buttonFontWeight = 600,
   buttonMaxWidth = '130px',
@@ -118,7 +121,12 @@ function DataUsageContent({
           style={{ color: textColor }}
           dangerouslySetInnerHTML={{ __html: content }}
         />
-        <Warning $color={warningColor} $fontSize={warningFontSize} $weight={warningFontWeight}>
+        <Warning
+          $color={warningColor}
+          $fontSize={warningFontSize}
+          $weight={warningFontWeight}
+          $align={warningTextAlign}
+        >
           {warning}
         </Warning>
         <Buttons>
@@ -212,10 +220,19 @@ const Content = styled.div<{ $bodyFontSize: string }>`
   p {
     margin: 3px 0;
   }
+
+  ul {
+    padding-left: 15px;
+  }
 `;
 
-const Warning = styled.div<{ $color: string; $fontSize: string; $weight: number | string }>`
-  text-align: center;
+const Warning = styled.div<{
+  $color: string;
+  $fontSize: string;
+  $weight: number | string;
+  $align: string;
+}>`
+  text-align: ${({ $align }) => $align};
   margin-top: 10px;
   font-size: ${({ $fontSize }) => $fontSize};
   line-height: 1.4;

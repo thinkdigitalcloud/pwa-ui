@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { Modal } from '../Modal';
 import { Brand, BrandScope } from '../../theme/brands';
+import { CancelButtonSize, cancelButtonVPadding } from '../../utils/cancelButtonSize';
 
 export interface SelectOption<T = string> {
   label: string;
@@ -22,6 +23,8 @@ export interface SelectModalProps<T = string> {
   borderRadius?: string;
   /** Cancel button corner radius (default '4px'). Pass '0' for square corners. */
   cancelBorderRadius?: string;
+  /** Cancel button padding size (small/medium/large → 8/12/16px vertical). */
+  cancelButtonSize?: CancelButtonSize;
   /** Selected row background (default: theme primary). */
   optionSelectedBackground?: string;
   /** Selected row text colour (default: theme textInverse). */
@@ -87,7 +90,7 @@ const Label = styled.span`
 `;
 
 // Cancel reads as a distinct branded action below the list.
-const Cancel = styled.button<{ $borderRadius?: string }>`
+const Cancel = styled.button<{ $borderRadius?: string; $vpad?: string }>`
   appearance: none;
   border: none;
   border-radius: ${({ $borderRadius }) => $borderRadius ?? '4px'};
@@ -96,7 +99,7 @@ const Cancel = styled.button<{ $borderRadius?: string }>`
   margin: 8px auto 0;
   display: block;
   text-align: center;
-  padding: 14px 10px;
+  padding: ${({ $vpad }) => $vpad ?? '14px'} 10px;
   font-size: 16px;
   font-weight: 700;
   font-family: ${({ theme }) => theme.typography.fontFamily};
@@ -115,6 +118,7 @@ function SelectModalContent<T extends string | number = string>({
   cancelLabel,
   borderRadius,
   cancelBorderRadius,
+  cancelButtonSize,
   optionSelectedBackground,
   optionSelectedColor,
   optionSelectedFontWeight,
@@ -130,7 +134,12 @@ function SelectModalContent<T extends string | number = string>({
       bodyPadding="0"
       footer={
         cancelLabel ? (
-          <Cancel type="button" $borderRadius={cancelBorderRadius} onClick={onClose}>
+          <Cancel
+            type="button"
+            $borderRadius={cancelBorderRadius}
+            $vpad={cancelButtonVPadding(cancelButtonSize)}
+            onClick={onClose}
+          >
             {cancelLabel}
           </Cancel>
         ) : undefined

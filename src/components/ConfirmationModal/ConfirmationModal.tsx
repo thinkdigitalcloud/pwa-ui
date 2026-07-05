@@ -6,6 +6,7 @@ import { Button } from '../Button';
 import { Text } from '../Text';
 import { useResolvedTheme } from '../../theme/useResolvedTheme';
 import { Brand, BrandScope } from '../../theme/brands';
+import { CancelButtonSize, cancelButtonPaddingStyle } from '../../utils/cancelButtonSize';
 
 export interface ConfirmationModalProps {
   open: boolean;
@@ -26,6 +27,8 @@ export interface ConfirmationModalProps {
   confirmColor?: string;
   /** Cancel button colour; defaults to the theme danger. */
   cancelColor?: string;
+  /** Cancel button padding size (small/medium/large → 8/12/16px vertical). */
+  cancelButtonSize?: CancelButtonSize;
   /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
   brand?: Brand;
 }
@@ -40,6 +43,7 @@ function ConfirmationModalContent({
   icon = 'question',
   confirmColor,
   cancelColor,
+  cancelButtonSize,
 }: ConfirmationModalProps) {
   const theme = useResolvedTheme();
   const confirm = confirmColor ?? theme.colors.secondary;
@@ -59,7 +63,12 @@ function ConfirmationModalContent({
         </Text>
       </Centered>
       <FooterRow>
-        <Button text={cancelLabel} uppercase={false} onClick={onCancel} style={{ flex: 1, background: cancel }} />
+        <Button
+          text={cancelLabel}
+          uppercase={false}
+          onClick={onCancel}
+          style={{ flex: 1, background: cancel, ...cancelButtonPaddingStyle(cancelButtonSize) }}
+        />
         <Button text={confirmLabel} uppercase={false} onClick={onConfirm} style={{ flex: 1, background: confirm }} />
       </FooterRow>
     </Modal>

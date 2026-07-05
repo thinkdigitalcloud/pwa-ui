@@ -10,6 +10,7 @@ import {
 import { Modal } from '../Modal';
 import { Spinner } from '../Spinner';
 import { Brand, BrandScope } from '../../theme/brands';
+import { CancelButtonSize, cancelButtonVPadding } from '../../utils/cancelButtonSize';
 
 export type CameraFacing = 'user' | 'environment';
 
@@ -39,6 +40,8 @@ export interface ImageUploadModalProps {
   cameraLabel?: string;
   galleryLabel?: string;
   cancelLabel?: string;
+  /** Cancel button padding size (small/medium/large → 8/12/16px vertical). */
+  cancelButtonSize?: CancelButtonSize;
   /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
   brand?: Brand;
 }
@@ -56,6 +59,7 @@ function ImageUploadModalContent({
   cameraLabel = 'Camera',
   galleryLabel = 'Gallery',
   cancelLabel = 'CANCEL',
+  cancelButtonSize,
 }: ImageUploadModalProps) {
   const theme = useTheme();
   const [mode, setMode] = useState<'chooser' | 'camera'>('chooser');
@@ -195,7 +199,7 @@ function ImageUploadModalContent({
             )}
           </Options>
           <input ref={fileRef} type="file" accept={accept} style={{ display: 'none' }} onChange={onFileChange} />
-          <CancelButton type="button" $bg={theme.colors.danger} disabled={isLoading} onClick={onClose}>
+          <CancelButton type="button" $bg={theme.colors.danger} $vpad={cancelButtonVPadding(cancelButtonSize)} disabled={isLoading} onClick={onClose}>
             {isLoading ? <Spinner size={18} color="#fff" /> : <IoClose size={22} color="#fff" />}
             <CancelText>{cancelLabel}</CancelText>
           </CancelButton>
@@ -260,14 +264,14 @@ const OptionLabel = styled.span<{ $color: string }>`
   color: ${({ $color }) => $color};
 `;
 
-const CancelButton = styled.button<{ $bg: string }>`
+const CancelButton = styled.button<{ $bg: string; $vpad?: string }>`
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
   width: 100%;
   margin-top: 20px;
-  padding: 15px 0;
+  padding: ${({ $vpad }) => $vpad ?? '15px'} 0;
   border: none;
   border-radius: 25px;
   background: ${({ $bg }) => $bg};

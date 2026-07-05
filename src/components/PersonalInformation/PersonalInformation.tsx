@@ -7,6 +7,7 @@ import { Modal } from '../Modal';
 import { Text } from '../Text';
 import { OtpInput } from '../OtpInput';
 import { Brand, BrandScope } from '../../theme/brands';
+import { CancelButtonSize, cancelButtonPaddingStyle } from '../../utils/cancelButtonSize';
 
 /** Result of validating the delete-account OTP. */
 export type OtpResult = 'VERIFIED' | 'INCORRECT' | 'EXPIRED' | 'INVALID';
@@ -38,6 +39,8 @@ export interface PersonalInformationProps {
   header?: PageProps['header'];
   bottomNav?: PageProps['bottomNav'];
   backgroundColor?: string;
+  /** Cancel button padding size (small/medium/large → 8/12/16px vertical). */
+  cancelButtonSize?: CancelButtonSize;
   /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
   brand?: Brand;
 }
@@ -65,6 +68,7 @@ function PersonalInformationContent({
   header,
   bottomNav,
   backgroundColor,
+  cancelButtonSize,
 }: PersonalInformationProps) {
   const theme = useTheme();
   const danger = theme.colors.danger;
@@ -130,7 +134,7 @@ function PersonalInformationContent({
 
   const twoButtons = (onCancel: () => void, onOk: () => void, okLabel = 'Confirm') => (
     <FooterRow>
-      <Button text="Cancel" uppercase={false} onClick={onCancel} style={{ flex: 1, background: danger }} />
+      <Button text="Cancel" uppercase={false} onClick={onCancel} style={{ flex: 1, background: danger, ...cancelButtonPaddingStyle(cancelButtonSize) }} />
       <Button text={okLabel} uppercase={false} onClick={onOk} style={{ flex: 1, background: confirm }} />
     </FooterRow>
   );

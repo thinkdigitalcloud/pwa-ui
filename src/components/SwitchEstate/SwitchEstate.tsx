@@ -6,6 +6,7 @@ import { Page, type PageProps } from '../Page';
 import { Spinner } from '../Spinner';
 import { Text } from '../Text';
 import { Brand, BrandScope } from '../../theme/brands';
+import { CancelButtonSize, cancelButtonVPadding } from '../../utils/cancelButtonSize';
 
 /** An estate the user can switch into. */
 export interface SwitchEstateEstate {
@@ -56,6 +57,8 @@ export interface SwitchEstateProps {
   roleSheetTitle?: string;
   /** Cancel button label in the role sheet. */
   cancelLabel?: string;
+  /** Cancel button padding size (small/medium/large → 8/12/16px vertical). */
+  cancelButtonSize?: CancelButtonSize;
   /** Loading overlay label. */
   loadingLabel?: string;
 
@@ -107,6 +110,7 @@ function SwitchEstateContent({
   subtitle = null,
   roleSheetTitle = 'Select a role',
   cancelLabel = 'Cancel',
+  cancelButtonSize,
   loadingLabel = 'Loading',
   activeRoleColor = '#FBB019',
   checkColor,
@@ -201,6 +205,7 @@ function SwitchEstateContent({
             </RoleList>
             <CancelButton
               type="button"
+              $vpad={cancelButtonVPadding(cancelButtonSize)}
               style={{ backgroundColor: theme.colors.primary }}
               onClick={() => setRoleSheetOpen(false)}
             >
@@ -355,10 +360,11 @@ const RoleLabel = styled.span<{ $active: boolean }>`
   font-weight: ${({ $active }) => ($active ? 600 : 400)};
 `;
 
-const CancelButton = styled.button`
+const CancelButton = styled.button<{ $vpad?: string }>`
   width: 80%;
   align-self: center;
-  height: 46px;
+  height: ${({ $vpad }) => ($vpad ? 'auto' : '46px')};
+  padding: ${({ $vpad }) => ($vpad ? `${$vpad} 0` : '0')};
   border: none;
   border-radius: 10px;
   color: #fff;

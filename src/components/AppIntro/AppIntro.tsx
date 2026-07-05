@@ -7,6 +7,7 @@ import { Page } from '../Page';
 import { Toggle } from '../Toggle';
 import { SelectModal, type SelectOption } from '../SelectModal';
 import { Spinner } from '../Spinner';
+import { type CancelButtonSize } from '../../utils/cancelButtonSize';
 import { useResolvedTheme } from '../../theme/useResolvedTheme';
 import { Brand, BrandScope } from '../../theme/brands';
 
@@ -155,6 +156,8 @@ export interface AppIntroSelectModalStyle {
   optionSelectedColor?: string;
   /** Selected option row font weight (default: theme weightBold). Pass 400 for regular. */
   optionSelectedFontWeight?: number | string;
+  /** Cancel button padding size (small/medium/large → 8/12/16px vertical). */
+  cancelButtonSize?: CancelButtonSize;
 }
 
 /** The complete payload emitted by `onComplete`. */
@@ -219,6 +222,9 @@ export interface AppIntroProps {
   colors?: AppIntroColors;
   /** Style overrides for the option-picker modal (address type / estate). */
   selectModal?: AppIntroSelectModalStyle;
+  /** Lock the estate picker when addressType is "Work" (balwin pins a corporate
+   *  estate for Work addresses). Default true; set false to keep it editable. */
+  lockEstateForWork?: boolean;
 
   /** Called with the collected data when the user finishes the wizard. */
   onComplete: (data: AppIntroData) => void | Promise<void>;
@@ -325,6 +331,7 @@ function AppIntroContent({
   loading = false,
   colors,
   selectModal,
+  lockEstateForWork = true,
   onComplete,
   onStepChange,
 }: AppIntroProps) {
@@ -564,7 +571,7 @@ function AppIntroContent({
           placeholder="Select an estate"
           value={addressInfo.context}
           options={estateOptions}
-          disabled={addressInfo.addressType === 'Work'}
+          disabled={lockEstateForWork && addressInfo.addressType === 'Work'}
           labelColor={labelColor}
           textColor={textColor}
           font={fontFamily}
@@ -834,6 +841,7 @@ function FieldSelect({ label, title, placeholder, value, options, onSelect, labe
         optionSelectedBackground={selectModal?.optionSelectedBackground}
         optionSelectedColor={selectModal?.optionSelectedColor}
         optionSelectedFontWeight={selectModal?.optionSelectedFontWeight}
+        cancelButtonSize={selectModal?.cancelButtonSize}
       />
     </FieldContainer>
   );

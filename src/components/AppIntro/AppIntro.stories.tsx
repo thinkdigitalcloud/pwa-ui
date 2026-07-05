@@ -119,6 +119,9 @@ export const Anch: Story = {
       optionSelectedBackground: '#e8e8e8',
       optionSelectedColor: '#212121',
       optionSelectedFontWeight: 400,
+      cancelButtonSize: 'medium',
     },
+    // anch's estate is freely editable (RN AddressForm doesn't pin it for Work).
+    lockEstateForWork: false,
   },
 };

@@ -94,6 +94,8 @@ export const Anch: Story = {
     addressFields: ['addressType', 'streetName', 'estate', 'suburbName', 'localityOrCity', 'addressPostalCode'],
     requiredAddressFields: ['addressType', 'estate', 'streetName'],
     fieldLabels: { addressPostalCode: 'Postal Code' },
+    // anch renders the footer nav labels in all caps like the mobile app-intro.
+    navLabels: { back: 'BACK', next: 'NEXT', done: 'DONE' },
     workDefaults: { estate: 'Go City Visitors', suburb: 'Waterfall 5-IR', city: 'Midrand', code: '2090' },
     // anch design: navy background, cyan field labels, white values/headings,
     // white Next/Done + active dot (matches the mobile app-intro screens).

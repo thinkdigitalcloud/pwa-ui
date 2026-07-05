@@ -8,6 +8,7 @@ export type {
   AppIntroContactField,
   AppIntroAddressField,
   AppIntroFieldLabels,
+  AppIntroNavLabels,
   AppIntroEstate,
   AppIntroInformation,
   AppIntroContacts,

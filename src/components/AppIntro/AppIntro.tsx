@@ -141,6 +141,12 @@ export interface AppIntroColors {
 }
 
 /** The complete payload emitted by `onComplete`. */
+export interface AppIntroNavLabels {
+  back?: string;
+  next?: string;
+  done?: string;
+}
+
 export interface AppIntroData {
   information: AppIntroInformation;
   contacts: AppIntroContacts;
@@ -187,6 +193,8 @@ export interface AppIntroProps {
   requiredAddressFields?: AppIntroAddressField[];
   /** Per-field label overrides (e.g. `{ addressPostalCode: 'Postal Code' }`). */
   fieldLabels?: AppIntroFieldLabels;
+  /** Footer nav label overrides (e.g. `{ back: 'BACK', next: 'NEXT', done: 'DONE' }`). */
+  navLabels?: AppIntroNavLabels;
 
   /** Force the saving overlay (in addition to the internal await of onComplete). */
   loading?: boolean;
@@ -294,6 +302,7 @@ function AppIntroContent({
   addressFields = DEFAULT_ADDRESS_FIELDS,
   requiredAddressFields = DEFAULT_REQUIRED_ADDRESS_FIELDS,
   fieldLabels,
+  navLabels,
   loading = false,
   colors,
   onComplete,
@@ -693,7 +702,11 @@ function AppIntroContent({
 
         <Footer>
           <FooterButton onClick={onBack} style={{ textAlign: 'left' }}>
-            {activeIndex !== 0 && <Text color={textColor} style={{ fontWeight: 400 }}>Back</Text>}
+            {activeIndex !== 0 && (
+              <Text color={textColor} style={{ fontWeight: 400 }}>
+                {navLabels?.back ?? 'Back'}
+              </Text>
+            )}
           </FooterButton>
           <Dots>
             {slides.map((s, i) => (
@@ -704,7 +717,7 @@ function AppIntroContent({
           </Dots>
           <FooterButton onClick={onNext} style={{ textAlign: 'right', justifyContent: 'flex-end' }}>
             <Text color={accent} style={{ fontWeight: 400 }}>
-              {activeIndex === slides.length - 1 ? 'Done' : 'Next'}
+              {activeIndex === slides.length - 1 ? navLabels?.done ?? 'Done' : navLabels?.next ?? 'Next'}
             </Text>
           </FooterButton>
         </Footer>

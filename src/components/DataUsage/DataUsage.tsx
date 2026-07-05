@@ -46,6 +46,8 @@ export interface DataUsageProps {
   buttonBorderRadius?: string;
   /** Heading font size (default '18px'). */
   titleFontSize?: string;
+  /** Heading margin (default '0 0 10px'; e.g. '15px 0' for 15px vertical spacing). */
+  titleMargin?: string;
   /** Body content font size (default '12px'). */
   bodyFontSize?: string;
   /** Warning line font size (default '13px'). */
@@ -54,6 +56,8 @@ export interface DataUsageProps {
   warningFontWeight?: number | string;
   /** Button label font size (default '16px'). */
   buttonFontSize?: string;
+  /** Button label font weight (default 600). Pass 400 for regular. */
+  buttonFontWeight?: number | string;
   /** Max width of each button (default '130px'; pass 'none' for full-width split). */
   buttonMaxWidth?: string;
   /** When set, buttons size by vertical padding instead of the fixed 50px height. */
@@ -75,10 +79,12 @@ function DataUsageContent({
   borderRadius = '15px',
   buttonBorderRadius = '8px',
   titleFontSize = '18px',
+  titleMargin = '0 0 10px',
   bodyFontSize = '12px',
   warningFontSize = '13px',
   warningFontWeight = 700,
   buttonFontSize = '16px',
+  buttonFontWeight = 600,
   buttonMaxWidth = '130px',
   buttonPaddingVertical,
 }: DataUsageProps) {
@@ -104,7 +110,7 @@ function DataUsageContent({
   return createPortal(
     <Backdrop>
       <Modal style={{ fontFamily }} $radius={borderRadius}>
-        <Title color={textColor} style={{ fontSize: titleFontSize }}>
+        <Title color={textColor} style={{ fontSize: titleFontSize, margin: titleMargin }}>
           {heading}
         </Title>
         <Content
@@ -123,6 +129,7 @@ function DataUsageContent({
             $maxWidth={buttonMaxWidth}
             $padV={buttonPaddingVertical}
             $fontSize={buttonFontSize}
+            $weight={buttonFontWeight}
             style={{ backgroundColor: decline, marginRight: 15, fontFamily }}
           >
             {declineLabel}
@@ -134,6 +141,7 @@ function DataUsageContent({
             $maxWidth={buttonMaxWidth}
             $padV={buttonPaddingVertical}
             $fontSize={buttonFontSize}
+            $weight={buttonFontWeight}
             style={{ backgroundColor: accept, fontFamily }}
           >
             {acceptLabel}
@@ -227,6 +235,7 @@ const ActionButton = styled.button<{
   $maxWidth: string;
   $padV?: string;
   $fontSize: string;
+  $weight: number | string;
 }>`
   flex: 1;
   max-width: ${({ $maxWidth }) => $maxWidth};
@@ -236,6 +245,6 @@ const ActionButton = styled.button<{
   border-radius: ${({ $radius }) => $radius};
   color: #fff;
   font-size: ${({ $fontSize }) => $fontSize};
-  font-weight: 600;
+  font-weight: ${({ $weight }) => $weight};
   cursor: pointer;
 `;

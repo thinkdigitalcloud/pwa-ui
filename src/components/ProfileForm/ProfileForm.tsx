@@ -5,6 +5,7 @@ import { Button } from '../Button';
 import { Spinner } from '../Spinner';
 import { FormField } from '../FormField';
 import { SelectModal } from '../SelectModal';
+import { Select } from '../Select';
 import { Brand, BrandScope } from '../../theme/brands';
 
 /** A text input field. */
@@ -26,6 +27,11 @@ export interface ProfileSelectField {
   /** Modal title (e.g. "Select an Estate"). */
   selectTitle?: string;
   placeholder?: string;
+  /**
+   * Control style: `'underline'` (default) renders the form's borderless
+   * trigger; `'box'` renders the standalone bordered `Select` component.
+   */
+  variant?: 'underline' | 'box';
 }
 
 export type ProfileFormFieldDef = ProfileTextField | ProfileSelectField;
@@ -74,27 +80,39 @@ function ProfileFormContent({
         </Overlay>
       )}
       <Form>
-        {fields.map((field) => (
-          <FormField key={field.key} label={field.label}>
-            {field.type === 'text' ? (
-              <TextInput
-                type={field.inputType || 'text'}
-                value={values[field.key] || ''}
-                placeholder={field.placeholder}
-                onChange={(e) => onChange(field.key, e.target.value)}
-              />
-            ) : (
-              <SelectTrigger
-                type="button"
-                $muted={!values[field.key]}
-                $color={theme.colors.text}
-                onClick={() => setOpenSelect(field.key)}
-              >
-                {values[field.key] || field.placeholder || 'Select'}
-              </SelectTrigger>
-            )}
-          </FormField>
-        ))}
+        {fields.map((field) => {
+          const isBoxSelect = field.type === 'select' && field.variant === 'box';
+          return (
+            <FormField key={field.key} label={field.label} noDivider={isBoxSelect}>
+              {field.type === 'text' ? (
+                <TextInput
+                  type={field.inputType || 'text'}
+                  value={values[field.key] || ''}
+                  placeholder={field.placeholder}
+                  onChange={(e) => onChange(field.key, e.target.value)}
+                />
+              ) : isBoxSelect ? (
+                <Select
+                  fullWidth
+                  options={field.options.map((o) => ({ label: o, value: o }))}
+                  value={values[field.key]}
+                  placeholder={field.placeholder}
+                  title={field.selectTitle || `Select ${field.label}`}
+                  onChange={(val) => onChange(field.key, String(val))}
+                />
+              ) : (
+                <SelectTrigger
+                  type="button"
+                  $muted={!values[field.key]}
+                  $color={theme.colors.text}
+                  onClick={() => setOpenSelect(field.key)}
+                >
+                  {values[field.key] || field.placeholder || 'Select'}
+                </SelectTrigger>
+              )}
+            </FormField>
+          );
+        })}
 
         <SaveWrap>
           <Button text={saveLabel} variant="success" block uppercase={false} onClick={onSave} />
@@ -102,7 +120,7 @@ function ProfileFormContent({
       </Form>
 
       {fields.map((field) =>
-        field.type === 'select' ? (
+        field.type === 'select' && field.variant !== 'box' ? (
           <SelectModal
             key={field.key}
             open={openSelect === field.key}

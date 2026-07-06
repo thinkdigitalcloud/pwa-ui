@@ -171,7 +171,7 @@ function NotificationTileContent({
 
   return (
     <Card
-      $bg={selected || unread ? theme.colors.lightGrey : theme.colors.background}
+      $bg={selected || unread ? '#ededed' : theme.colors.background}
       onClick={handleClick}
       onMouseDown={startPress}
       onMouseUp={cancelPress}
@@ -182,7 +182,7 @@ function NotificationTileContent({
     >
       <ImageWrap>
         <Avatar style={{ backgroundImage: `url(${image || defaultImage})` }} />
-        <Badge $pill={!!badgeText} style={{ backgroundColor: theme.colors.success }}>
+        <Badge $pill={!!badgeText} style={{ backgroundColor: '#5cb85c' }}>
           {badgeText ? (
             <BadgeText>{badgeText}</BadgeText>
           ) : (

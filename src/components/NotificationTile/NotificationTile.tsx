@@ -182,9 +182,9 @@ function NotificationTileContent({
     >
       <ImageWrap>
         <Avatar style={{ backgroundImage: `url(${image || defaultImage})` }} />
-        <Badge style={{ backgroundColor: theme.colors.secondary }}>
+        <Badge $pill={!!badgeText} style={{ backgroundColor: theme.colors.success }}>
           {badgeText ? (
-            <BadgeText>{badgeText.slice(0, 10)}</BadgeText>
+            <BadgeText>{badgeText}</BadgeText>
           ) : (
             <Icon size={13} color="#fff" />
           )}
@@ -256,13 +256,17 @@ const Avatar = styled.div`
   background-size: cover;
 `;
 
-const Badge = styled.div`
+// A count/icon shows in a circle; a category label ($pill) shows in a rounded
+// text pill (RN's green category badge).
+const Badge = styled.div<{ $pill?: boolean }>`
   position: absolute;
   bottom: 0;
   right: -10px;
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
+  min-width: 25px;
+  height: ${({ $pill }) => ($pill ? '18px' : '25px')};
+  padding: ${({ $pill }) => ($pill ? '0 8px' : '0')};
+  border-radius: ${({ $pill }) => ($pill ? '9px' : '50%')};
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -270,10 +274,13 @@ const Badge = styled.div`
 
 const BadgeText = styled.span`
   color: #fff;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   line-height: 1;
   white-space: nowrap;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const Body = styled.div`

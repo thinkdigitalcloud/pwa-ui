@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type CSSProperties } from 'react';
 import styled, { useTheme } from 'styled-components';
 import { Page, type PageProps } from '../Page';
-import { Button } from '../Button';
+import { Button, type ButtonVariant } from '../Button';
 import { StatusNav } from '../StatusNav';
 import { FacilityCard } from '../FacilityCard';
 import { Text } from '../Text';
@@ -31,7 +31,20 @@ export interface BookingsProps {
 
   /** Empty-state copy per category. */
   emptyText?: Record<BookingCategory, string>;
+  /** Override the segment labels (default 'requested' / 'upcoming' / 'past'). */
+  categoryLabels?: Partial<Record<BookingCategory, string>>;
   makeBookingLabel?: string;
+  /** "Make a booking" button variant (default 'success'). */
+  makeBookingButtonVariant?: ButtonVariant;
+  /** Style overrides for the "Make a booking" button (default rounded/green). */
+  makeBookingButtonStyle?: CSSProperties;
+  /** Colour overrides for the requested/upcoming/past status nav. */
+  statusNav?: {
+    selectedColor?: string;
+    selectedTextColor?: string;
+    trackColor?: string;
+    textColor?: string;
+  };
   title?: string;
   header?: PageProps['header'];
   bottomNav?: PageProps['bottomNav'];
@@ -68,7 +81,11 @@ function BookingsContent({
   onMakeBooking,
   initialCategory = 'requested',
   emptyText = DEFAULT_EMPTY,
+  categoryLabels,
   makeBookingLabel = 'Make a booking',
+  makeBookingButtonVariant = 'success',
+  makeBookingButtonStyle = { borderRadius: 8, minHeight: 52, fontWeight: 'bold' },
+  statusNav,
   title = 'Bookings',
   header,
   bottomNav,
@@ -87,17 +104,21 @@ function BookingsContent({
       <Column>
         <Button
           text={makeBookingLabel}
-          variant="success"
+          variant={makeBookingButtonVariant}
           block
           uppercase={false}
           onClick={onMakeBooking}
-          style={{ borderRadius: 8, minHeight: 52, fontWeight: 'bold' }}
+          style={makeBookingButtonStyle}
         />
         <StatusNav
-          items={CATEGORIES}
+          items={CATEGORIES.map((c) => ({ value: c.value, label: categoryLabels?.[c.value] ?? c.label }))}
           value={category}
           width="100%"
           onChange={(v) => setCategory(v as BookingCategory)}
+          selectedColor={statusNav?.selectedColor}
+          selectedTextColor={statusNav?.selectedTextColor}
+          trackColor={statusNav?.trackColor}
+          textColor={statusNav?.textColor}
         />
         <List>
           {current.length > 0 ? (

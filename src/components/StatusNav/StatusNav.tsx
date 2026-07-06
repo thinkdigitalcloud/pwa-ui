@@ -15,22 +15,36 @@ export interface StatusNavProps<T extends string = string> {
   fullWidth?: boolean;
   /** Explicit width (any CSS length, e.g. "60%" / "320px"). Overrides `fullWidth`. */
   width?: string;
+  /** Selected segment background (default: theme secondary). */
+  selectedColor?: string;
+  /** Selected segment text colour (default: theme textInverse). */
+  selectedTextColor?: string;
+  /** Unselected segment background / track (default: theme lightGrey). */
+  trackColor?: string;
+  /** Unselected segment text colour (default: theme text). */
+  textColor?: string;
   /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
   brand?: Brand;
 }
 
-const Container = styled.div<{ $width: string }>`
+const Container = styled.div<{ $width: string; $track?: string }>`
   display: flex;
   flex-direction: row;
   align-items: center;
   width: ${({ $width }) => $width};
   height: 40px;
   margin: 20px auto 0;
-  background: ${({ theme }) => theme.colors.background};
+  background: ${({ $track, theme }) => $track ?? theme.colors.background};
   overflow: hidden;
 `;
 
-const Item = styled.button<{ $selected: boolean }>`
+const Item = styled.button<{
+  $selected: boolean;
+  $selectedBg?: string;
+  $selectedText?: string;
+  $track?: string;
+  $text?: string;
+}>`
   flex: 1;
   height: 100%;
   display: flex;
@@ -41,10 +55,10 @@ const Item = styled.button<{ $selected: boolean }>`
   font-family: ${({ theme }) => theme.typography.fontFamily};
   font-size: 12px;
   line-height: 12px;
-  background: ${({ $selected, theme }) =>
-    $selected ? theme.colors.secondary : theme.colors.lightGrey};
-  color: ${({ $selected, theme }) =>
-    $selected ? theme.colors.textInverse : theme.colors.text};
+  background: ${({ $selected, $selectedBg, $track, theme }) =>
+    $selected ? $selectedBg ?? theme.colors.secondary : $track ?? theme.colors.lightGrey};
+  color: ${({ $selected, $selectedText, $text, theme }) =>
+    $selected ? $selectedText ?? theme.colors.textInverse : $text ?? theme.colors.text};
   transition: background 0.15s ease;
 `;
 
@@ -54,10 +68,14 @@ function StatusNavContent<T extends string = string>({
   onChange,
   fullWidth = false,
   width,
+  selectedColor,
+  selectedTextColor,
+  trackColor,
+  textColor,
 }: StatusNavProps<T>) {
   const resolvedWidth = width ?? (fullWidth ? '100%' : '80%');
   return (
-    <Container $width={resolvedWidth} role="tablist">
+    <Container $width={resolvedWidth} $track={trackColor} role="tablist">
       {items.map((item) => (
         <Item
           key={item.value}
@@ -65,6 +83,10 @@ function StatusNavContent<T extends string = string>({
           role="tab"
           aria-selected={item.value === value}
           $selected={item.value === value}
+          $selectedBg={selectedColor}
+          $selectedText={selectedTextColor}
+          $track={trackColor}
+          $text={textColor}
           onClick={() => onChange(item.value)}
         >
           {item.label}

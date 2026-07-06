@@ -50,6 +50,11 @@ export interface ProfileFormProps {
   header?: PageProps['header'];
   bottomNav?: PageProps['bottomNav'];
   backgroundColor?: string;
+  /**
+   * Hide the bottom green Save button (default false). Use when the screen
+   * saves only via the header save action.
+   */
+  hideSaveButton?: boolean;
   /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
   brand?: Brand;
 }
@@ -65,6 +70,7 @@ function ProfileFormContent({
   header,
   bottomNav,
   backgroundColor = '#ffffff',
+  hideSaveButton = false,
 }: ProfileFormProps) {
   const theme = useTheme();
   const [openSelect, setOpenSelect] = useState<string | null>(null);
@@ -115,9 +121,11 @@ function ProfileFormContent({
           );
         })}
 
-        <SaveWrap>
-          <Button text={saveLabel} variant="success" block uppercase={false} onClick={onSave} />
-        </SaveWrap>
+        {!hideSaveButton && (
+          <SaveWrap>
+            <Button text={saveLabel} variant="success" block uppercase={false} onClick={onSave} />
+          </SaveWrap>
+        )}
       </Form>
 
       {fields.map((field) =>

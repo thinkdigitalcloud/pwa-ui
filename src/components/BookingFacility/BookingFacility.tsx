@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import styled from 'styled-components';
 import { Page, type PageProps } from '../Page';
 import { FacilityCard } from '../FacilityCard';
@@ -14,6 +15,16 @@ export interface BookingFacilityProps {
   header?: PageProps['header'];
   bottomNav?: PageProps['bottomNav'];
   backgroundColor?: string;
+
+  /** Style overrides merged onto the facility title. */
+  titleStyle?: CSSProperties;
+  /** Style overrides merged onto the "Book Now" button. */
+  buttonStyle?: CSSProperties;
+  /** Style overrides merged onto the "Book Now" button text. */
+  buttonTextStyle?: CSSProperties;
+  /** Style overrides merged onto the resource image. */
+  resourceImageStyle?: CSSProperties;
+
   /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
   brand?: Brand;
 }
@@ -27,6 +38,10 @@ function BookingFacilityContent({
   header,
   bottomNav,
   backgroundColor,
+  titleStyle,
+  buttonStyle,
+  buttonTextStyle,
+  resourceImageStyle,
 }: BookingFacilityProps) {
   return (
     <Page
@@ -41,6 +56,10 @@ function BookingFacilityContent({
           titleStyle="overlay"
           action={bookNowLabel}
           onClick={onBook}
+          titleTextStyle={titleStyle}
+          actionStyle={buttonStyle}
+          actionTextStyle={buttonTextStyle}
+          imageStyle={resourceImageStyle}
         />
       </Wrap>
     </Page>

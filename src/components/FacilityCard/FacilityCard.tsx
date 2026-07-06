@@ -1,6 +1,7 @@
+import type { CSSProperties } from 'react';
 import styled, { useTheme } from 'styled-components';
 import { Text } from '../Text';
-import { Brand, BrandScope } from '../../theme/brands';
+import { Brand, BrandScope, useBrand } from '../../theme/brands';
 
 /** Coloured status badge shown bottom-right (e.g. Requested / Booked). */
 export interface FacilityCardBadge {
@@ -26,6 +27,16 @@ export interface FacilityCardProps {
   /** Fallback image when `image` is empty/broken. */
   placeholder?: string;
   onClick?: () => void;
+
+  /** Style overrides merged onto the title text. */
+  titleTextStyle?: CSSProperties;
+  /** Style overrides merged onto the action chip (the "button"). */
+  actionStyle?: CSSProperties;
+  /** Style overrides merged onto the action chip's text. */
+  actionTextStyle?: CSSProperties;
+  /** Style overrides merged onto the background image. */
+  imageStyle?: CSSProperties;
+
   /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
   brand?: Brand;
 }
@@ -45,27 +56,35 @@ function FacilityCardContent({
   height = 150,
   placeholder = PLACEHOLDER,
   onClick,
+  titleTextStyle,
+  actionStyle,
+  actionTextStyle,
+  imageStyle,
 }: FacilityCardProps) {
   const theme = useTheme();
+  // anch renders the overlay title in the theme text colour (black); other
+  // brands keep the white, shadowed caption over the image.
+  const overlayTitleColor = useBrand() === Brand.Anch ? theme.colors.text : '#fff';
   const showFooter = !!badge || !!action;
   return (
     <Card $height={height} onClick={onClick}>
       <Background
         src={image || placeholder}
         alt={title}
+        style={imageStyle}
         onError={(e) => {
           (e.currentTarget as HTMLImageElement).src = placeholder;
         }}
       />
       {titleStyle === 'bar' ? (
         <HeaderBar>
-          <Text variant="label" color={theme.colors.text}>
+          <Text variant="label" color={theme.colors.text} style={titleTextStyle}>
             {title}
           </Text>
         </HeaderBar>
       ) : (
         <OverlayTitle>
-          <Text variant="label" color="#fff">
+          <Text variant="label" color={overlayTitleColor} style={titleTextStyle}>
             {title}
           </Text>
         </OverlayTitle>
@@ -80,8 +99,8 @@ function FacilityCardContent({
             </Badge>
           )}
           {action && (
-            <ActionChip>
-              <Text variant="label" color={theme.colors.text}>
+            <ActionChip style={actionStyle}>
+              <Text variant="label" color={theme.colors.text} style={actionTextStyle}>
                 {action}
               </Text>
             </ActionChip>

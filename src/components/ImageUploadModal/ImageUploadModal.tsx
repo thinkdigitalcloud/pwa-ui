@@ -9,7 +9,7 @@ import {
 } from 'react-icons/io5';
 import { Modal } from '../Modal';
 import { Spinner } from '../Spinner';
-import { Brand, BrandScope } from '../../theme/brands';
+import { Brand, BrandScope, useBrand } from '../../theme/brands';
 import { CancelButtonSize, cancelButtonVPadding } from '../../utils/cancelButtonSize';
 
 export type CameraFacing = 'user' | 'environment';
@@ -42,13 +42,17 @@ export interface ImageUploadModalProps {
   cancelLabel?: string;
   /** Cancel button padding size (small/medium/large → 8/12/16px vertical). */
   cancelButtonSize?: CancelButtonSize;
-  /** Card corner radius (default '24px'). Pass '0' for square-cornered brands. */
+  /** Card corner radius (default: theme `radii.lg`, i.e. 0 for square brands). */
   borderRadius?: string;
-  /** Cancel button corner radius (default '25px'). Pass '0' for square corners. */
+  /** Cancel button corner radius (default: theme `button.borderRadius`). */
   cancelBorderRadius?: string;
-  /** Cancel button background (default: theme danger). Pass theme primary for a
-   *  brand-coloured (e.g. black) cancel. */
+  /** Cancel button background (default: theme danger; theme primary for anch). */
   cancelColor?: string;
+  /** Show the X (close) icon inside the Cancel button (default: true; false for anch). */
+  showCancelIcon?: boolean;
+  /** Invert the Camera/Gallery options: fill the icon ring with the text colour
+   *  and render the icon in the inverse colour (default: false; true for anch). */
+  invertOptions?: boolean;
   /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
   brand?: Brand;
 }
@@ -70,8 +74,17 @@ function ImageUploadModalContent({
   borderRadius,
   cancelBorderRadius,
   cancelColor,
+  showCancelIcon,
+  invertOptions,
 }: ImageUploadModalProps) {
   const theme = useTheme();
+  // anch defaults: hidden X icon, inverted (filled) options, and a primary
+  // (black) cancel button with white text. Explicit props still win.
+  const isAnch = useBrand() === Brand.Anch;
+  const resolvedShowCancelIcon = showCancelIcon ?? !isAnch;
+  const resolvedInvertOptions = invertOptions ?? isAnch;
+  const resolvedCancelColor =
+    cancelColor ?? (isAnch ? theme.colors.primary : theme.colors.danger);
   const [mode, setMode] = useState<'chooser' | 'camera'>('chooser');
   const [facing, setFacing] = useState<CameraFacing>(initialFacing);
   const [busy, setBusy] = useState(false);
@@ -169,7 +182,7 @@ function ImageUploadModalContent({
   };
 
   return (
-    <Modal open={open} onClose={onClose} hideCloseButton borderRadius={borderRadius ?? '24px'} bodyPadding="0">
+    <Modal open={open} onClose={onClose} hideCloseButton borderRadius={borderRadius ?? theme.radii.lg} bodyPadding="0">
       {mode === 'camera' ? (
         <Camera>
           <Video ref={videoRef} autoPlay playsInline muted $mirror={facing === 'user'} />
@@ -193,24 +206,28 @@ function ImageUploadModalContent({
           <Options>
             {enableCamera && (
               <Option onClick={() => setMode('camera')}>
-                <IconRing $color={theme.colors.text}>
-                  <IoCameraOutline size={30} color={theme.colors.text} />
+                <IconRing $color={theme.colors.text} $bg={resolvedInvertOptions ? theme.colors.text : 'transparent'}>
+                  <IoCameraOutline size={30} color={resolvedInvertOptions ? theme.colors.textInverse : theme.colors.text} />
                 </IconRing>
                 <OptionLabel $color={theme.colors.text}>{cameraLabel}</OptionLabel>
               </Option>
             )}
             {enableGallery && (
               <Option onClick={onPickGallery}>
-                <IconRing $color={theme.colors.text}>
-                  <IoCloudUploadOutline size={30} color={theme.colors.text} />
+                <IconRing $color={theme.colors.text} $bg={resolvedInvertOptions ? theme.colors.text : 'transparent'}>
+                  <IoCloudUploadOutline size={30} color={resolvedInvertOptions ? theme.colors.textInverse : theme.colors.text} />
                 </IconRing>
                 <OptionLabel $color={theme.colors.text}>{galleryLabel}</OptionLabel>
               </Option>
             )}
           </Options>
           <input ref={fileRef} type="file" accept={accept} style={{ display: 'none' }} onChange={onFileChange} />
-          <CancelButton type="button" $bg={cancelColor ?? theme.colors.danger} $radius={cancelBorderRadius} $vpad={cancelButtonVPadding(cancelButtonSize)} disabled={isLoading} onClick={onClose}>
-            {isLoading ? <Spinner size={18} color="#fff" /> : <IoClose size={22} color="#fff" />}
+          <CancelButton type="button" $bg={resolvedCancelColor} $radius={cancelBorderRadius ?? theme.button.borderRadius} $vpad={cancelButtonVPadding(cancelButtonSize)} disabled={isLoading} onClick={onClose}>
+            {isLoading ? (
+              <Spinner size={18} color="#fff" />
+            ) : resolvedShowCancelIcon ? (
+              <IoClose size={22} color="#fff" />
+            ) : null}
             <CancelText>{cancelLabel}</CancelText>
           </CancelButton>
         </Body>
@@ -261,10 +278,11 @@ const Option = styled.div`
   cursor: pointer;
 `;
 
-const IconRing = styled.div<{ $color: string }>`
+const IconRing = styled.div<{ $color: string; $bg?: string }>`
   padding: 20px;
   border-radius: 50%;
   border: 1px solid ${({ $color }) => $color};
+  background: ${({ $bg }) => $bg ?? 'transparent'};
   display: flex;
 `;
 

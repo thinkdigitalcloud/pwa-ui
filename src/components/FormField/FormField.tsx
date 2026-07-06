@@ -1,7 +1,7 @@
 import React from 'react';
 import styled, { useTheme } from 'styled-components';
 import { Text } from '../Text';
-import { Brand, BrandScope } from '../../theme/brands';
+import { Brand, BrandScope, useBrand } from '../../theme/brands';
 
 export interface FormFieldProps {
   /** Field label (semibold, above the control). */
@@ -15,9 +15,11 @@ export interface FormFieldProps {
 
 function FormFieldContent({ label, children, noDivider = false }: FormFieldProps) {
   const theme = useTheme();
+  // anch renders labels at regular weight; other brands stay bold.
+  const labelWeight = useBrand() === Brand.Anch ? 400 : theme.typography.weightBold;
   return (
     <Container $divider={theme.colors.lightGrey} $noDivider={noDivider}>
-      <Label variant="label" color={theme.colors.text}>
+      <Label variant="label" color={theme.colors.text} $weight={labelWeight}>
         {label}
       </Label>
       {children}
@@ -46,9 +48,9 @@ const Container = styled.div<{ $divider: string; $noDivider: boolean }>`
     $noDivider ? 'none' : `1px solid ${$divider}`};
 `;
 
-const Label = styled(Text)`
+const Label = styled(Text)<{ $weight: number | string }>`
   text-align: left;
   font-size: 16px;
   margin-bottom: 6px;
-  font-weight: ${({ theme }) => theme.typography.weightBold};
+  font-weight: ${({ $weight }) => $weight};
 `;

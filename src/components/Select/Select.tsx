@@ -5,6 +5,12 @@ import { Brand, BrandScope } from '../../theme/brands';
 
 export type SelectSize = 'sm' | 'md' | 'lg';
 
+/**
+ * Control style. `'underline'` (default) is borderless with a bottom divider;
+ * `'box'` renders the bordered, rounded, surface-filled field.
+ */
+export type SelectVariant = 'underline' | 'box';
+
 export interface SelectProps<T extends string | number = string> {
   options: SelectOption<T>[];
   /** Controlled value. Omit (with `defaultValue`) for uncontrolled use. */
@@ -16,6 +22,8 @@ export interface SelectProps<T extends string | number = string> {
   /** Modal title (defaults to `placeholder`). */
   title?: string;
   size?: SelectSize;
+  /** Control style; defaults to `'underline'` (not boxed). */
+  variant?: SelectVariant;
   disabled?: boolean;
   invalid?: boolean;
   fullWidth?: boolean;
@@ -29,23 +37,27 @@ export interface SelectProps<T extends string | number = string> {
 const sizeStyles: Record<SelectSize, ReturnType<typeof css>> = {
   sm: css`
     height: 36px;
-    padding: 0 12px;
     font-size: 13px;
   `,
   md: css`
     height: 44px;
-    padding: 0 14px;
     font-size: 15px;
   `,
   lg: css`
     height: 54px;
-    padding: 0 16px;
     font-size: 16px;
   `,
 };
 
+const boxPadding: Record<SelectSize, string> = {
+  sm: '0 12px',
+  md: '0 14px',
+  lg: '0 16px',
+};
+
 const Field = styled.button<{
   $size: SelectSize;
+  $variant: SelectVariant;
   $invalid: boolean;
   $fullWidth: boolean;
   $placeholder: boolean;
@@ -55,11 +67,6 @@ const Field = styled.button<{
   justify-content: space-between;
   gap: 8px;
   width: ${({ $fullWidth }) => ($fullWidth ? '100%' : 'auto')};
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid
-    ${({ $invalid, theme }) =>
-      $invalid ? theme.colors.danger : theme.colors.border};
-  border-radius: ${({ theme }) => theme.radii.md};
   font-family: ${({ theme }) => theme.typography.fontFamily};
   color: ${({ $placeholder, theme }) =>
     $placeholder ? theme.colors.textMuted : theme.colors.text};
@@ -67,14 +74,36 @@ const Field = styled.button<{
   text-align: left;
   ${({ $size }) => sizeStyles[$size]};
 
+  ${({ $variant, $invalid, $size, theme }) =>
+    $variant === 'box'
+      ? css`
+          background: ${theme.colors.surface};
+          border: 1px solid
+            ${$invalid ? theme.colors.danger : theme.colors.border};
+          border-radius: ${theme.radii.md};
+          padding: ${boxPadding[$size]};
+        `
+      : css`
+          background: transparent;
+          border: none;
+          border-bottom: 1px solid
+            ${$invalid ? theme.colors.danger : theme.colors.border};
+          border-radius: 0;
+          padding: 0;
+        `}
+
   &:focus-visible {
     outline: 2px solid ${({ theme }) => theme.colors.secondary};
     outline-offset: 2px;
   }
   &:disabled {
-    background: ${({ theme }) => theme.colors.lightGrey};
     opacity: 0.7;
     cursor: not-allowed;
+    ${({ $variant, theme }) =>
+      $variant === 'box' &&
+      css`
+        background: ${theme.colors.lightGrey};
+      `}
   }
 `;
 
@@ -101,6 +130,7 @@ function SelectContent<T extends string | number = string>({
   placeholder = '',
   title,
   size = 'md',
+  variant = 'underline',
   disabled = false,
   invalid = false,
   fullWidth = true,
@@ -147,6 +177,7 @@ function SelectContent<T extends string | number = string>({
         aria-haspopup="dialog"
         aria-expanded={open}
         $size={size}
+        $variant={variant}
         $invalid={invalid}
         $fullWidth={fullWidth}
         $placeholder={!hasSelection}

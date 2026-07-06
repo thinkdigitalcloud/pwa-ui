@@ -31,9 +31,9 @@ export interface SelectModalProps<T = string> {
   cancelButtonSize?: CancelButtonSize;
   /** Selected row background (default: theme primary). */
   optionSelectedBackground?: string;
-  /** Selected row text colour (default: theme textInverse). */
+  /** Selected row text colour (default: theme text colour). */
   optionSelectedColor?: string;
-  /** Selected row font weight (default: theme weightBold). Pass 400 for regular. */
+  /** Selected row font weight (default: 400). Pass a heavier weight to emphasise. */
   optionSelectedFontWeight?: number | string;
   /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
   brand?: Brand;
@@ -63,11 +63,11 @@ const Row = styled.button<{
   font-family: ${({ theme }) => theme.typography.fontFamily};
   font-size: 16px;
   font-weight: ${({ $selected, $selectedWeight, theme }) =>
-    $selected ? $selectedWeight ?? theme.typography.weightBold : theme.typography.weightBody};
+    $selected ? $selectedWeight ?? 400 : theme.typography.weightBody};
   background: ${({ $selected, $selectedBg, theme }) =>
     $selected ? $selectedBg ?? theme.colors.selected ?? theme.colors.primary : 'transparent'};
   color: ${({ $selected, $selectedColor, theme }) =>
-    $selected ? $selectedColor ?? theme.colors.textInverse : theme.colors.text};
+    $selected ? $selectedColor ?? theme.colors.text : theme.colors.text};
   cursor: pointer;
   text-align: left;
 

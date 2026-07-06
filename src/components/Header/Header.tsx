@@ -8,7 +8,7 @@ import {
   FiTrash2,
   FiRefreshCw,
 } from 'react-icons/fi';
-import { Brand, BrandScope } from '../../theme/brands';
+import { Brand, BrandScope, useBrand } from '../../theme/brands';
 
 export interface HeaderAction {
   key: string;
@@ -123,6 +123,8 @@ function HeaderContent({
   onRefresh,
   actions = [],
 }: HeaderProps) {
+  // anch renders the Save icon white; other brands keep the green save colour.
+  const saveColor = useBrand() === Brand.Anch ? '#FFFFFF' : '#4C8B2B';
   const rightActions: HeaderAction[] = [
     refresh && { key: 'refresh', icon: <FiRefreshCw size={20} />, label: 'Refresh', onClick: onRefresh ?? (() => {}) },
     edit && { key: 'edit', icon: <FiEdit2 size={20} />, label: 'Edit', onClick: onEdit ?? (() => {}) },
@@ -132,7 +134,7 @@ function HeaderContent({
       label: 'Save',
       onClick: onSave ?? (() => {}),
       disabled: saveDisabled,
-      color: saveDisabled ? undefined : '#4C8B2B',
+      color: saveDisabled ? undefined : saveColor,
     },
     remove && { key: 'remove', icon: <FiTrash2 size={20} />, label: 'Delete', onClick: onRemove ?? (() => {}), color: '#D01E2D' },
     share && { key: 'share', icon: <FiShare2 size={20} />, label: 'Share', onClick: onShare ?? (() => {}) },

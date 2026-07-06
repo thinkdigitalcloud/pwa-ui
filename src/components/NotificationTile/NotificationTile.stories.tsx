@@ -48,3 +48,13 @@ export const Newsletter: Story = {
     },
   },
 };
+export const BadgeText: Story = {
+  args: {
+    notification: {
+      ...base,
+      title: 'You have new messages',
+      description: '3 unread notifications from the estate.',
+      badgeText: '3',
+    },
+  },
+};

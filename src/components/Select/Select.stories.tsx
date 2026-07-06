@@ -10,6 +10,7 @@ const meta: Meta<typeof Select> = {
   parameters: { layout: 'padded' },
   argTypes: {
     size: { control: 'inline-radio', options: ['sm', 'md', 'lg'] },
+    variant: { control: 'inline-radio', options: ['underline', 'box'] },
   },
 };
 export default meta;
@@ -59,6 +60,19 @@ export const Invalid: Story = {
 
 export const Disabled: Story = {
   args: { options: estates, placeholder: 'Select an estate', disabled: true },
+};
+
+export const Variants: Story = {
+  render: () => {
+    const [a, setA] = useState<string | undefined>('domin');
+    const [b, setB] = useState<string | undefined>('domin');
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <Select options={estates} value={a} onChange={setA} placeholder="Underline (default)" />
+        <Select options={estates} value={b} onChange={setB} variant="box" placeholder="Box" />
+      </div>
+    );
+  },
 };
 
 export const Sizes: Story = {

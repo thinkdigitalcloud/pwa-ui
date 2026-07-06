@@ -105,18 +105,59 @@ export const lightTheme = createTheme('light', {
   bottomActive: '#133C63',
 });
 
-/** anch-pwa — warm taupe brand. Square everywhere (0 radius) and the picker's
- *  selected row is filled with the secondary (grey) colour rather than primary. */
+/**
+ * anch-pwa / "LeClub" — the app's default brand theme, mapped from the live
+ * Firestore theme (`store.theme.data`). A black/white brand: black (#000)
+ * primary, light-grey (#EEE) secondary, a black header and bottom bar with
+ * white icons, and a white online/offline gradient. Square everywhere
+ * (0 radius); the picker's selected row is filled with the secondary colour.
+ *
+ * Colours mirror anch-pwa's `toAppTheme` mapping of the flat theme keys onto
+ * the grouped AppTheme contract (e.g. `secondaryDisabled`, `disabledTextColour`
+ * → `textMuted`, `profileListBorderColor` → `border`, `bottomBar.*`, `tile.*`).
+ */
 const anchBase = createTheme('anch', {
-  primary: '#7B7566',
-  secondary: '#58748C',
-  bottomActive: '#7B7566',
-  onlineGradient: ['#7B7566', '#7B7566'],
+  primary: '#000000',
+  secondary: '#EEEEEE',
+  danger: 'red',
+  success: '#000000',
+  warning: 'black',
+  headerBackground: '#000000',
+  headerText: '#FFFFFF',
+  bottomActive: '#000000',
+  onlineGradient: ['#FFFFFF', '#FFFFFF'],
+  offlineGradient: ['#FFFFFF', '#FFFFFF'],
 });
 export const anchTheme: AppTheme = {
   ...anchBase,
-  colors: { ...anchBase.colors, selected: anchBase.colors.secondary },
+  colors: {
+    ...anchBase.colors,
+    text: '#000000',
+    textMuted: '#EEEEEE', // disabledTextColour
+    secondaryDisabled: '#CCCCCC',
+    selected: anchBase.colors.secondary,
+    backgroundSecondary: '#EDEDED', // lightOpacityBackground
+    darkGrey: '#666666',
+    lightGrey: '#999999',
+    border: '#000000', // profileListBorderColor
+  },
   button: { ...anchBase.button, borderRadius: '0' },
+  bottomBar: {
+    ...anchBase.bottomBar,
+    background: '#000000',
+    active: '#000000',
+    activeBackground: '#FFFFFF',
+    activeIconColor: '#FFFFFF',
+    inactive: '#FFFFFF', // iconColor
+    badge: 'red', // dangerColor
+  },
+  tile: {
+    ...anchBase.tile,
+    iconBackground: '#000000',
+    iconColor: '#FFFFFF',
+    heading: '#000000',
+    description: '#000000',
+  },
   // Square cards/buttons/modals; keep `pill` for toggles + rounded avatars.
   radii: { ...anchBase.radii, sm: '0', md: '0', lg: '0' },
 };

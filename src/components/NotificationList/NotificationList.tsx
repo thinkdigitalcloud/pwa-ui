@@ -146,9 +146,9 @@ function NotificationListContent({
             </IconBtn>
           </Side>
         </Toolbar>
-      ) : (
+      ) : categoryLabel ? (
         <CategoryLabel $color={theme.colors.text}>{categoryLabel}</CategoryLabel>
-      )}
+      ) : null}
 
       {notifications.length > 0 ? (
         <ListBody>

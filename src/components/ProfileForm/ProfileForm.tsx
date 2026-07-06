@@ -94,6 +94,7 @@ function ProfileFormContent({
               ) : isBoxSelect ? (
                 <Select
                   fullWidth
+                  variant="box"
                   options={field.options.map((o) => ({ label: o, value: o }))}
                   value={values[field.key]}
                   placeholder={field.placeholder}

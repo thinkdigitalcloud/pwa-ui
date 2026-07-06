@@ -31,6 +31,11 @@ export interface NotificationItem {
   status?: string;
   /** Drives the badge icon (e.g. `visitor`, `payments`, `newsletter`). */
   type: string;
+  /**
+   * Text to show in the corner badge instead of the type icon (e.g. a count).
+   * Rendered on a single line and truncated to a maximum of 10 characters.
+   */
+  badgeText?: string;
   /** Unix seconds for the created timestamp. */
   createdSeconds?: number;
   url?: string;
@@ -120,8 +125,16 @@ function NotificationTileContent({
   defaultImage = PLACEHOLDER,
 }: NotificationTileProps) {
   const theme = useTheme();
-  const { title, image, status, type, description, subTitle, createdSeconds } =
-    notification;
+  const {
+    title,
+    image,
+    status,
+    type,
+    badgeText,
+    description,
+    subTitle,
+    createdSeconds,
+  } = notification;
 
   const pressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressed = useRef(false);
@@ -170,7 +183,11 @@ function NotificationTileContent({
       <ImageWrap>
         <Avatar style={{ backgroundImage: `url(${image || defaultImage})` }} />
         <Badge style={{ backgroundColor: theme.colors.secondary }}>
-          <Icon size={13} color="#fff" />
+          {badgeText ? (
+            <BadgeText>{badgeText.slice(0, 10)}</BadgeText>
+          ) : (
+            <Icon size={13} color="#fff" />
+          )}
         </Badge>
       </ImageWrap>
       <Body>
@@ -249,6 +266,14 @@ const Badge = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+
+const BadgeText = styled.span`
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
 `;
 
 const Body = styled.div`

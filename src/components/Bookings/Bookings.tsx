@@ -9,6 +9,11 @@ import { Brand, BrandScope } from '../../theme/brands';
 
 export type BookingCategory = 'requested' | 'upcoming' | 'past';
 
+/** Booking statuses that carry a coloured badge on the card. */
+export type BookingBadgeStatus = 'requested' | 'booked' | 'rejected' | 'canceled';
+/** Per-status background-colour overrides for the card status badges. */
+export type StatusBadgeColors = Partial<Record<BookingBadgeStatus, string>>;
+
 /** A booking as needed by the list (kept loose — extra fields pass through). */
 export interface BookingItem {
   id?: string;
@@ -45,6 +50,13 @@ export interface BookingsProps {
     trackColor?: string;
     textColor?: string;
   };
+  /**
+   * Background-colour overrides for the card status badges, keyed by status
+   * (e.g. `{ booked: '#000' }`). Any status omitted falls back to the theme
+   * default (booked → secondary, requested → warning, rejected/canceled →
+   * danger).
+   */
+  statusBadgeColors?: StatusBadgeColors;
   title?: string;
   header?: PageProps['header'];
   bottomNav?: PageProps['bottomNav'];
@@ -65,13 +77,15 @@ const CATEGORIES: { label: string; value: BookingCategory }[] = [
   { label: 'past', value: 'past' },
 ];
 
-/** Map a booking status to a badge label + theme colour key. */
-function badgeFor(theme: ReturnType<typeof useTheme>, status?: string) {
+/** Map a booking status to a badge label + colour (host override wins over theme). */
+function badgeFor(theme: ReturnType<typeof useTheme>, status?: string, colors: StatusBadgeColors = {}) {
   const s = (status || '').toUpperCase();
-  if (s === 'REJECTED' || s === 'CANCELED')
-    return { label: s === 'REJECTED' ? 'Rejected' : 'Canceled', color: theme.colors.danger };
-  if (s === 'REQUESTED') return { label: 'Requested', color: theme.colors.warning };
-  if (s === 'BOOKED') return { label: 'Booked', color: theme.colors.secondary };
+  if (s === 'REJECTED' || s === 'CANCELED') {
+    const key = s === 'REJECTED' ? 'rejected' : 'canceled';
+    return { label: s === 'REJECTED' ? 'Rejected' : 'Canceled', color: colors[key] ?? theme.colors.danger };
+  }
+  if (s === 'REQUESTED') return { label: 'Requested', color: colors.requested ?? theme.colors.warning };
+  if (s === 'BOOKED') return { label: 'Booked', color: colors.booked ?? theme.colors.secondary };
   return s ? { label: s.charAt(0) + s.slice(1).toLowerCase(), color: theme.colors.secondary } : undefined;
 }
 
@@ -86,6 +100,7 @@ function BookingsContent({
   makeBookingButtonVariant = 'success',
   makeBookingButtonStyle = { borderRadius: 8, minHeight: 52, fontWeight: 'bold' },
   statusNav,
+  statusBadgeColors,
   title = 'Bookings',
   header,
   bottomNav,
@@ -127,7 +142,7 @@ function BookingsContent({
                 <FacilityCard
                   title={booking.resourceName || ''}
                   image={booking.resourceImage}
-                  badge={badgeFor(theme, booking.status)}
+                  badge={badgeFor(theme, booking.status, statusBadgeColors)}
                   onClick={() => onOpenBooking(booking)}
                 />
               </CardSlot>

@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { CSSObject } from 'styled-components';
 import { FiSearch, FiX } from 'react-icons/fi';
 import { Brand, BrandScope } from '../../theme/brands';
 
@@ -13,6 +13,16 @@ export interface SearchBarProps {
   autoFocus?: boolean;
   /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
   brand?: Brand;
+  /** Style overrides for the outer container — e.g. border, background, radius. */
+  containerStyle?: React.CSSProperties;
+  /** Style overrides for the text input — e.g. color, fontSize, fontFamily. */
+  inputStyle?: React.CSSProperties;
+  /** Style overrides applied to the placeholder (::placeholder) pseudo-element. */
+  placeholderStyle?: React.CSSProperties;
+  /** Style overrides for the clear (✕) icon button. `color` also tints the icon. */
+  closeIconStyle?: React.CSSProperties;
+  /** Size of the clear (✕) icon in px. Defaults to 20. */
+  closeIconSize?: number;
 }
 
 const Wrapper = styled.div`
@@ -30,7 +40,7 @@ const Wrapper = styled.div`
   }
 `;
 
-const Input = styled.input`
+const Input = styled.input<{ $placeholderStyle?: React.CSSProperties }>`
   flex: 1;
   border: none;
   outline: none;
@@ -41,6 +51,7 @@ const Input = styled.input`
 
   &::placeholder {
     color: ${({ theme }) => theme.colors.textMuted};
+    ${({ $placeholderStyle }) => $placeholderStyle as CSSObject | undefined}
   }
 `;
 
@@ -62,13 +73,18 @@ function SearchBarContent({
   onFocus,
   onClear,
   autoFocus,
+  containerStyle,
+  inputStyle,
+  placeholderStyle,
+  closeIconStyle,
+  closeIconSize = 20,
 }: SearchBarProps) {
   const clear = () => {
     onChange('');
     onClear?.();
   };
   return (
-    <Wrapper>
+    <Wrapper style={containerStyle}>
       <FiSearch size={20} aria-hidden />
       <Input
         value={value}
@@ -77,10 +93,12 @@ function SearchBarContent({
         autoFocus={autoFocus}
         onChange={(e) => onChange(e.target.value)}
         aria-label={placeholder}
+        style={inputStyle}
+        $placeholderStyle={placeholderStyle}
       />
       {value.length > 0 && (
-        <IconButton type="button" onClick={clear} aria-label="Clear search">
-          <FiX size={20} />
+        <IconButton type="button" onClick={clear} aria-label="Clear search" style={closeIconStyle}>
+          <FiX size={closeIconSize} />
         </IconButton>
       )}
     </Wrapper>

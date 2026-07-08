@@ -36,8 +36,13 @@ export interface NotificationItem {
    * Rendered on a single line and truncated to a maximum of 10 characters.
    */
   badgeText?: string;
-  /** Unix seconds for the created timestamp. */
+  /** Unix seconds for the created timestamp (preferred). */
   createdSeconds?: number;
+  /**
+   * Raw created timestamp, used when `createdSeconds` is absent. Accepts a
+   * Firestore `Timestamp` (live or persisted), a `Date`, or an epoch number.
+   */
+  createdAt?: unknown;
   url?: string;
   [key: string]: unknown;
 }
@@ -150,6 +155,42 @@ export function formatRelativeTime(seconds?: number, now: number = Date.now()): 
   return `${Math.floor(hours / 24)} days ago`;
 }
 
+/**
+ * Resolve a unix-seconds timestamp from a notification, tolerant of the many
+ * shapes a Firestore `createdAt` arrives in:
+ *  - `createdSeconds` already provided (number, or numeric string) — preferred;
+ *  - a live Firestore `Timestamp` instance (`.seconds`) — firebase JS SDK v7/8/9;
+ *  - a rehydrated/persisted Timestamp (`{ seconds }` via toJSON, or RN's `_seconds`);
+ *  - a `Date` / `{ toDate() }`; or a raw epoch number (seconds or milliseconds).
+ * Returns `undefined` when nothing usable is present.
+ */
+export function notificationCreatedSeconds(n: {
+  createdSeconds?: unknown;
+  createdAt?: unknown;
+}): number | undefined {
+  const cs = n.createdSeconds;
+  if (typeof cs === 'number' && cs > 0) return cs;
+  if (typeof cs === 'string' && cs.trim() !== '' && Number.isFinite(Number(cs)))
+    return Number(cs);
+
+  const ca = n.createdAt as
+    | number
+    | { seconds?: number; _seconds?: number; toDate?: () => Date; getTime?: () => number }
+    | null
+    | undefined;
+  if (ca == null) return undefined;
+  if (typeof ca === 'number')
+    // Heuristic: values past ~2001 in ms (>1e12) are milliseconds; else seconds.
+    return ca > 1e12 ? Math.floor(ca / 1000) : ca;
+  if (typeof ca === 'object') {
+    const s = ca.seconds ?? ca._seconds;
+    if (typeof s === 'number') return s;
+    if (typeof ca.toDate === 'function') return Math.floor(ca.toDate().getTime() / 1000);
+    if (typeof ca.getTime === 'function') return Math.floor(ca.getTime() / 1000);
+  }
+  return undefined;
+}
+
 const PLACEHOLDER =
   'data:image/svg+xml;utf8,' +
   encodeURIComponent(
@@ -180,7 +221,6 @@ function NotificationTileContent({
     badgeText,
     description,
     subTitle,
-    createdSeconds,
   } = notification;
 
   // RN parity (`NotificationItem`): prefer `image`, then `pushImage`, then the
@@ -221,8 +261,9 @@ function NotificationTileContent({
 
   const Icon = ICON_BY_KEY[iconKeyForType(type)];
   const unread = (status || '').toUpperCase() === 'SENT';
-  const createdDate = formatCreatedDate(createdSeconds);
-  const relative = formatRelativeTime(createdSeconds);
+  const resolvedSeconds = notificationCreatedSeconds(notification);
+  const createdDate = formatCreatedDate(resolvedSeconds);
+  const relative = formatRelativeTime(resolvedSeconds);
 
   return (
     <Card

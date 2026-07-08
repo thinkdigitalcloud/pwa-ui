@@ -58,3 +58,71 @@ export const BadgeText: Story = {
     },
   },
 };
+
+// RN parity: the category pill is coloured by `type`. These mirror the mobile
+// Notifications screen (arrivals = navy, booking alerts = info-blue, etc.).
+export const ArrivalBadge: Story = {
+  args: {
+    notification: {
+      ...base,
+      title: 'Client Access',
+      description: 'Stijn Hendriks has entered the building.',
+      type: 'clientEntered',
+      badgeText: 'ARRIVAL',
+      status: 'READ',
+    },
+  },
+};
+export const BookingAlertBadge: Story = {
+  args: {
+    notification: {
+      ...base,
+      title: 'Booking Alert',
+      description: 'Giorgi Gumburashvili has made a booking',
+      type: 'bookingAlert',
+      badgeText: 'BOOKING',
+    },
+  },
+};
+
+// Consumer-supplied style overrides + hiding the absolute date, keeping only the
+// relative "x ago" stamp.
+export const StyleOverrides: Story = {
+  args: {
+    notification: {
+      ...base,
+      title: 'Client Access',
+      description: 'Stijn Hendriks has entered the building.',
+      type: 'clientEntered',
+      badgeText: 'ARRIVAL',
+      status: 'READ',
+    },
+    hideDate: true,
+    titleStyle: { fontSize: 18, fontWeight: 700 },
+    descriptionStyle: { fontSize: 15, color: '#444' },
+    timeAgoStyle: { fontSize: 12, fontStyle: 'italic', color: '#888' },
+    badgeStyle: { backgroundColor: '#111' },
+    badgeTextStyle: { fontSize: 11, letterSpacing: 0.5 },
+  },
+};
+
+// A broken image URL falls back to `defaultImage` via onError, so the circle is
+// never empty (previously the CSS background failed silently, leaving the badge
+// floating over blank space).
+export const BrokenImageFallsBack: Story = {
+  args: {
+    defaultImage:
+      'data:image/svg+xml;utf8,' +
+      encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56"><rect width="56" height="56" fill="#32435B"/></svg>',
+      ),
+    notification: {
+      ...base,
+      title: 'Booking Alert',
+      description: 'This tile has a broken image URL.',
+      type: 'bookingAlert',
+      badgeText: 'BOOKING',
+      image: 'https://example.invalid/does-not-exist.png',
+    },
+  },
+};

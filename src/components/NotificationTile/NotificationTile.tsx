@@ -51,6 +51,25 @@ export interface NotificationTileProps {
   selected?: boolean;
   /** Fallback image when `notification.image` is empty. */
   defaultImage?: string;
+
+  /** Style overrides for the title text (e.g. color, fontSize, fontFamily). */
+  titleStyle?: React.CSSProperties;
+  /** Style overrides for the description line. */
+  descriptionStyle?: React.CSSProperties;
+  /** Style overrides for the absolute date stamp (`formatCreatedDate`). */
+  dateStyle?: React.CSSProperties;
+  /** Style overrides for the relative "x ago" stamp (`formatRelativeTime`). */
+  timeAgoStyle?: React.CSSProperties;
+  /** Style overrides for the corner badge pill (e.g. backgroundColor, size). */
+  badgeStyle?: React.CSSProperties;
+  /** Style overrides for the badge label text. */
+  badgeTextStyle?: React.CSSProperties;
+
+  /** Hide the absolute date stamp. */
+  hideDate?: boolean;
+  /** Hide the relative "x ago" stamp. */
+  hideTimeAgo?: boolean;
+
   /** Render with a specific brand's theme, overriding the ambient BrandProvider. */
   brand?: Brand;
 }
@@ -67,6 +86,26 @@ const ICON_BY_KEY = {
   'people-outline': FiUsers,
   'wallet-outline': IoWalletOutline,
 } as const;
+
+/**
+ * Corner-badge background colour by notification `type`, ported verbatim from the
+ * RN app's `NotificationItem` (tdg-one-app). RN colours the category pill by type
+ * (arrivals navy, alerts amber, booking alerts info-blue, …) and only falls back
+ * to green as the default — it does NOT hardcode green for everything. These are
+ * fixed hex values (not theme colours) because some brand themes set
+ * success/primary to black or mid-grey.
+ */
+const BADGE_COLOR_DEFAULT = '#5cb85c'; // success green
+export function badgeColorForType(rawType: string): string {
+  const type = (rawType || '').toLowerCase();
+  if (type === 'cliententered') return '#32435B'; // arrivals — dark navy
+  if (type === 'alert') return '#f0ad4e'; // warning — amber
+  if (type === 'event') return '#5cb85c'; // success — green
+  if (type === 'snag' || type === 'communityconnect' || type === 'bookingalert')
+    return '#62B1F6'; // info — light blue
+  if (type === 'booking' || type === 'vehiclebooking') return '#3F51B5'; // primary — indigo
+  return BADGE_COLOR_DEFAULT;
+}
 
 /** Map a notification `type` to an icon key (ported from balwin). */
 export function iconKeyForType(rawType: string): keyof typeof ICON_BY_KEY {
@@ -123,6 +162,14 @@ function NotificationTileContent({
   onLongPress,
   selected = false,
   defaultImage = PLACEHOLDER,
+  titleStyle,
+  descriptionStyle,
+  dateStyle,
+  timeAgoStyle,
+  badgeStyle,
+  badgeTextStyle,
+  hideDate = false,
+  hideTimeAgo = false,
 }: NotificationTileProps) {
   const theme = useTheme();
   const {
@@ -135,6 +182,14 @@ function NotificationTileContent({
     subTitle,
     createdSeconds,
   } = notification;
+
+  // RN parity (`NotificationItem`): prefer `image`, then `pushImage`, then the
+  // caller's default. Rendered via an <img> (not a CSS background) so a broken or
+  // browser-blocked URL falls back to the default via onError instead of leaving
+  // an empty circle with an orphaned badge floating over it.
+  const pushImage =
+    typeof notification.pushImage === 'string' ? notification.pushImage : undefined;
+  const primarySrc = image || pushImage || defaultImage;
 
   const pressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressed = useRef(false);
@@ -181,25 +236,48 @@ function NotificationTileContent({
       onContextMenu={handleContextMenu}
     >
       <ImageWrap>
-        <Avatar style={{ backgroundImage: `url(${image || defaultImage})` }} />
-        <Badge $pill={!!badgeText} style={{ backgroundColor: '#5cb85c' }}>
+        <Avatar
+          src={primarySrc}
+          alt=""
+          loading="lazy"
+          onError={(e) => {
+            const el = e.currentTarget;
+            if (el.src !== defaultImage) el.src = defaultImage;
+          }}
+        />
+        <Badge
+          $pill={!!badgeText}
+          style={{ backgroundColor: badgeColorForType(type), ...badgeStyle }}
+        >
           {badgeText ? (
-            <BadgeText>{badgeText}</BadgeText>
+            <BadgeText style={badgeTextStyle}>{badgeText}</BadgeText>
           ) : (
             <Icon size={13} color="#fff" />
           )}
         </Badge>
       </ImageWrap>
       <Body>
-        <Title $color={theme.colors.text} $unread={unread} title={title}>
+        <Title $color={theme.colors.text} $unread={unread} title={title} style={titleStyle}>
           {title}
         </Title>
         {subTitle && subTitle !== 'Visitor Information' && (
           <Line $color={theme.colors.text}>{subTitle}</Line>
         )}
-        {description && <Line $color={theme.colors.text}>{description}</Line>}
-        {createdDate && <Stamp $color={theme.colors.text}>{createdDate}</Stamp>}
-        {relative && <Stamp $color={theme.colors.text}>{relative}</Stamp>}
+        {description && (
+          <Line $color={theme.colors.text} style={descriptionStyle}>
+            {description}
+          </Line>
+        )}
+        {!hideDate && createdDate && (
+          <Stamp $color={theme.colors.text} style={dateStyle}>
+            {createdDate}
+          </Stamp>
+        )}
+        {!hideTimeAgo && relative && (
+          <Stamp $color={theme.colors.text} style={timeAgoStyle}>
+            {relative}
+          </Stamp>
+        )}
       </Body>
       <Trailing>
         {selected ? (
@@ -247,13 +325,13 @@ const ImageWrap = styled.div`
   flex-shrink: 0;
 `;
 
-const Avatar = styled.div`
+const Avatar = styled.img`
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
+  object-fit: cover;
+  /* Neutral fill shown while loading or if the default image also fails. */
+  background-color: #e3e6ea;
 `;
 
 // A count/icon shows in a circle; a category label ($pill) shows in a rounded
@@ -261,7 +339,8 @@ const Avatar = styled.div`
 const Badge = styled.div<{ $pill?: boolean }>`
   position: absolute;
   bottom: 0;
-  right: -10px;
+  /* Text pills sit further right so they clear the avatar; icon badges keep -10px. */
+  right: ${({ $pill }) => ($pill ? '-24px' : '-10px')};
   min-width: 25px;
   height: ${({ $pill }) => ($pill ? '18px' : '25px')};
   padding: ${({ $pill }) => ($pill ? '0 8px' : '0')};

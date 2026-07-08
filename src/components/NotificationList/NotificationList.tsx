@@ -36,6 +36,18 @@ export interface NotificationListProps {
   /** Fallback avatar for tiles without an image. */
   defaultImage?: string;
 
+  /** Per-tile style overrides / visibility, forwarded to every `NotificationTile`. */
+  titleStyle?: React.CSSProperties;
+  descriptionStyle?: React.CSSProperties;
+  dateStyle?: React.CSSProperties;
+  timeAgoStyle?: React.CSSProperties;
+  badgeStyle?: React.CSSProperties;
+  badgeTextStyle?: React.CSSProperties;
+  /** Hide the absolute date stamp on every tile. */
+  hideDate?: boolean;
+  /** Hide the relative "x ago" stamp on every tile. */
+  hideTimeAgo?: boolean;
+
   header?: PageProps['header'];
   bottomNav?: PageProps['bottomNav'];
   backgroundColor?: string;
@@ -54,6 +66,14 @@ function NotificationListContent({
   footerHint = 'Press and hold a notification for more options.',
   emptyText = 'No Notifications found.',
   defaultImage,
+  titleStyle,
+  descriptionStyle,
+  dateStyle,
+  timeAgoStyle,
+  badgeStyle,
+  badgeTextStyle,
+  hideDate,
+  hideTimeAgo,
   header,
   bottomNav,
   backgroundColor,
@@ -160,6 +180,14 @@ function NotificationListContent({
                 onClick={() => onCardClick(n)}
                 onLongPress={() => onCardLongPress(n)}
                 defaultImage={defaultImage}
+                titleStyle={titleStyle}
+                descriptionStyle={descriptionStyle}
+                dateStyle={dateStyle}
+                timeAgoStyle={timeAgoStyle}
+                badgeStyle={badgeStyle}
+                badgeTextStyle={badgeTextStyle}
+                hideDate={hideDate}
+                hideTimeAgo={hideTimeAgo}
               />
             </TileWrap>
           ))}

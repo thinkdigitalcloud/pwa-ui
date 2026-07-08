@@ -22,6 +22,7 @@ export * from './BottomNavigation';
 export * from './Page';
 export * from './ProfileBase';
 export * from './Modal';
+export * from './Sidebar';
 export * from './SelectModal';
 export * from './AddFromContacts';
 export * from './SwitchEstate';
